@@ -1,0 +1,40 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:motogen/core/constants/app_colors.dart';
+import 'package:motogen/views/learn.dart';
+
+void main() {
+  runApp(
+    ScreenUtilInit(
+      designSize: Size(412, 917),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (_, child) => MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(
+        fontFamily: "IRANSansXFaNum",
+        scaffoldBackgroundColor: AppColors.white100,
+      ),
+      locale: const Locale('fa'),
+      supportedLocales: const [Locale('fa')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      debugShowCheckedModeBanner: false,
+      title: 'MotoGen',
+      home: Learn(),
+    );
+  }
+}
