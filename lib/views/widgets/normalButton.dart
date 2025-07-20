@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 
-class Button extends StatelessWidget {
+class Normalbutton extends ConsumerWidget {
   final String text;
   final VoidCallback onPressed;
 
-  const Button({super.key, required this.text, required this.onPressed});
+  const Normalbutton({super.key, required this.onPressed, required this.text});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: onPressed,
       child: Container(
