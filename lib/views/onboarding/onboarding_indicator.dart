@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
+import 'package:motogen/viewmodels/car_info/car_info_form_viewmodel.dart';
 import 'package:motogen/viewmodels/personal_info_view_model.dart';
 import 'package:motogen/views/learn.dart';
+import 'package:motogen/views/onboarding/car_info/car_info_screen.dart';
+import 'package:motogen/views/onboarding/car_info/first_car_info_config.dart';
+import 'package:motogen/views/onboarding/car_info/second_car_info_config.dart';
 import 'package:motogen/views/onboarding/onboarding_page_1.dart';
 import 'package:motogen/views/onboarding/personal_info_screen.dart';
 import 'package:motogen/views/widgets/onboarding_button.dart';
@@ -21,14 +25,40 @@ class _OnboardingIndicatorState extends ConsumerState<OnboardingIndicator> {
   int _currentPage = 0;
   final int count = 5;
 
-  ProviderBase<dynamic> _getCurrentStepProvider() {
+  final isCarInfoButtonEnabledForFirstPageProvider = Provider<bool>((ref) {
+    final state = ref.watch(CarInfoFormProvider);
+    return state.brand != null &&
+        state.model != null &&
+        state.type != null &&
+        state.yearMade != null &&
+        state.color != null;
+  });
+
+  final isCarInfoButtonEnabledForSecondPageProvider = Provider<bool>((ref) {
+    final state = ref.watch(CarInfoFormProvider);
+
+    final rawKm = state.rawKilometersInput ?? '';
+    final parsedKm = int.tryParse(rawKm);
+
+    final isKmValid = parsedKm != null && parsedKm > 0 && parsedKm < 10000000;
+
+    return isKmValid &&
+        state.fuelType !=
+            null /* &&
+        state.insuranceExpiry != null &&
+        state.nextTechnicalCheck != null */;
+  });
+
+  bool _getCurrentButtonEnabled() {
     switch (_currentPage) {
       case 0:
-        return personalInfoProvider;
-      // case 1: return carProvider;
-      // case 2: return phoneProvider;
+        return ref.watch(personalInfoProvider).isButtonEnabled;
+      case 1:
+        return ref.watch(isCarInfoButtonEnabledForFirstPageProvider);
+      case 2:
+        return ref.watch(isCarInfoButtonEnabledForSecondPageProvider);
       default:
-        return personalInfoProvider;
+        return false;
     }
   }
 
@@ -56,26 +86,15 @@ class _OnboardingIndicatorState extends ConsumerState<OnboardingIndicator> {
               controller: _pageController,
               physics: NeverScrollableScrollPhysics(),
               onPageChanged: (index) => setState(() => _currentPage = index),
-              children: [PersonalInfoScreen(), Learn()],
+              children: [
+                PersonalInfoScreen(),
+                CarInfoScreen(_prevPage, carInfoFirstPageFields),
+                CarInfoScreen(_prevPage, carInfoSecondPageFields),
+                Learn(),
+              ],
             ),
           ),
 
-          /*  Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).size.height * 0.027,
-            ),
-            child: SmoothPageIndicator(
-              controller: _pageController,
-              count: 5,
-              effect: WormEffect(
-                dotHeight: 8.h,
-                dotWidth: 8.w,
-                dotColor: AppColors.black100,
-                spacing: 8,
-                activeDotColor: AppColors.orange500,
-              ),
-            ),
-          ), */
           Padding(
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).size.height * 0.027,
@@ -103,7 +122,7 @@ class _OnboardingIndicatorState extends ConsumerState<OnboardingIndicator> {
             child: onboardingButton(
               text: "تایید و ادامه",
               onPressed: () => _nextPage(),
-              currentProvider: _getCurrentStepProvider(),
+              enabled: _getCurrentButtonEnabled(),
             ),
           ),
         ],

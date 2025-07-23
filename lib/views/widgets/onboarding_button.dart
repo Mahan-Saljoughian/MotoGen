@@ -6,24 +6,19 @@ import 'package:motogen/core/constants/app_colors.dart';
 class onboardingButton extends ConsumerWidget {
   final String text;
   final VoidCallback onPressed;
-  final ProviderBase<dynamic> currentProvider;
+  final bool? enabled;
 
   const onboardingButton({
     super.key,
     required this.onPressed,
-    required this.currentProvider,
+    this.enabled = true,
     required this.text,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    bool enabled = true;
-
-    final currentViewModel = ref.watch(currentProvider);
-    enabled = currentViewModel.isButtonEnabled;
-
     return GestureDetector(
-      onTap: enabled
+      onTap: enabled!
           ? /* () async {
               await ref.watch(currentProvider).savePersonalInfo();
               onPressed();
@@ -34,7 +29,7 @@ class onboardingButton extends ConsumerWidget {
         height: 48.w,
         padding: EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: enabled ? AppColors.orange600 : AppColors.white700,
+          color: enabled! ? AppColors.orange600 : AppColors.white700,
           borderRadius: BorderRadius.circular(50.r),
         ),
         child: Text(

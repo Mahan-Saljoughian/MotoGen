@@ -3,6 +3,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
+import 'package:motogen/views/onboarding/car_info/car_info_screen.dart';
+import 'package:motogen/views/onboarding/onboarding_indicator.dart';
 import 'package:motogen/views/onboarding/onboarding_page_1.dart';
 
 void main() {
@@ -38,7 +40,7 @@ class MyApp extends StatelessWidget {
       ],
       debugShowCheckedModeBanner: false,
       title: 'MotoGen',
-      home: OnboardingPage1(),
+      home: OnboardingIndicator(),
     );
   }
 }

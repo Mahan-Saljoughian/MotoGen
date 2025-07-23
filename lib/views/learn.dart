@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
-import 'package:motogen/views/widgets/normalButton.dart';
 import 'package:motogen/views/widgets/onboarding_button.dart';
 
 class Learn extends StatefulWidget {
@@ -47,7 +46,7 @@ class _LearnState extends State<Learn> {
                 ),
               ],
             ),
-            Normalbutton(
+            onboardingButton(
               text: "عوض کن",
               onPressed: () => setState(() {
                 toggle = !toggle;

@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/views/onboarding/onboarding_indicator.dart';
 import 'package:motogen/views/onboarding/personal_info_screen.dart';
-import 'package:motogen/views/widgets/normalButton.dart';
 import 'package:motogen/views/widgets/onboarding_button.dart';
 
 class OnboardingPage2 extends StatelessWidget {
@@ -56,7 +55,7 @@ class OnboardingPage2 extends StatelessWidget {
                   height: 370.h,
                 ),
 
-                Normalbutton(
+                onboardingButton(
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(

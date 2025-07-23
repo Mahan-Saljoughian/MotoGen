@@ -21,7 +21,7 @@ class PersonalInfoViewModel extends ChangeNotifier {
     lastNameController.addListener(() {
       validateLastName(lastNameController.text);
     });
-    loadPersonalInfo();
+    loadFromPrefs();
     /* resetSharedPref(); */
   }
 
@@ -40,7 +40,7 @@ class PersonalInfoViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadPersonalInfo() async {
+  Future<void> loadFromPrefs() async {
     final prefs = await SharedPreferences.getInstance();
     final name = prefs.getString('name') ?? '';
     final lastName = prefs.getString('last_name') ?? '';
@@ -50,7 +50,7 @@ class PersonalInfoViewModel extends ChangeNotifier {
     validateLastName(lastName);
   }
 
-  Future<void> savePersonalInfo() async {
+  Future<void> saveToPrefs() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('name', nameController.text.trim());
     await prefs.setString('last_name', lastNameController.text.trim());
