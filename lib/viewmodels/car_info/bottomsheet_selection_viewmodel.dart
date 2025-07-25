@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:motogen/views/onboarding/car_info/picker_item.dart';
 
 class BottomsheetSelectionViewmodel extends ChangeNotifier {
-  String? _selectedItem;
-  String? get selectedItem => _selectedItem;
+  PickerItem? _selectedItem;
+  PickerItem? get selectedItem => _selectedItem;
 
   BottomsheetSelectionViewmodel();
-  BottomsheetSelectionViewmodel.initial(String? selected)
+  BottomsheetSelectionViewmodel.initial(PickerItem? selected)
     : _selectedItem = selected;
 
-  void select(String item) {
+  void select(PickerItem item) {
     if (_selectedItem != item) {
       _selectedItem = item;
       notifyListeners();
     }
   }
 
-  bool isSelected(String item) => _selectedItem == item;
+  bool isSelected(PickerItem item) => _selectedItem?.id == item.id;
 
   void clear() {
     _selectedItem = null;

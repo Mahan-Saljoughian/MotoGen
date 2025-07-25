@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:motogen/views/onboarding/car_info/picker_item.dart';
 
 class BottomsheetSearchViewmodel extends ChangeNotifier {
-  final List<String> items;
+  final List<PickerItem> items;
   String _query = '';
 
   BottomsheetSearchViewmodel({required this.items});
@@ -16,10 +17,10 @@ class BottomsheetSearchViewmodel extends ChangeNotifier {
     }
   }
 
-  List<String> get filteredItems {
+  List<PickerItem> get filteredItems {
     if (_query.isEmpty) return items;
     return items
-        .where((e) => e.toLowerCase().contains(_query.toLowerCase()))
+        .where((e) => e.title.toLowerCase().contains(_query.toLowerCase()))
         .toList();
   }
 }

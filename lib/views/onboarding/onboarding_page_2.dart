@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
+import 'package:motogen/core/constants/app_images.dart';
 import 'package:motogen/views/onboarding/onboarding_indicator.dart';
-import 'package:motogen/views/onboarding/personal_info_screen.dart';
-import 'package:motogen/views/widgets/onboarding_button.dart';
 
 class OnboardingPage2 extends StatelessWidget {
   const OnboardingPage2({super.key});
@@ -14,7 +12,7 @@ class OnboardingPage2 extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(top: 150),
+          padding: EdgeInsets.only(top: 150.h),
 
           child: Center(
             child: Column(
@@ -50,20 +48,37 @@ class OnboardingPage2 extends StatelessWidget {
                 ),
 
                 Image.asset(
-                  "assets/images/Need technical inspection.png",
+                  AppImages.seconfOnboardingImage,
                   width: 370.w,
                   height: 370.h,
                 ),
 
-                onboardingButton(
-                  onPressed: () {
+                GestureDetector(
+                  onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => OnboardingIndicator(),
                       ),
                     );
                   },
-                  text: "َشروع",
+                  child: Container(
+                    width: 330.w,
+                    height: 48.w,
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
+                    decoration: BoxDecoration(
+                      color: AppColors.orange600,
+                      borderRadius: BorderRadius.circular(50.r),
+                    ),
+                    child: Text(
+                      "َشروع",
+                      style: TextStyle(
+                        color: AppColors.black50,
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
               ],
             ),

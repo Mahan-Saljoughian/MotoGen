@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
-import 'package:motogen/core/services/api_service.dart';
-import 'package:motogen/viewmodels/personal_info_view_model.dart';
+import 'package:motogen/viewmodels/personal_info_controller_view_model.dart';
 import 'package:motogen/views/widgets/field_text.dart';
 
 class PersonalInfoScreen extends ConsumerWidget {
@@ -15,7 +14,7 @@ class PersonalInfoScreen extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
+          padding:  EdgeInsets.symmetric(vertical: 20.h),
           child: Center(
             child: Column(
               children: [
@@ -31,7 +30,7 @@ class PersonalInfoScreen extends ConsumerWidget {
                 SizedBox(height: 120.h),
 
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  padding:  EdgeInsets.symmetric(horizontal: 40.w),
                   child: Column(
                     children: [
                       FieldText(

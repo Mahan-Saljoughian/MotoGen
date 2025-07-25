@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
+import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/viewmodels/car_info/car_info_form_viewmodel.dart';
-import 'package:motogen/viewmodels/personal_info_view_model.dart';
-import 'package:motogen/views/onboarding/car_info/picker_and_field_config.dart';
+
+import 'package:motogen/views/onboarding/car_info/car_info_field_config.dart';
+
 import 'package:motogen/views/widgets/bottomsheet_List_show.dart';
 import 'package:motogen/views/widgets/bottomsheet_picker_field.dart';
-import 'package:motogen/views/widgets/field_text.dart';
+
 
 class CarInfoScreen extends ConsumerWidget {
   final VoidCallback onBack;
@@ -17,30 +19,30 @@ class CarInfoScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final CarInfoFormViewmodel = ref.read(CarInfoFormProvider.notifier);
+    final carInfoFormViewmodel = ref.read(carInfoFormProvider.notifier);
     final kilometerText = ref.watch(
-      CarInfoFormProvider.select((s) => s.rawKilometersInput),
+      carInfoFormProvider.select((s) => s.rawKilometersInput),
     );
     final isKmValid =
         int.tryParse(kilometerText ?? '') != null &&
         int.parse(kilometerText!) > 0 &&
-        int.parse(kilometerText!) < 10000000;
+        int.parse(kilometerText) < 10000000;
 
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
+          padding:  EdgeInsets.symmetric(vertical: 20.h),
           child: Center(
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding:  EdgeInsets.symmetric(horizontal: 20.w),
                   child: Row(
                     children: [
                       GestureDetector(
                         onTap: onBack,
                         child: SvgPicture.asset(
-                          "assets/icons/arrow-right.svg",
+                          AppIcons.arrowRight,
                           width: 24.w,
                           height: 24.h,
                         ),
@@ -63,30 +65,35 @@ class CarInfoScreen extends ConsumerWidget {
                 SizedBox(height: 120.h),
 
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  padding:  EdgeInsets.symmetric(horizontal: 40.w),
                   child: Column(
                     children: [
                       for (int idx = 0; idx < pickerFields.length; idx++) ...[
                         if (pickerFields[idx].type == FieldInputType.picker)
-                          BottomsheetPickerField(
-                            labelText: pickerFields[idx].labelText,
-                            selectedItem: pickerFields[idx].pickerConfig!
-                                .getter(ref.watch(CarInfoFormProvider)),
-                            onPressed: () =>
-                                BottomsheetListShow.showSelectionBottomSheet(
-                                  context: context,
-                                  config: pickerFields[idx].pickerConfig!,
-                                  ref: ref,
-                                  state: ref.watch(CarInfoFormProvider),
-                                ),
+                          Consumer(
+                            builder: (context, ref, _) {
+                              final formState = ref.watch(carInfoFormProvider);
+                              return BottomsheetPickerField(
+                                labelText: pickerFields[idx].labelText,
+                                selectedItem: pickerFields[idx].pickerConfig!
+                                    .getter(formState),
+                                onPressed: () =>
+                                    BottomsheetListShow.showSelectionBottomSheet(
+                                      context: context,
+                                      config: pickerFields[idx].pickerConfig!,
+                                      ref: ref,
+                                      state: formState,
+                                    ),
+                              );
+                            },
                           )
                         else if (pickerFields[idx].type == FieldInputType.text)
                           TextField(
                             controller:
-                                CarInfoFormViewmodel.kilometeDrivenController,
+                                carInfoFormViewmodel.kilometeDrivenController,
                             keyboardType: TextInputType.number,
                             onChanged: (text) {
-                              CarInfoFormViewmodel.setRawKilometerInput(text);
+                              carInfoFormViewmodel.setRawKilometerInput(text);
                             },
                             decoration: InputDecoration(
                               labelText: pickerFields[idx].labelText,
@@ -125,7 +132,7 @@ class CarInfoScreen extends ConsumerWidget {
                                 fontSize: 15.sp,
                                 fontWeight: FontWeight.w600,
                               ),
-                              contentPadding: EdgeInsets.only(right: 24),
+                              contentPadding: EdgeInsets.only(right: 24.w),
                             ),
                           ),
                         if (idx != pickerFields.length - 1)

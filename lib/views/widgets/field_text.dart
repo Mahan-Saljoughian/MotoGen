@@ -19,6 +19,9 @@ class FieldText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      keyboardType: labelText == "شماره موبایل"
+          ? TextInputType.number
+          : TextInputType.text,
       controller: controller,
       decoration: InputDecoration(
         labelText: labelText,
@@ -50,7 +53,7 @@ class FieldText extends StatelessWidget {
           fontSize: 15.sp,
           fontWeight: FontWeight.w600,
         ),
-        contentPadding: EdgeInsets.only(right: 24),
+        contentPadding: EdgeInsets.only(right: 24.w),
       ),
     );
   }

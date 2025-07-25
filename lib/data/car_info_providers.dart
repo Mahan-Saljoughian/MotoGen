@@ -1,0 +1,122 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:motogen/core/services/api_service.dart';
+import 'package:motogen/models/car_form_state.dart';
+import 'package:motogen/views/onboarding/car_info/picker_item.dart';
+
+final api = ApiService();
+final carBrandsProvider = FutureProvider.autoDispose<List<PickerItem>>((
+  ref,
+) async {
+  final result = await api.get('cars/brands');
+  final List data = result['data'];
+  print("API response: $result");
+  return data
+      .map(
+        (e) => PickerItem(id: e['id'].toString(), title: e['title'] as String),
+      )
+      .toList();
+});
+
+// Models depend on brand selection
+final carModelsProvider = FutureProvider.autoDispose
+    .family<List<PickerItem>, String>((ref, brandId) async {
+      if (brandId.isEmpty) return [];
+      final result = await api.get('cars/brands/$brandId/models');
+      final List data = result['data'];
+      print("API response: $result");
+      return data
+          .map(
+            (e) =>
+                PickerItem(id: e['id'].toString(), title: e['title'] as String),
+          )
+          .toList();
+    });
+
+final carTrimsApiProvider = FutureProvider.autoDispose
+    .family<Map<String, dynamic>, String>((ref, modelId) async {
+      final api = ApiService();
+      // Only calls API when modelId changes, or when explicitly refreshed.
+      return await api.get('cars/models/$modelId/trims');
+    });
+
+// Types (trims) depend on model selection
+final carTypesProvider = Provider.autoDispose
+    .family<AsyncValue<List<PickerItem>>, String>((ref, modelId) {
+      final apiAsync = ref.watch(carTrimsApiProvider(modelId));
+      return apiAsync.whenData((result) {
+        final List dataList = result['data'];
+        return dataList
+            .map(
+              (e) => PickerItem(
+                id: e['id'].toString(),
+                title: e['title'].toString(),
+              ),
+            )
+            .toList();
+      });
+    });
+
+class TrimRange {
+  final int firstYearProd, lastYearProd;
+  TrimRange({required this.firstYearProd, required this.lastYearProd});
+}
+
+final trimRangeProvider = Provider.autoDispose
+    .family<AsyncValue<TrimRange?>, ({String modelId, String typeId})>((
+      ref,
+      args,
+    ) {
+      final apiAsync = ref.watch(carTrimsApiProvider(args.modelId));
+      return apiAsync.whenData((result) {
+        final data = result['data'];
+        if (data == null || data is! List || data.isEmpty) return null;
+
+        final item = data.firstWhere((e) => e['id'] == args.typeId);
+        if (item == null) return null;
+
+        final firstYear = item['firstYearProd'];
+        final lastYear = item['lastYearProd'];
+
+        if (firstYear == null || lastYear == null) return null;
+
+        if (firstYear == null || lastYear == null) return null;
+        return TrimRange(firstYearProd: firstYear, lastYearProd: lastYear);
+      });
+    });
+
+final yearMadeProvider = Provider.autoDispose
+    .family<AsyncValue<List<PickerItem>>, ({String modelId, String typeId})>((
+      ref,
+      args,
+    ) {
+      final trimRangeAsync = ref.watch(
+        trimRangeProvider((modelId: args.modelId, typeId: args.typeId)),
+      );
+      return trimRangeAsync.whenData((range) {
+        if (range == null) return <PickerItem>[];
+        final start = range.firstYearProd;
+        final end = range.lastYearProd;
+        return List.generate(end - start + 1, (i) {
+          final year = start + i;
+          return PickerItem(id: year.toString(), title: year.toString());
+        });
+      });
+    });
+
+ProviderListenable<AsyncValue<List<PickerItem>>> carColorsAsyncProviderBuilder(
+  CarFormState state,
+) {
+  return Provider.autoDispose<AsyncValue<List<PickerItem>>>((ref) {
+    final list = ref.watch(carColorsProvider);
+    return AsyncValue.data(list);
+  });
+}
+
+ProviderListenable<AsyncValue<List<PickerItem>>> fuelTypesAsyncProviderBuilder(
+  CarFormState state,
+) {
+  return Provider.autoDispose<AsyncValue<List<PickerItem>>>((ref) {
+    final list = ref.watch(fuelTypesProvider);
+    return AsyncValue.data(list);
+  });
+}

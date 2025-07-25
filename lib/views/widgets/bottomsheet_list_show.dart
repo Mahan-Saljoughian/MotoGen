@@ -3,10 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
+import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/models/car_form_state.dart';
 import 'package:motogen/viewmodels/car_info/bottomsheet_search_viewmodel.dart';
 import 'package:motogen/viewmodels/car_info/bottomsheet_selection_viewmodel.dart';
-import 'package:motogen/views/onboarding/car_info/picker_and_field_config.dart';
+import 'package:motogen/viewmodels/car_info/car_info_form_viewmodel.dart';
+import 'package:motogen/views/onboarding/car_info/picker_field_config.dart';
+import 'package:motogen/views/onboarding/car_info/picker_item.dart';
 
 class BottomsheetListShow {
   static Future<void> showSelectionBottomSheet({
@@ -16,11 +19,10 @@ class BottomsheetListShow {
     required CarFormState state,
   }) async {
     final labelText = config.labelText;
-    final items = config.items;
-    final selectedItem = config.getter(state);
-    String? latestSelectedItem = selectedItem;
+    final PickerItem? selectedItem = config.getter(state);
+    PickerItem? latestSelectedItem = selectedItem;
 
-    final result = await showModalBottomSheet<String>(
+    final result = await showModalBottomSheet<PickerItem>(
       context: context,
       isScrollControlled: true,
       isDismissible: true,
@@ -30,157 +32,176 @@ class BottomsheetListShow {
       ),
       builder: (ctx) => _BottomSheetContent(
         labelText: labelText,
-        items: items,
-        initalSelectedItem: selectedItem,
+        itemsProvider: config.providerBuilder(state),
+        initialSelectedItem: selectedItem,
         onLatestSelectionChanged: (val) => latestSelectedItem = val,
       ),
     );
 
     config.setter(ref, result ?? latestSelectedItem);
+    final s = ref.read(carInfoFormProvider);
+    print(
+      "[DEBUG] brand: ${s.brand}, model: ${s.model}, type: ${s.type}, yearMade: ${s.yearMade}, color: ${s.color}",
+    );
   }
 }
 
-class _BottomSheetContent extends StatelessWidget {
+class _BottomSheetContent extends ConsumerWidget {
   final String labelText;
-  final List<String> items;
-  final String? initalSelectedItem;
-  final ValueChanged<String?> onLatestSelectionChanged;
+  final ProviderListenable<AsyncValue<List<PickerItem>>> itemsProvider;
+  final PickerItem? initialSelectedItem;
+  final ValueChanged<PickerItem?> onLatestSelectionChanged;
 
   const _BottomSheetContent({
     required this.labelText,
-    required this.items,
-    required this.initalSelectedItem,
     required this.onLatestSelectionChanged,
+    this.initialSelectedItem,
+    required this.itemsProvider,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return ProviderScope(
-      overrides: [
-        bottomsheetSelectionProvider.overrideWith(
-          (ref) => BottomsheetSelectionViewmodel.initial(initalSelectedItem),
-        ),
-        bottomsheetSearchProvider.overrideWith(
-          (ref) => BottomsheetSearchViewmodel(items: items),
-        ),
-      ],
-      child: Consumer(
-        builder: (context, ref, _) {
-          final searchVM = ref.watch(bottomsheetSearchProvider);
-          final selectionVM = ref.watch(bottomsheetSelectionProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final itemsAsync = ref.watch(itemsProvider);
+    return itemsAsync.when(
+      data: (items) => ProviderScope(
+        overrides: [
+          bottomsheetSelectionProvider.overrideWith(
+            (ref) => BottomsheetSelectionViewmodel.initial(initialSelectedItem),
+          ),
+          bottomsheetSearchProvider.overrideWith(
+            (ref) => BottomsheetSearchViewmodel(items: items),
+          ),
+        ],
+        child: Consumer(
+          builder: (context, ref, _) {
+            final searchVM = ref.watch(bottomsheetSearchProvider);
+            final selectionVM = ref.watch(bottomsheetSelectionProvider);
 
-          // Update latest selection
-          onLatestSelectionChanged(selectionVM.selectedItem);
+            // Update latest selection
+            onLatestSelectionChanged(selectionVM.selectedItem);
 
-          return Container(
-            width: double.infinity,
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.5,
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 34),
-            child: Column(
-              children: [
-                // Title
-                Text(
-                  labelText,
-                  style: TextStyle(
-                    color: AppColors.blue600,
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                SizedBox(height: 29.h),
-
-                // Search field
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 33),
-                  child: TextField(
-                    onChanged: (val) => searchVM.query = val,
-                    decoration: InputDecoration(
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15.r),
-                        borderSide: BorderSide(
-                          color: AppColors.white700,
-                          width: 1,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15.r),
-                        borderSide: BorderSide(
-                          color: AppColors.white700,
-                          width: 1,
-                        ),
-                      ),
-                      hintText: "جستجو...",
-                      hintStyle: TextStyle(
-                        color: AppColors.black300,
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      suffixIcon: Padding(
-                        padding: const EdgeInsets.only(left: 18),
-                        child: SvgPicture.asset(
-                          "assets/icons/search-status.svg",
-                        ),
-                      ),
-                      suffixIconConstraints: BoxConstraints(
-                        minHeight: 24.h,
-                        minWidth: 24.w,
-                      ),
-                      contentPadding: EdgeInsets.only(right: 26.w),
+            return Container(
+              width: double.infinity,
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.5,
+              ),
+              padding:  EdgeInsets.symmetric(vertical: 34.h),
+              child: Column(
+                children: [
+                  // Title
+                  Text(
+                    labelText,
+                    style: TextStyle(
+                      color: AppColors.blue600,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                ),
-                SizedBox(height: 16.h),
+                  SizedBox(height: 29.h),
 
-                // List
-                Expanded(
-                  child: RawScrollbar(
-                    thumbVisibility: true,
-                    thickness: 8.w,
-                    radius: const Radius.circular(20),
-                    thumbColor: AppColors.black50,
-                    padding: const EdgeInsets.only(left: 10),
-                    interactive: true,
-                    child: ListView.builder(
-                      itemCount: searchVM.filteredItems.length,
-                      itemBuilder: (context, index) {
-                        final item = searchVM.filteredItems[index];
-                        final isSelected = selectionVM.isSelected(item);
-
-                        return ListTile(
-                          onTap: () {
-                            ref.read(bottomsheetSelectionProvider).select(item);
-                            Navigator.pop(context, item);
-                          },
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 44,
+                  // Search field
+                  Padding(
+                    padding:  EdgeInsets.symmetric(horizontal: 33.w),
+                    child: TextField(
+                      onChanged: (val) => searchVM.query = val,
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15.r),
+                          borderSide: BorderSide(
+                            color: AppColors.white700,
+                            width: 1,
                           ),
-                          title: Text(
-                            item,
-                            style: TextStyle(
-                              color: AppColors.blue600,
-                              fontSize: 15.sp,
-                              fontWeight: FontWeight.w600,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15.r),
+                          borderSide: BorderSide(
+                            color: AppColors.white700,
+                            width: 1,
+                          ),
+                        ),
+                        hintText: "جستجو...",
+                        hintStyle: TextStyle(
+                          color: AppColors.black300,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        suffixIcon: Padding(
+                          padding:  EdgeInsets.only(left: 18.w),
+                          child: SvgPicture.asset(AppIcons.searchStatus),
+                        ),
+                        suffixIconConstraints: BoxConstraints(
+                          minHeight: 24.h,
+                          minWidth: 24.w,
+                        ),
+                        contentPadding: EdgeInsets.only(right: 26.w),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+
+                  // List
+                  Expanded(
+                    child: RawScrollbar(
+                      thumbVisibility: true,
+                      thickness: 8.w,
+                      radius: const Radius.circular(20),
+                      thumbColor: AppColors.black50,
+                      padding:  EdgeInsets.only(left: 10.w),
+                      interactive: true,
+                      child: ListView.builder(
+                        itemCount: searchVM.filteredItems.length,
+                        itemBuilder: (context, index) {
+                          final item = searchVM.filteredItems[index];
+                          final isSelected = selectionVM.isSelected(item);
+
+                          return ListTile(
+                            onTap: () {
+                              ref
+                                  .read(bottomsheetSelectionProvider)
+                                  .select(item);
+                              Navigator.pop(context, item);
+                            },
+                            contentPadding:  EdgeInsets.symmetric(
+                              horizontal: 44.w,
                             ),
-                          ),
-                          trailing: SvgPicture.asset(
-                            isSelected
-                                ? "assets/icons/tick-circle-filled.svg"
-                                : "assets/icons/tick-circle-empty.svg",
-                            width: 24.w,
-                            height: 24.h,
-                          ),
-                        );
-                      },
+                            title: Text(
+                              item.title,
+                              style: TextStyle(
+                                color: AppColors.blue600,
+                                fontSize: 15.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            trailing: SvgPicture.asset(
+                              isSelected
+                                  ? AppIcons.tickCircleFilled
+                                  : AppIcons.tickCircleEmpty,
+                              width: 24.w,
+                              height: 24.h,
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                ],
+              ),
+            );
+          },
+        ),
       ),
+      loading: () => SizedBox(
+        height: 250,
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (err, stack) {
+        print('provider error: $err');
+        print('stack error  $stack');
+        return SizedBox(
+          height: 250,
+          child: Center(child: Text('خطا در گرفتن لیست')),
+        );
+      },
     );
   }
 }

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
+import 'package:motogen/core/constants/app_icons.dart';
+import 'package:motogen/core/constants/app_images.dart';
 import 'package:motogen/views/onboarding/onboarding_page_2.dart';
-import 'package:motogen/views/widgets/onboarding_button.dart';
+
 
 class OnboardingPage1 extends StatelessWidget {
   const OnboardingPage1({super.key});
@@ -14,7 +16,7 @@ class OnboardingPage1 extends StatelessWidget {
       resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(top: 150),
+          padding:  EdgeInsets.only(top: 150.h),
           child: Center(
             child: Column(
               children: [
@@ -52,7 +54,7 @@ class OnboardingPage1 extends StatelessWidget {
                 SizedBox(height: 116.h),
         
                 Image.asset(
-                  "assets/images/car.png",
+                  AppImages.firstOnboardingImage,
                   width: 300.w,
                   height: 157.h,
                 ),
@@ -60,7 +62,7 @@ class OnboardingPage1 extends StatelessWidget {
                 SizedBox(height: 87.h),
         
                 Padding(
-                  padding: const EdgeInsets.only(right: 280),
+                  padding:  EdgeInsets.only(right: 280.w),
                   child: GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(
@@ -73,13 +75,13 @@ class OnboardingPage1 extends StatelessWidget {
                     child: Container(
                       width: 48,
                       height: 48,
-                      padding: EdgeInsets.all(12),
+                      padding:  EdgeInsets.symmetric(horizontal: 12.w , vertical: 12.h),
                       decoration: BoxDecoration(
                         color: AppColors.orange600,
                         borderRadius: BorderRadius.circular(50),
                       ),
                       child: SvgPicture.asset(
-                        "assets/icons/arrow-left.svg",
+                        AppIcons.arrowLeft
                       ),
                     ),
                   ),

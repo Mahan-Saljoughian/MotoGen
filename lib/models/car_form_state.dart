@@ -1,15 +1,16 @@
+import 'package:motogen/views/onboarding/car_info/picker_item.dart';
+
 class CarFormState {
-  final String? brand;
-  final String? model;
-  final String? type;
+  final PickerItem? brand;
+  final PickerItem? model;
+  final PickerItem? type;
   final int? yearMade;
-  final String? color;
+  final PickerItem? color;
   final int? kilometerDriven;
-  final String? fuelType;
+  final PickerItem? fuelType;
   final DateTime? insuranceExpiry;
   final DateTime? nextTechnicalCheck;
-  final String? rawKilometersInput; 
-
+  final String? rawKilometersInput;
 
   const CarFormState({
     this.brand,
@@ -18,23 +19,23 @@ class CarFormState {
     this.yearMade,
     this.color,
     this.kilometerDriven,
-    this.fuelType ,
+    this.fuelType,
     this.insuranceExpiry,
     this.nextTechnicalCheck,
-    this.rawKilometersInput
+    this.rawKilometersInput,
   });
 
   CarFormState copyWith({
-    String? brand,
-    String? model,
-    String? type,
+    PickerItem? brand,
+    PickerItem? model,
+    PickerItem? type,
     int? yearMade,
-    String? color,
+    PickerItem? color,
     int? kilometerDriven,
-    String? fuelType,
+    PickerItem? fuelType,
     DateTime? insuranceExpiry,
     DateTime? nextTechnicalCheck,
-    String? rawKilometersInput
+    String? rawKilometersInput,
   }) {
     return CarFormState(
       brand: brand ?? this.brand,
@@ -46,30 +47,32 @@ class CarFormState {
       fuelType: fuelType ?? this.fuelType,
       insuranceExpiry: insuranceExpiry ?? this.insuranceExpiry,
       nextTechnicalCheck: nextTechnicalCheck ?? this.nextTechnicalCheck,
-      rawKilometersInput : rawKilometersInput ?? this.rawKilometersInput
+      rawKilometersInput: rawKilometersInput ?? this.rawKilometersInput,
     );
   }
 
   Map<String, dynamic> toJson() => {
-    "brand": brand,
-    "model": model,
-    "type": type,
+    "brand": brand?.toJson(),
+    "model": model?.toJson(),
+    "type": type?.toJson(),
     "yearMade": yearMade,
-    "color": color,
+    "color": color?.toJson(),
     "kilometerDriven": kilometerDriven,
-    "fuelType": fuelType,
+    "fuelType": fuelType?.toJson(),
     "insuranceExpiry": insuranceExpiry?.toIso8601String(),
     "nextTechnicalCheck": nextTechnicalCheck?.toIso8601String(),
   };
 
   factory CarFormState.fromJson(Map<String, dynamic> json) => CarFormState(
-    brand: json['brand'],
-    model: json['model'],
-    type: json['type'],
+    brand: json['brand'] != null ? PickerItem.fromJson(json['brand']) : null,
+    model: json['model'] != null ? PickerItem.fromJson(json['model']) : null,
+    type: json['type'] != null ? PickerItem.fromJson(json['type']) : null,
     yearMade: json['yearMade'],
-    color: json['color'],
+    color: json['color'] != null ? PickerItem.fromJson(json['color']) : null,
     kilometerDriven: json['kilometerDriven'],
-    fuelType: json['fuelType'],
+    fuelType: json['fuelType'] != null
+        ? PickerItem.fromJson(json['fuelType'])
+        : null,
     insuranceExpiry: json['insuranceExpiry'] != null
         ? DateTime.parse(json['insuranceExpiry'])
         : null,

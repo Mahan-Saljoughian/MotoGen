@@ -1,16 +1,22 @@
-import 'package:flutter/material.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:motogen/data/car_info_providers.dart';
 import 'package:motogen/models/car_form_state.dart';
 import 'package:motogen/viewmodels/car_info/car_info_form_viewmodel.dart';
+import 'package:motogen/views/onboarding/car_info/picker_item.dart';
 
 class PickerFieldConfig {
   final String labelText;
-  final List<String> items;
-  final String? Function(CarFormState state) getter;
-  final void Function(WidgetRef ref, String? val) setter;
+  final ProviderListenable<AsyncValue<List<PickerItem>>> Function(
+    CarFormState state,
+  )
+  providerBuilder;
+
+  final PickerItem? Function(CarFormState state) getter;
+  final void Function(WidgetRef ref, PickerItem? val) setter;
   PickerFieldConfig({
     required this.labelText,
-    required this.items,
+    required this.providerBuilder,
     required this.getter,
     required this.setter,
   });
@@ -18,52 +24,60 @@ class PickerFieldConfig {
 
 PickerFieldConfig brandPickConfig = PickerFieldConfig(
   labelText: "برند خودرو",
-  items: ["یک", "دو"],
+  providerBuilder: (state) => carBrandsProvider,
   getter: (CarFormState state) => state.brand,
   setter: (WidgetRef ref, value) =>
-      ref.read(CarInfoFormProvider.notifier).setBrand(value),
+      ref.read(carInfoFormProvider.notifier).setBrand(value),
 );
 
 PickerFieldConfig modelPickConfig = PickerFieldConfig(
   labelText: "مدل خودرو",
-  items: ["یک", "دو"],
+  providerBuilder: (state) => carModelsProvider(state.brand?.id ?? ''),
   getter: (CarFormState state) => state.model,
   setter: (WidgetRef ref, value) =>
-      ref.read(CarInfoFormProvider.notifier).setModel(value),
+      ref.read(carInfoFormProvider.notifier).setModel(value),
 );
 
 PickerFieldConfig typePickConfig = PickerFieldConfig(
   labelText: "تیپ خودرو",
-  items: ["یک", "دو"],
+  providerBuilder: (state) => carTypesProvider(state.model?.id ?? ''),
   getter: (CarFormState state) => state.type,
   setter: (WidgetRef ref, value) =>
-      ref.read(CarInfoFormProvider.notifier).setType(value),
+      ref.read(carInfoFormProvider.notifier).setType(value),
 );
 
-PickerFieldConfig yearMadePickConfig = PickerFieldConfig(
-  labelText: "سال ساخت خودرو",
-  items: ["1", "2"],
-  getter: (CarFormState state) => state.yearMade?.toString(),
-  setter: (WidgetRef ref, value) {
-    int? yearInt = int.tryParse(value ?? '');
-    ref.read(CarInfoFormProvider.notifier).setYearMade(yearInt);
+final yearMadePickConfig = PickerFieldConfig(
+  labelText: "سال ساخت",
+  providerBuilder: (state) => yearMadeProvider((
+    modelId: state.model?.id ?? '',
+    typeId: state.type?.id ?? '',
+  )),
+  getter: (state) => state.yearMade != null
+      ? PickerItem(
+          id: state.yearMade.toString(),
+          title: state.yearMade.toString(),
+        )
+      : null,
+  setter: (ref, value) {
+    final year = value != null ? int.tryParse(value.id) : null;
+    ref.read(carInfoFormProvider.notifier).setYearMade(year);
   },
 );
 
 PickerFieldConfig colorPickConfig = PickerFieldConfig(
   labelText: "رنگ خودرو",
-  items: ["یک", "دو"],
+  providerBuilder: carColorsAsyncProviderBuilder,
   getter: (CarFormState state) => state.color,
   setter: (WidgetRef ref, value) =>
-      ref.read(CarInfoFormProvider.notifier).setColor(value),
+      ref.read(carInfoFormProvider.notifier).setColor(value),
 );
 
 PickerFieldConfig fuelTypePickConfig = PickerFieldConfig(
   labelText: "نوع سوخت",
-  items: ["یک", "دو"],
+  providerBuilder: fuelTypesAsyncProviderBuilder,
   getter: (CarFormState state) => state.fuelType,
   setter: (WidgetRef ref, value) =>
-      ref.read(CarInfoFormProvider.notifier).setFuelType(value),
+      ref.read(carInfoFormProvider.notifier).setFuelType(value),
 );
 
 /* PickerFieldConfig insuranceExpiryFieldConfig = PickerFieldConfig(
@@ -82,17 +96,3 @@ PickerFieldConfig nextTechnicalCheckPickConfig = PickerFieldConfig(
       ref.read(CarInfoFormProvider.notifier).setNextTechnicalCheck(value),
 );
  */
-
-enum FieldInputType { picker, text }
-
-class CarInfoFieldConfig {
-  final String labelText;
-  final FieldInputType type;
-  final PickerFieldConfig? pickerConfig;
-
-  CarInfoFieldConfig({
-    required this.labelText,
-    required this.type,
-    this.pickerConfig,
-  });
-}

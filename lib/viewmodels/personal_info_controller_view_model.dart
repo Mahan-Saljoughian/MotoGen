@@ -5,12 +5,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 class PersonalInfoViewModel extends ChangeNotifier {
   final nameController = TextEditingController();
   final lastNameController = TextEditingController();
+  
 
   bool _isNameValid = false;
   bool _isLastNameValid = false;
+  
 
   bool get isNameValid => _isNameValid;
   bool get isLastNameValid => _isLastNameValid;
+ 
 
   bool get isButtonEnabled => _isNameValid && _isLastNameValid;
 

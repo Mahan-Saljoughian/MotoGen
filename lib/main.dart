@@ -3,9 +3,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
-import 'package:motogen/views/onboarding/car_info/car_info_screen.dart';
+
 import 'package:motogen/views/onboarding/onboarding_indicator.dart';
-import 'package:motogen/views/onboarding/onboarding_page_1.dart';
+
 
 void main() {
   runApp(
@@ -27,6 +27,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      //showPerformanceOverlay: true,
       theme: ThemeData(
         fontFamily: "IRANSansXFaNum",
         scaffoldBackgroundColor: AppColors.white100,
