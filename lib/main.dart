@@ -3,9 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
-
-import 'package:motogen/views/onboarding/onboarding_indicator.dart';
-
+import 'package:motogen/features/onboarding/views/onboarding_page_1.dart';
 
 void main() {
   runApp(
@@ -23,7 +21,6 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -41,7 +38,7 @@ class MyApp extends StatelessWidget {
       ],
       debugShowCheckedModeBanner: false,
       title: 'MotoGen',
-      home: OnboardingIndicator(),
+      home: OnboardingPage1(),
     );
   }
 }

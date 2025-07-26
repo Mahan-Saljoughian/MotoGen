@@ -37,6 +37,8 @@ dependencies:
   shared_preferences: 
   flutter_riverpod: 
   http:
+  logger:  
+  shamsi_date: 
  
 
 dev_dependencies:
