@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/features/car_info/viewmodels/car_info_form_viewmodel.dart';
 import 'package:motogen/features/car_info/viewmodels/date_input_view_model.dart';
+import 'package:motogen/features/car_info/viewmodels/nickName_validator.dart';
 import 'package:motogen/features/onboarding/viewmodels/personal_info_controller_view_model.dart';
 import 'package:motogen/features/phone_number/viewmodels/code_controller_view_model.dart';
 import 'package:motogen/features/phone_number/viewmodels/phone_number_controller_view_model.dart';
@@ -90,11 +91,13 @@ class OnboardingButton extends ConsumerWidget {
         return ref.watch(isCarInfoButtonEnabledForFirstPageProvider);
       case 4:
         return ref.watch(isCarInfoButtonEnabledForSecondPageProvider);
-
+      case 5:
+        return ref.watch(nickNameValidatorProvider).isNickNameValid;
       case 10:
-        return ref.watch(dateInputProvider).isFutureDateValid;
+        return ref.watch(dateInputProvider).isDateValid;
+
       default:
-        return false;
+        return true;
     }
   }
 
@@ -108,6 +111,8 @@ class OnboardingButton extends ConsumerWidget {
       case 3:
       case 4:
         return "تایید و ادامه";
+      case 5:
+        return "ورود به برنامه";
       case 10:
         return "تایید";
       default:

@@ -40,10 +40,6 @@ class BottomsheetListShow {
     );
 
     config.setter(ref, result ?? latestSelectedItem);
-    final s = ref.read(carInfoFormProvider);
-    Logger().i(
-      "[DEBUG] brand: ${s.brand}, model: ${s.model}, type: ${s.type}, yearMade: ${s.yearMade}, color: ${s.color}",
-    );
   }
 }
 
@@ -62,6 +58,7 @@ class _BottomSheetContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    
     final itemsAsync = ref.watch(itemsProvider);
     return itemsAsync.when(
       data: (items) => ProviderScope(

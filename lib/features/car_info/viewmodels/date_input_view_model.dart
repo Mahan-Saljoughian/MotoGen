@@ -15,13 +15,24 @@ class DateInputViewModel extends ChangeNotifier {
   String get month => _month;
   String get year => _year;
 
-  bool get dayValid => _dayValid;
-  bool get monthValid => _monthValid;
-  bool get yearValid => _yearValid;
+  bool isDayInteractedOnce = false;
+  bool isMonthInteractedOnce = false;
+  bool isYearInteractedOnce = false;
 
-  bool get _isFieldsValid => _dayValid && _monthValid && _yearValid;
+  void markDayInteracted() {
+    isDayInteractedOnce = true;
+    notifyListeners();
+  }
 
-  bool get isFutureDateValid => _isFutureDateValid;
+  void markMonthInteracted() {
+    isMonthInteractedOnce = true;
+    notifyListeners();
+  }
+
+  void markYearInteracted() {
+    isYearInteractedOnce = true;
+    notifyListeners();
+  }
 
   void setDay(String value) {
     _day = value;
@@ -56,12 +67,24 @@ class DateInputViewModel extends ChangeNotifier {
   }
 
   bool get _isFutureDateValid {
-    if (!_isFieldsValid) return false;
+    if (_isFieldsValid) return false;
     final inputDate = asDateTime;
     if (inputDate == null) return false;
     final now = DateTime.now();
     return inputDate.isAfter(now);
   }
+
+  bool get dayValid => _dayValid;
+  bool get monthValid => _monthValid;
+  bool get yearValid => _yearValid;
+
+  bool get _isFieldsValid => _dayValid && _monthValid && _yearValid;
+  bool get isFieldsValid => _isFieldsValid;
+
+  bool get isFutureDateValid => _isFutureDateValid;
+  bool get isDateValid => _isFutureDateValid && _isFieldsValid;
+
+  String get errorWhenFutureDate => "تاریخ معتبر انتخاب کن";
 
   bool _isNumberInRange(String src, int min, int max) {
     if (src.isEmpty) return false;

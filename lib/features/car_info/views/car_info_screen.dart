@@ -9,12 +9,12 @@ import 'package:motogen/features/car_info/viewmodels/car_info_form_viewmodel.dar
 import 'package:motogen/features/car_info/config/car_info_field_config.dart';
 import 'package:motogen/features/car_info/config/date_set_field_config.dart';
 
-import 'package:motogen/views/widgets/bottomsheet_List_show.dart';
 import 'package:motogen/features/car_info/widgets/bottomsheet_date_show.dart';
+import 'package:motogen/features/car_info/widgets/bottomsheet_list_show.dart';
 import 'package:motogen/features/car_info/widgets/bottomsheet_picker_field.dart';
-import 'package:motogen/widgets/dot_indicator.dart';
+import 'package:motogen/features/onboarding/widgets/dot_indicator.dart';
 import 'package:motogen/features/car_info/widgets/kilometer_text_field.dart';
-import 'package:motogen/widgets/onboarding_button.dart';
+import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
 
 class CarInfoScreen extends ConsumerWidget {
   final int currentPage;
@@ -97,14 +97,17 @@ class CarInfoScreen extends ConsumerWidget {
                                                 .pickerConfig!
                                                 .getter(formState)
                                                 ?.title,
-                                            onPressed: () =>
-                                                BottomsheetListShow.showSelectionBottomSheet(
-                                                  context: context,
-                                                  config:
-                                                      fieldConfig.pickerConfig!,
-                                                  ref: ref,
-                                                  state: formState,
-                                                ),
+                                            onPressed: () {
+                                              BottomsheetListShow.showSelectionBottomSheet(
+                                                context: context,
+                                                config:
+                                                    fieldConfig.pickerConfig!,
+                                                ref: ref,
+                                                state: formState,
+                                              );
+                                            },
+                                            errorText: fieldConfig.errorGetter
+                                                ?.call(formState),
                                           );
                                         },
                                       );
@@ -156,26 +159,27 @@ class CarInfoScreen extends ConsumerWidget {
                                                           state: formState,
                                                         ),
                                                   );
-                                              if (pickedDate != null) {
-                                                fieldConfig.dateSetFieldConfig!
-                                                    .setter(ref, pickedDate);
-                                              }
+
+                                              fieldConfig.dateSetFieldConfig!
+                                                  .setter(ref, pickedDate);
                                             },
+                                            errorText: fieldConfig.errorGetter
+                                                ?.call(formState),
                                           );
                                         },
                                       );
                                   }
                                 },
                               ),
-                              if (idx != carInfoField.length - 1)
-                                SizedBox(height: 42.h),
+                              /* if (idx != carInfoField.length - 1)
+                                SizedBox(height: 42.h), */
                             ],
                           ],
                         ),
                       ),
 
-                      if (currentPage == 3) SizedBox(height: 145.h),
-                      if (currentPage == 4) SizedBox(height: 240.h),
+                      if (currentPage == 3) SizedBox(height: 100.h),
+                      if (currentPage == 4) SizedBox(height: 180.h),
 
                       DotIndicator(currentPage: currentPage, count: count),
                       SizedBox(height: 24.h),

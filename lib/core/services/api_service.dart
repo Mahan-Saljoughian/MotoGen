@@ -3,8 +3,8 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   final String _baseUrl =
-      'http://10.0.2.2:3000'; // Use 10.0.2.2 for Android emulator
-  //'http://192.168.219.6:3000';
+      //  'http://10.0.2.2:3000'; // Use 10.0.2.2 for Android emulator
+      'http://192.168.219.6:3000';
 
   Future<dynamic> get(String endpoint) async {
     final url = Uri.parse('$_baseUrl/$endpoint');

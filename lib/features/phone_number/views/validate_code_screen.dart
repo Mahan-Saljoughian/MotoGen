@@ -8,8 +8,8 @@ import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/core/constants/app_images.dart';
 import 'package:motogen/features/phone_number/viewmodels/code_controller_view_model.dart';
-import 'package:motogen/widgets/dot_indicator.dart';
-import 'package:motogen/widgets/onboarding_button.dart';
+import 'package:motogen/features/onboarding/widgets/dot_indicator.dart';
+import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
 
 class ValidateCodeScreen extends ConsumerStatefulWidget {
   final int currentPage;
@@ -42,6 +42,12 @@ class _ValidateCodeScreenState extends ConsumerState<ValidateCodeScreen> {
       (i) => TextEditingController(text: digits[i]),
     );
     focusNodes = List.generate(4, (_) => FocusNode());
+
+    //start the timer
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(codeControllerProvider.notifier).startTimer();
+      focusNodes[0].requestFocus();
+    });
   }
 
   @override
@@ -91,7 +97,7 @@ class _ValidateCodeScreenState extends ConsumerState<ValidateCodeScreen> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 238.h),
+                  SizedBox(height: 224.h),
                   Text(
                     "کد تایید پیامک شده به موبایلت رو وارد کن...",
                     style: TextStyle(
@@ -100,7 +106,7 @@ class _ValidateCodeScreenState extends ConsumerState<ValidateCodeScreen> {
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  SizedBox(height: 36.h),
+                  SizedBox(height: 25.h),
                   Directionality(
                     textDirection: TextDirection.ltr,
                     child: Row(
@@ -147,8 +153,14 @@ class _ValidateCodeScreenState extends ConsumerState<ValidateCodeScreen> {
                                   .read(codeControllerProvider.notifier)
                                   .updateDigit(i, value);
 
-                              if (codeVM.isComplete) {
-                                logger.i("[DEBUG] ${codeVM.code}");
+                              final codeVM = ref.read(codeControllerProvider);
+
+                              if (codeVM.isValid) {
+                                logger.i("[DEBUG] Code accepted!");
+                              } else if (codeVM.isComplete && !codeVM.isValid) {
+                                logger.i(
+                                  "[DEBUG] Invalid code or timer expired. ${codeVM.code}",
+                                );
                               }
                             },
                           ),
@@ -156,7 +168,48 @@ class _ValidateCodeScreenState extends ConsumerState<ValidateCodeScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 14.h),
+                  SizedBox(height: 17.h),
+                  Text(
+                    codeVM.timerText,
+                    style: TextStyle(
+                      color: AppColors.blue900,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  SizedBox(height: 17.h),
+                  GestureDetector(
+                    onTap: () {
+                      ref.read(codeControllerProvider.notifier).resetCode();
+                      for (var controller in controllers) {
+                        controller.clear();
+                      }
+                      ref.read(codeControllerProvider.notifier).startTimer();
+                      focusNodes[0].requestFocus();
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 134.w),
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
+                            AppIcons.rotateLeft,
+                            height: 24.h,
+                            width: 24.w,
+                          ),
+                          SizedBox(width: 5.w),
+                          Text(
+                            "ارسال مجدد کد",
+                            style: TextStyle(
+                              color: Color(0xFF3D89F6),
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 2.h),
                   Image.asset(
                     AppImages.phoneCodePageImage,
                     width: 276.w,

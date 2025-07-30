@@ -7,18 +7,30 @@ class PhoneNumberControllerViewModel extends ChangeNotifier {
   bool _isValid = false;
   bool get isValid => _isValid;
 
+  String? _error;
+  String? get error => _error;
+
   PhoneNumberControllerViewModel() {
-    phoneController.addListener(_validatePhone);
+    phoneController.addListener(_onTextChanged);
   }
 
-  void _validatePhone() {
-    _isValid = _isIranianPhoneNumber(phoneController.text);
+  static final RegExp nicknameRegExp = RegExp(r'^09\d{9}$');
+
+  static String? phoneNumberValidator(String? input) {
+    if (input == null || input.trim().isEmpty) {
+      return " شماره موبایلـت رو وارد کن";
+    }
+    if (!nicknameRegExp.hasMatch(input)) {
+      return "یک شماره موبایل معتبر وارد کن!";
+    }
+
+    return null;
+  }
+
+  void _onTextChanged() {
+    _error = phoneNumberValidator(phoneController.text.trim());
+    _isValid = _error == null;
     notifyListeners();
-  }
-
-  bool _isIranianPhoneNumber(String input) {
-    final reg = RegExp(r'^09\d{9}$');
-    return reg.hasMatch(input);
   }
 
   @override

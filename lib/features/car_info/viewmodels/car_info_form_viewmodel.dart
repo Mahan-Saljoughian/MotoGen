@@ -22,42 +22,66 @@ class CarInfoFormViewmodel extends Notifier<CarFormState> {
 
   // ---- Setters for form fields
   void setBrand(PickerItem? brand) {
-     Logger().i('[DEBUG]setBrand called with $brand');
     state = state.copyWith(
       brand: brand,
+      isBrandInteractedOnce: state.isBrandInteractedOnce || true,
       model: PickerItem.noValueString,
       type: PickerItem.noValueString,
       yearMade: PickerItem.yearNoValue,
     );
-     Logger().i(
-      "[DEBUG] brand: ${state.brand}, model: ${state.model}, type: ${state.type}, yearMade: ${state.yearMade}, color: ${state.color}",
+    Logger().i(
+      "[DEBUG] brand: ${state.brand}, model: ${state.model}, type: ${state.type}, yearMade: ${state.yearMade}, color: ${state.color} , isBrandInteractedOnce: ${state.isBrandInteractedOnce}, isModelInteractedOnce: ${state.isModelInteractedOnce}",
     );
   }
 
   void setModel(PickerItem? model) {
-     Logger().i('[DEBUG] setModel called with $model');
     state = state.copyWith(
       model: model,
+      isModelInteractedOnce: state.isModelInteractedOnce || true,
       type: PickerItem.noValueString,
       yearMade: PickerItem.yearNoValue,
     );
-     Logger().i(
-      "[DEBUG] brand: ${state.brand}, model: ${state.model}, type: ${state.type}, yearMade: ${state.yearMade}, color: ${state.color}",
+    Logger().i(
+      "[DEBUG] brand: ${state.brand}, model: ${state.model}, type: ${state.type}, yearMade: ${state.yearMade}, color: ${state.color} ,isBrandInteractedOnce: ${state.isBrandInteractedOnce}, isModelInteractedOnce: ${state.isModelInteractedOnce}",
     );
   }
 
-  void setType(PickerItem? type) =>
-      state = state.copyWith(type: type, yearMade: PickerItem.yearNoValue);
-  void setYearMade(int? year) => state = state.copyWith(yearMade: year);
-  void setColor(PickerItem? color) => state = state.copyWith(color: color);
+  void setType(PickerItem? type) => state = state.copyWith(
+    type: type,
+    isTypeInteractedOnce: state.isTypeInteractedOnce || true,
+    yearMade: PickerItem.yearNoValue,
+  );
+
+  void setYearMade(int? year) => state = state.copyWith(
+    yearMade: year,
+    isYearMadeInteractedOnce: state.isYearMadeInteractedOnce || true,
+  );
+
+  void setColor(PickerItem? color) => state = state.copyWith(
+    color: color,
+    isColorInteractedOnce: state.isColorInteractedOnce || true,
+  );
   void setKilometerDriven(int? km) =>
       state = state.copyWith(kilometerDriven: km);
-  void setFuelType(PickerItem? fuel) => state = state.copyWith(fuelType: fuel);
+  void setFuelType(PickerItem? fuel) => state = state.copyWith(
+    fuelType: fuel,
+    isFuelTypeInteractedOnce: state.isFuelTypeInteractedOnce || true,
+  );
 
-  void setInsuranceExpiry(DateTime? date) =>
-      state = state.copyWith(insuranceExpiry: date);
-  void setNextTechnicalCheck(DateTime? date) =>
-      state = state.copyWith(nextTechnicalCheck: date);
+  void setInsuranceExpiry(DateTime? date) => state = state.copyWith(
+    insuranceExpiry: date,
+    isInsuranceExpiryInteractedOnce:
+        state.isInsuranceExpiryInteractedOnce || true,
+  );
+
+  void setNextTechnicalCheck(DateTime? date) => state = state.copyWith(
+    nextTechnicalCheck: date,
+    isNextTechnicalCheckInteractedOnce:
+        state.isNextTechnicalCheckInteractedOnce || true,
+  );
+
+  void setNickName(String? nickNameText) =>
+      state = state.copyWith(nickName: nickNameText);
 
   // ----kilometer validation------
 
@@ -90,6 +114,4 @@ class CarInfoFormViewmodel extends Notifier<CarFormState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('car_form');
   }
-
- 
 }

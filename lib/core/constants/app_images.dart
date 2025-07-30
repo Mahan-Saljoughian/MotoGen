@@ -6,4 +6,5 @@ class AppImages {
       "assets/images/Man logging into his account on phone.png";
   static const String phoneCodePageImage =
       "assets/images/E-mail marketing campaign.png";
+  static const String nickNameCarPage = "assets/images/Choosing a car.png";
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/features/car_info/viewmodels/car_info_form_viewmodel.dart';
 import 'package:motogen/widgets/field_text.dart';
 
@@ -34,11 +35,12 @@ class _KilometerTextFieldState extends ConsumerState<KilometerTextField> {
     final kilometerText = ref.watch(
       carInfoFormProvider.select((s) => s.rawKilometersInput),
     );
-    final isKmValid =
-        int.tryParse(kilometerText ?? '') != null &&
-        int.parse(kilometerText!) > 0 &&
-        int.parse(kilometerText) < 10000000;
-
+    final kilometerError = ref.watch(
+      carInfoFormProvider.select((s) => s.kilometerError),
+    );
+    final isKmValid = ref.watch(
+      carInfoFormProvider.select((s) => s.isKilometerValid),
+    );
     // Sync only when provider changes (avoid overwrite on local edits)
     if (_controller.text != (kilometerText ?? '')) {
       _controller.text = kilometerText ?? '';
@@ -51,6 +53,7 @@ class _KilometerTextFieldState extends ConsumerState<KilometerTextField> {
       hintText: kilometerText ?? "انتخاب کنید...",
       onChanged: (text) =>
           ref.read(carInfoFormProvider.notifier).setRawKilometerInput(text),
+      error: kilometerError,
     );
   }
 }

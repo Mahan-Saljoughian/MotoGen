@@ -5,9 +5,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/features/onboarding/viewmodels/personal_info_controller_view_model.dart';
-import 'package:motogen/widgets/dot_indicator.dart';
+import 'package:motogen/features/onboarding/widgets/dot_indicator.dart';
 import 'package:motogen/widgets/field_text.dart';
-import 'package:motogen/widgets/onboarding_button.dart';
+import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
 
 class PersonalInfoScreen extends ConsumerWidget {
   final int currentPage;
@@ -26,10 +26,11 @@ class PersonalInfoScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final personalInfoViewModel = ref.watch(personalInfoProvider);
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 20.h),
-          child: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 20.h),
             child: Column(
               children: [
                 Row(
@@ -67,18 +68,21 @@ class PersonalInfoScreen extends ConsumerWidget {
                         isValid: personalInfoViewModel.isNameValid,
                         labelText: "نام",
                         hintText: "علی",
+                        error: personalInfoViewModel.errorName,
                       ),
-
-                      SizedBox(height: 42.h),
 
                       FieldText(
                         controller: personalInfoViewModel.lastNameController,
                         isValid: personalInfoViewModel.isLastNameValid,
                         labelText: "نام خانوادگی",
                         hintText: "علیزاده",
+                        error: personalInfoViewModel.errorLastName,
                       ),
 
-                      SizedBox(height: 440.h),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.42,
+                      ),
+
                       DotIndicator(currentPage: currentPage, count: count),
                       SizedBox(height: 24.h),
                       OnboardingButton(

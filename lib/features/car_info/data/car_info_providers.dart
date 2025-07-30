@@ -11,7 +11,7 @@ final carBrandsProvider = FutureProvider.autoDispose<List<PickerItem>>((
 ) async {
   final result = await api.get('cars/brands');
   final List data = result['data'];
-   Logger().i("API response: $result");
+  Logger().i("API response: $result");
   return data
       .map(
         (e) => PickerItem(id: e['id'].toString(), title: e['title'] as String),
@@ -22,10 +22,9 @@ final carBrandsProvider = FutureProvider.autoDispose<List<PickerItem>>((
 // Models depend on brand selection
 final carModelsProvider = FutureProvider.autoDispose
     .family<List<PickerItem>, String>((ref, brandId) async {
-      if (brandId.isEmpty) return [];
       final result = await api.get('cars/brands/$brandId/models');
       final List data = result['data'];
-       Logger().i("API response: $result");
+      Logger().i("API response: $result");
       return data
           .map(
             (e) =>

@@ -1,10 +1,8 @@
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:motogen/features/car_info/config/picker_item.dart';
 import 'package:motogen/features/car_info/data/car_info_providers.dart';
 import 'package:motogen/features/car_info/models/car_form_state.dart';
 import 'package:motogen/features/car_info/viewmodels/car_info_form_viewmodel.dart';
-
 
 class PickerFieldConfig {
   final String labelText;
@@ -80,4 +78,3 @@ PickerFieldConfig fuelTypePickConfig = PickerFieldConfig(
   setter: (WidgetRef ref, value) =>
       ref.read(carInfoFormProvider.notifier).setFuelType(value),
 );
-

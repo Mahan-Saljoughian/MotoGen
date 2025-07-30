@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:motogen/features/car_info/config/car_info_config_list.dart';
 import 'package:motogen/features/car_info/views/car_info_screen.dart';
+import 'package:motogen/features/car_info/views/car_nickname_screen.dart';
 import 'package:motogen/features/onboarding/views/personal_info_screen.dart';
 import 'package:motogen/features/phone_number/views/enter_phone_number_screen.dart';
 import 'package:motogen/features/phone_number/views/validate_code_screen.dart';
-
 
 class OnboardingIndicator extends ConsumerStatefulWidget {
   const OnboardingIndicator({super.key});
@@ -18,7 +18,7 @@ class OnboardingIndicator extends ConsumerStatefulWidget {
 class _OnboardingIndicatorState extends ConsumerState<OnboardingIndicator> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  final int count = 5;
+  final int count = 6;
 
   void _nextPage() {
     _pageController.nextPage(
@@ -76,6 +76,12 @@ class _OnboardingIndicatorState extends ConsumerState<OnboardingIndicator> {
                   onNext: _nextPage,
                   onBack: _prevPage,
                   carInfoField: carInfoSecondPageFields,
+                ),
+                CarNicknameScreen(
+                  currentPage: _currentPage,
+                  count: count,
+                  onNext: _nextPage,
+                  onBack: _prevPage,
                 ),
               ],
             ),

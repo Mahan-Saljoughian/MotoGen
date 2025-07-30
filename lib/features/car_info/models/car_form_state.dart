@@ -11,6 +11,15 @@ class CarFormState {
   final DateTime? insuranceExpiry;
   final DateTime? nextTechnicalCheck;
   final String? rawKilometersInput;
+  final String? nickName;
+  final bool isBrandInteractedOnce;
+  final bool isModelInteractedOnce;
+  final bool isTypeInteractedOnce;
+  final bool isYearMadeInteractedOnce;
+  final bool isFuelTypeInteractedOnce;
+  final bool isInsuranceExpiryInteractedOnce;
+  final bool isColorInteractedOnce;
+  final bool isNextTechnicalCheckInteractedOnce;
 
   const CarFormState({
     this.brand,
@@ -23,6 +32,15 @@ class CarFormState {
     this.insuranceExpiry,
     this.nextTechnicalCheck,
     this.rawKilometersInput,
+    this.nickName,
+    this.isBrandInteractedOnce = false,
+    this.isModelInteractedOnce = false,
+    this.isTypeInteractedOnce = false,
+    this.isYearMadeInteractedOnce = false,
+    this.isFuelTypeInteractedOnce = false,
+    this.isInsuranceExpiryInteractedOnce = false,
+    this.isColorInteractedOnce = false,
+    this.isNextTechnicalCheckInteractedOnce = false,
   });
 
   CarFormState copyWith({
@@ -36,6 +54,15 @@ class CarFormState {
     DateTime? insuranceExpiry,
     DateTime? nextTechnicalCheck,
     String? rawKilometersInput,
+    String? nickName,
+    bool? isBrandInteractedOnce,
+    bool? isModelInteractedOnce,
+    bool? isTypeInteractedOnce,
+    bool? isYearMadeInteractedOnce,
+    bool? isFuelTypeInteractedOnce,
+    bool? isInsuranceExpiryInteractedOnce,
+    bool? isColorInteractedOnce,
+    bool? isNextTechnicalCheckInteractedOnce,
   }) {
     return CarFormState(
       brand: brand ?? this.brand,
@@ -48,6 +75,24 @@ class CarFormState {
       insuranceExpiry: insuranceExpiry ?? this.insuranceExpiry,
       nextTechnicalCheck: nextTechnicalCheck ?? this.nextTechnicalCheck,
       rawKilometersInput: rawKilometersInput ?? this.rawKilometersInput,
+      nickName: nickName ?? this.nickName,
+      isBrandInteractedOnce:
+          isBrandInteractedOnce ?? this.isBrandInteractedOnce,
+      isModelInteractedOnce:
+          isModelInteractedOnce ?? this.isModelInteractedOnce,
+      isTypeInteractedOnce: isTypeInteractedOnce ?? this.isTypeInteractedOnce,
+      isYearMadeInteractedOnce:
+          isYearMadeInteractedOnce ?? this.isYearMadeInteractedOnce,
+      isFuelTypeInteractedOnce:
+          isFuelTypeInteractedOnce ?? this.isFuelTypeInteractedOnce,
+      isInsuranceExpiryInteractedOnce:
+          isInsuranceExpiryInteractedOnce ??
+          this.isInsuranceExpiryInteractedOnce,
+      isColorInteractedOnce:
+          isColorInteractedOnce ?? this.isColorInteractedOnce,
+      isNextTechnicalCheckInteractedOnce:
+          isNextTechnicalCheckInteractedOnce ??
+          this.isNextTechnicalCheckInteractedOnce,
     );
   }
 
@@ -61,6 +106,7 @@ class CarFormState {
     "fuelType": fuelType?.toJson(),
     "insuranceExpiry": insuranceExpiry?.toIso8601String(),
     "nextTechnicalCheck": nextTechnicalCheck?.toIso8601String(),
+    "nickName": nickName,
   };
 
   factory CarFormState.fromJson(Map<String, dynamic> json) => CarFormState(
@@ -79,5 +125,56 @@ class CarFormState {
     nextTechnicalCheck: json['nextTechnicalCheck'] != null
         ? DateTime.parse(json['nextTechnicalCheck'])
         : null,
+    nickName: json['nickName'],
   );
+
+  String? get kilometerError {
+    final text = rawKilometersInput;
+    if (text == null || text.trim().isEmpty) {
+      return 'الزامی!';
+    }
+    final parsed = int.tryParse(text);
+    if (parsed == null || parsed <= 0 || parsed >= 10000000) {
+      return 'کیلومتر وارد شده معتبر نیست!';
+    }
+    return null;
+  }
+
+  bool get isKilometerValid => kilometerError == null;
+
+  String? get brandError =>
+      isBrandInteractedOnce && brand == null ? 'الزامی!' : null;
+
+  String? get modelError =>
+      isModelInteractedOnce &&
+          (model == null || model == PickerItem.noValueString)
+      ? 'الزامی!'
+      : null;
+
+  String? get typeError =>
+      isTypeInteractedOnce && (type == null || type == PickerItem.noValueString)
+      ? 'الزامی!'
+      : null;
+
+  String? get yearMadeError =>
+      isYearMadeInteractedOnce &&
+          (yearMade == null || yearMade == PickerItem.yearNoValue)
+      ? 'الزامی!'
+      : null;
+
+  String? get fuelTypeError =>
+      isFuelTypeInteractedOnce && fuelType == null ? 'الزامی!' : null;
+
+  String? get insuranceExpiryError =>
+      isInsuranceExpiryInteractedOnce && insuranceExpiry == null
+      ? 'الزامی!'
+      : null;
+
+  String? get nextTechnicalCheckError =>
+      isNextTechnicalCheckInteractedOnce && nextTechnicalCheck == null
+      ? 'الزامی!'
+      : null;
+
+  String? get colorError =>
+      isColorInteractedOnce && color == null ? 'الزامی!' : null;
 }

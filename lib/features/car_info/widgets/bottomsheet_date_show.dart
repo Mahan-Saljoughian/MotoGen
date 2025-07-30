@@ -7,7 +7,7 @@ import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/features/car_info/models/car_form_state.dart';
 import 'package:motogen/features/car_info/viewmodels/date_input_view_model.dart';
 import 'package:motogen/features/car_info/config/date_set_field_config.dart';
-import 'package:motogen/widgets/onboarding_button.dart';
+import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 
 class BottomsheetDateShow extends ConsumerStatefulWidget {
@@ -72,11 +72,11 @@ class _BottomsheetDateShowState extends ConsumerState<BottomsheetDateShow> {
       'focusNode': focusNodes[0],
       'hint': '12',
       'width': 56.w,
-
       'maxLength': 2,
       'onChanged': (String v) => dateVm.setDay(v),
       'valid': dateVm.dayValid,
       'value': dateVm.day,
+      'isInteractedOnce': dateVm.isDayInteractedOnce,
     },
     {
       'label': 'ماه',
@@ -89,6 +89,7 @@ class _BottomsheetDateShowState extends ConsumerState<BottomsheetDateShow> {
       'onChanged': (String v) => dateVm.setMonth(v),
       'valid': dateVm.monthValid,
       'value': dateVm.month,
+      'isInteractedOnce': dateVm.isMonthInteractedOnce,
     },
     {
       'label': 'سال',
@@ -100,6 +101,7 @@ class _BottomsheetDateShowState extends ConsumerState<BottomsheetDateShow> {
       'onChanged': (String v) => dateVm.setYear(v),
       'valid': dateVm.yearValid,
       'value': dateVm.year,
+      'isInteractedOnce': dateVm.isYearInteractedOnce,
     },
   ];
 
@@ -160,11 +162,19 @@ class _BottomsheetDateShowState extends ConsumerState<BottomsheetDateShow> {
                       width: (inputConfigs[i]['width'] as num?)?.toDouble(),
                       height: 56.w,
                       decoration: BoxDecoration(
-                        color: AppColors.white300,
+                        color:
+                            inputConfigs[i]['valid'] ||
+                                inputConfigs[i]['isInteractedOnce'] == false
+                            ? AppColors.white300
+                            : const Color(0xFFC60B0B).withAlpha(33),
+
                         border: Border.all(
-                          color: inputConfigs[i]['valid']
+                          color:
+                              inputConfigs[i]['valid'] ||
+                                  inputConfigs[i]['isInteractedOnce'] == false
                               ? AppColors.white300
                               : const Color(0xFFC60B0B),
+                          width: 2.w,
                         ),
                         borderRadius: BorderRadius.circular(15.r),
                       ),
@@ -174,11 +184,16 @@ class _BottomsheetDateShowState extends ConsumerState<BottomsheetDateShow> {
                                 as TextEditingController,
                         focusNode: inputConfigs[i]['focusNode'] as FocusNode,
                         keyboardType: TextInputType.number,
+
                         textAlign: TextAlign.center,
                         maxLength: (inputConfigs[i]['maxLength'] as num?)
                             ?.toInt(),
                         style: TextStyle(
-                          color: AppColors.blue500,
+                          color:
+                              inputConfigs[i]['valid'] ||
+                                  inputConfigs[i]['isInteractedOnce'] == false
+                              ? AppColors.blue500
+                              : const Color(0xFFC60B0B),
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
                         ),
@@ -208,7 +223,15 @@ class _BottomsheetDateShowState extends ConsumerState<BottomsheetDateShow> {
                               inputConfigs[i]['onChanged']
                                   as void Function(String);
                           onChanged(value);
-                          // Forward focus IF not the last field AND fully filled
+                          if (i == 0 && !dateVM.isDayInteractedOnce) {
+                            dateVM.markDayInteracted();
+                          }
+                          if (i == 1 && !dateVM.isMonthInteractedOnce) {
+                            dateVM.markMonthInteracted();
+                          }
+                          if (i == 2 && !dateVM.isYearInteractedOnce) {
+                            dateVM.markYearInteracted();
+                          }
                           if (value.length == inputConfigs[i]['maxLength'] &&
                               i < inputConfigs.length - 1) {
                             (inputConfigs[i + 1]['focusNode'] as FocusNode)
@@ -227,6 +250,16 @@ class _BottomsheetDateShowState extends ConsumerState<BottomsheetDateShow> {
                                     as void Function(String);
                             onChanged(padded);
                             setState(() {});
+                          }
+
+                          if (i == 0 && !dateVM.isDayInteractedOnce) {
+                            dateVM.markDayInteracted();
+                          }
+                          if (i == 1 && !dateVM.isMonthInteractedOnce) {
+                            dateVM.markMonthInteracted();
+                          }
+                          if (i == 2 && !dateVM.isYearInteractedOnce) {
+                            dateVM.markYearInteracted();
                           }
 
                           if (i < inputConfigs.length - 1) {
@@ -252,7 +285,22 @@ class _BottomsheetDateShowState extends ConsumerState<BottomsheetDateShow> {
                   ],
                 ],
               ),
-              SizedBox(height: 60.h),
+              if (!dateVM.isFutureDateValid && dateVM.isFieldsValid)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20.h),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      dateVM.errorWhenFutureDate,
+                      style: TextStyle(
+                        color: Color(0xFFC60B0B),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              if (!dateVM.isFieldsValid) SizedBox(height: 60.h),
               OnboardingButton(
                 onPressed: () {
                   final pickedDate = dateVM.asDateTime;

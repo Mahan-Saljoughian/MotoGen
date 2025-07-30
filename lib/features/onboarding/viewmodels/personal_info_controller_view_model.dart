@@ -6,41 +6,59 @@ import 'package:shared_preferences/shared_preferences.dart';
 class PersonalInfoViewModel extends ChangeNotifier {
   final nameController = TextEditingController();
   final lastNameController = TextEditingController();
-  
 
   bool _isNameValid = false;
   bool _isLastNameValid = false;
-  
+
+  String? _errorName;
+  String? _errorLastName;
 
   bool get isNameValid => _isNameValid;
   bool get isLastNameValid => _isLastNameValid;
- 
+
+  String? get errorName => _errorName;
+  String? get errorLastName => _errorLastName;
 
   bool get isButtonEnabled => _isNameValid && _isLastNameValid;
 
   PersonalInfoViewModel() {
-    nameController.addListener(() {
-      validateName(nameController.text);
-    });
-    lastNameController.addListener(() {
-      validateLastName(lastNameController.text);
-    });
+    nameController.addListener(_onNameChanged);
+    lastNameController.addListener(_onLastNameChanged);
     loadFromPrefs();
     /* resetSharedPref(); */
   }
 
-  bool _nameValidator(String value) {
-    final regExp = RegExp(r'^[\u0600-\u06FFa-zA-Z\s\-]+$');
-    return regExp.hasMatch(value.trim()) && value.trim().isNotEmpty;
+  static final RegExp nameRegExp = RegExp(r'^[\u0600-\u06FFa-zA-Z\s\-]+$');
+
+  static String? nameValidator(String? text) {
+    if (text == null || text.trim().isEmpty) {
+      return "الزامی!";
+    }
+    if (!nameRegExp.hasMatch(text.trim())) {
+      return "نام معتبر وارد کنید!";
+    }
+    return null;
   }
 
-  void validateName(String value) {
-    _isNameValid = _nameValidator(value);
+  static String? lastNameValidator(String? text) {
+    if (text == null || text.trim().isEmpty) {
+      return "الزامی!";
+    }
+    if (!nameRegExp.hasMatch(text.trim())) {
+      return "نام خانوادگی معتبر وارد کنید!";
+    }
+    return null;
+  }
+
+  void _onNameChanged() {
+    _errorName = nameValidator(nameController.text.trim());
+    _isNameValid = _errorName == null;
     notifyListeners();
   }
 
-  void validateLastName(String value) {
-    _isLastNameValid = _nameValidator(value);
+  void _onLastNameChanged() {
+    _errorLastName = lastNameValidator(lastNameController.text.trim());
+    _isLastNameValid = _errorLastName == null;
     notifyListeners();
   }
 
@@ -50,8 +68,8 @@ class PersonalInfoViewModel extends ChangeNotifier {
     final lastName = prefs.getString('last_name') ?? '';
     nameController.text = name;
     lastNameController.text = lastName;
-    validateName(name);
-    validateLastName(lastName);
+    _onNameChanged();
+    _onLastNameChanged();
   }
 
   Future<void> saveToPrefs() async {
@@ -70,7 +88,7 @@ class PersonalInfoViewModel extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final savedName = prefs.getString('name') ?? '(no name)';
     final savedLastName = prefs.getString('last_name') ?? '(no lastName)';
-     Logger().i('saved info: $savedName $savedLastName');
+    Logger().i('saved info: $savedName $savedLastName');
   }
 
   @override
