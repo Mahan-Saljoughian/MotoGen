@@ -67,7 +67,7 @@ class DateInputViewModel extends ChangeNotifier {
   }
 
   bool get _isFutureDateValid {
-    if (_isFieldsValid) return false;
+    if (!_isFieldsValid) return false;
     final inputDate = asDateTime;
     if (inputDate == null) return false;
     final now = DateTime.now();

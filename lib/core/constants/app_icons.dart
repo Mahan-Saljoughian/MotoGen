@@ -11,9 +11,9 @@ class AppIcons {
   static const String send = "assets/icons/send.svg";
   static const String loadingDotTop = "assets/icons/loading_dot_top.svg";
   static const String loadingDotBottom = "assets/icons/loading_dot_bottom.svg";
-  static const String user = "assets/icons/user.svg";
-  static const String messages = "assets/icons/messages.svg";
-  static const String timer = "assets/icons/timer.svg";
+  static const String profile = "assets/icons/user.svg";
+  static const String chatbot = "assets/icons/messages.svg";
+  static const String notifier = "assets/icons/timer.svg";
   static const String home = "assets/icons/home.svg";
   static const String errorCircle = "assets/icons/error_circle.svg";
 }

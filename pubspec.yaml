@@ -39,6 +39,9 @@ dependencies:
   http:
   logger:  
   shamsi_date: 
+  curved_navigation_bar: 
+ 
+  floating_bottom_navigation_bar:
  
 
 dev_dependencies:

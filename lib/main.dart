@@ -13,6 +13,7 @@ import 'package:motogen/features/onboarding/views/onboarding_page_1.dart';
 import 'package:motogen/features/onboarding/views/personal_info_screen.dart';
 import 'package:motogen/features/phone_number/views/enter_phone_number_screen.dart';
 import 'package:motogen/features/phone_number/views/validate_code_screen.dart';
+import 'package:motogen/main_scaffold.dart';
 
 void main() {
   runApp(
@@ -47,13 +48,14 @@ class MyApp extends StatelessWidget {
       ],
       debugShowCheckedModeBanner: false,
       title: 'MotoGen',
-      home: CarInfoScreen(
+      home: /*  CarInfoScreen(
         currentPage: 4,
         count: 6,
         onNext: () {},
         onBack: () {},
         carInfoField: carInfoSecondPageFields,
-      ),
+      ), */
+          MainScaffold(),
     );
   }
 }

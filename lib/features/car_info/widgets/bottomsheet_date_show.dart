@@ -301,6 +301,7 @@ class _BottomsheetDateShowState extends ConsumerState<BottomsheetDateShow> {
                   ),
                 ),
               if (!dateVM.isFieldsValid) SizedBox(height: 60.h),
+              if (dateVM.isDateValid) SizedBox(height: 60.h),
               OnboardingButton(
                 onPressed: () {
                   final pickedDate = dateVM.asDateTime;
