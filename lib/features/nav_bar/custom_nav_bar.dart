@@ -23,8 +23,7 @@ class CustomNavBar extends StatefulWidget {
 }
 
 class _NavBarState extends State<CustomNavBar> {
-  static const defaultPadding = 40.0;
-  static const defaultMargin = 7.0;
+  
 
   int noOfIcons = 4;
 
@@ -40,7 +39,6 @@ class _NavBarState extends State<CustomNavBar> {
   late double position;
   late AnimationController controller;
   late Animation<double> animation;
- 
 
   @override
   void initState() {
@@ -106,7 +104,7 @@ class _NavBarState extends State<CustomNavBar> {
   void didUpdateWidget(CustomNavBar oldWidget) {
     if (widget.selected != oldWidget.selected) {
       final mq = MediaQuery.of(context);
-      final horzPadding = 40.0.w;
+      final horzPadding = 25.0.w;
       final horzMargin = 7.0.w;
       animateDrop(widget.selected, mq.size.width, horzPadding, horzMargin);
     }
@@ -120,7 +118,7 @@ class _NavBarState extends State<CustomNavBar> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         final mq = MediaQuery.of(context);
-        final horzPadding = 40.0.w;
+        final horzPadding = 25.0.w;
         final horzMargin = 7.0.w;
         _setPosition(widget.selected, mq.size.width, horzPadding, horzMargin);
       }
@@ -135,10 +133,9 @@ class _NavBarState extends State<CustomNavBar> {
 
   @override
   Widget build(BuildContext context) {
-  
     final mq = MediaQuery.of(context);
     final screenWidth = mq.size.width;
-    final horizontalPadding = 40.0.w;
+    final horizontalPadding = 25.0.w;
     final horizontalMargin = 7.0.w;
     final isRTL = Directionality.of(context) == TextDirection.rtl;
 
@@ -184,7 +181,7 @@ class _NavBarState extends State<CustomNavBar> {
                                 (2 * horizontalMargin) -
                                 (2 * horizontalPadding)) /
                             noOfIcons,
-                        padding: EdgeInsets.only(top: 14.h, bottom: 16.h),
+                        padding: EdgeInsets.only(top: 0.h, bottom: 9.39.h),
                         alignment: Alignment.bottomCenter,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -194,7 +191,7 @@ class _NavBarState extends State<CustomNavBar> {
                               duration: const Duration(milliseconds: 375),
                               curve: Curves.easeOutCubic,
                               padding: EdgeInsets.only(
-                                bottom: isSelected ? 16.h : 0,
+                                bottom: isSelected ? 31.h : 6.h,
                               ),
                               child: AnimatedSwitcher(
                                 duration: const Duration(milliseconds: 375),
@@ -203,7 +200,8 @@ class _NavBarState extends State<CustomNavBar> {
                                   key: ValueKey(
                                     isSelected ? 'yellow$index' : 'gray$index',
                                   ),
-                                  width: 30.0.w,
+                                  width: 24.0.w,
+                                  height: 24.w,
                                   colorFilter: ColorFilter.mode(
                                     isSelected
                                         ? AppColors.orange600
@@ -217,11 +215,12 @@ class _NavBarState extends State<CustomNavBar> {
                             AnimatedPadding(
                               duration: const Duration(milliseconds: 300),
                               padding: EdgeInsets.only(
-                                bottom: isSelected ? 6.0.h : 2.0.h,
+                                bottom: isSelected ? 2.81.h : 0.0.h,
                               ),
                               child: AnimatedDefaultTextStyle(
                                 duration: const Duration(milliseconds: 300),
                                 style: TextStyle(
+                                  fontFamily: "IRANSansXFaNum",
                                   fontSize: isSelected ? 11.71.sp : 9.76.sp,
                                   fontWeight: isSelected
                                       ? FontWeight.w600

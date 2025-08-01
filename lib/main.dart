@@ -3,8 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
-import 'package:motogen/features/car_info/config/car_info_config_list.dart'
-    show carInfoFirstPageFields, carInfoSecondPageFields;
+
 import 'package:motogen/features/car_info/views/car_info_screen.dart';
 import 'package:motogen/features/car_info/views/car_nickname_screen.dart';
 import 'package:motogen/features/chat_screen/views/chat_screen.dart';

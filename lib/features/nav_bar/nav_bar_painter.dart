@@ -18,45 +18,46 @@ class NavBarPainter extends CustomPainter {
     if (isRTL) {
       xPainted = size.width - (x + 140.w); // 140.w: width of your dip path
     }
+
     Path path = Path();
     path.moveTo(0.0, start);
 
-    path.lineTo(xPainted < 20.w ? 20.w : xPainted, start);
+    path.lineTo(xPainted < 30.w ? 30.w : xPainted, start);
     path.quadraticBezierTo(
-      20.w + xPainted,
-      start,
       30.w + xPainted,
-      start + 15.h,
+      start,
+      (35.w + xPainted) < (35.w) ? (35.w) : 35.w + xPainted,
+      start + 5.h,
     ); //4th start from left
     path.quadraticBezierTo(
       40.w + xPainted,
-      start + 32.h,
+      start + 30.h,
       70.w + xPainted,
-      start + 35.h,
+      start + 32.5.h,
     ); //2nd the left curve , 4th conorls the middle of the deep
     path.quadraticBezierTo(
       100.w + xPainted,
-      start + 32.h,
-      110.w + xPainted,
-      start + 15.h,
+      start + 30.h,
+      105.w + xPainted,
+      start + 5,
     ); //2nd the right curve , 4th start from right
     path.quadraticBezierTo(
-      120.w + xPainted,
+      110.w + xPainted,
       start,
-      (140.w + xPainted) > (size.width - 20.w)
-          ? (size.width - 20.w)
-          : 140.w + xPainted,
+      (115.w + xPainted) > (size.width - 0.w)
+          ? (size.width - 0.w)
+          : 115.w + xPainted,
       start,
     );
-    path.lineTo(size.width - 20.w, start);
+    path.lineTo(size.width - 30.w, start);
 
-    path.quadraticBezierTo(size.width, start, size.width, start + 25.h);
-    path.lineTo(size.width, end - 25.h);
-    path.quadraticBezierTo(size.width, end, size.width - 25.w, end);
-    path.lineTo(25.w, end);
-    path.quadraticBezierTo(0.0, end, 0.0, end - 25.h);
-    path.lineTo(0.0, start + 25.h);
-    path.quadraticBezierTo(0.0, start, 20.w, start);
+    path.quadraticBezierTo(size.width, start, size.width, start + 40.h);
+    path.lineTo(size.width, end - 40.h);
+    path.quadraticBezierTo(size.width, end, size.width - 40.w, end);
+    path.lineTo(40.w, end);
+    path.quadraticBezierTo(0.0, end, 0.0, end - 40.h);
+    path.lineTo(0.0, start + 40.h);
+    path.quadraticBezierTo(0.0, start, 35.w, start);
     path.close();
 
     canvas.drawShadow(
@@ -66,7 +67,7 @@ class NavBarPainter extends CustomPainter {
       true, // true closes the path for a proper shadow
     );
     final paint = Paint()
-      ..color = Colors.black
+      ..color = AppColors.white50
       ..style = PaintingStyle.fill;
 
     canvas.drawPath(path, paint);
