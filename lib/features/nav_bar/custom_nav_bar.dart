@@ -23,8 +23,6 @@ class CustomNavBar extends StatefulWidget {
 }
 
 class _NavBarState extends State<CustomNavBar> {
-  
-
   int noOfIcons = 4;
 
   List<String> icons = [
@@ -141,7 +139,7 @@ class _NavBarState extends State<CustomNavBar> {
 
     return Padding(
       padding: EdgeInsets.only(
-        bottom: horizontalMargin,
+        bottom: 11.5.h,
         left: horizontalMargin,
         right: horizontalMargin,
       ),

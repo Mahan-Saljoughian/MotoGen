@@ -11,63 +11,98 @@ class NavBarPainter extends CustomPainter {
   double height = 80.h;
   double start = 40.h;
   double end = 120.h;
+  double paddingHorizental = 25.w;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final double leftEdge = paddingHorizental;
+    final double rightEdge = size.width - paddingHorizental;
+
+    // Cup width & depth
+    final double cupWidth = 140.w; // width of dip/cup, adjust to taste
+    final double cupDepth = 34.h; // makes the dip deeper/shallower
+    ;
+
+    double minCupX = leftEdge;
+    double maxCupX = rightEdge - cupWidth;
     double xPainted = x;
     if (isRTL) {
-      xPainted = size.width - (x + 140.w); // 140.w: width of your dip path
+      xPainted = size.width - (x + cupWidth); // 140.w: width of your dip path
     }
 
+    //xPainted = xPainted.clamp(minCupX, maxCupX);
+
+    final double cupStartX = xPainted;
+    final double cupEndX = xPainted + cupWidth;
+
     Path path = Path();
-    path.moveTo(0.0, start);
+    path.moveTo(0.0, start + 40.h);
+    path.quadraticBezierTo(0.0, start, leftEdge, start);
 
-    path.lineTo(xPainted < 30.w ? 30.w : xPainted, start);
+    if (cupStartX > leftEdge) {
+      path.lineTo(cupStartX, start); // Only draws if cup offset in from edge
+    }
+
+    // Cup/dip curves (can tweak control points for organic look)
     path.quadraticBezierTo(
-      30.w + xPainted,
-      start,
-      (35.w + xPainted) < (35.w) ? (35.w) : 35.w + xPainted,
-      start + 5.h,
-    ); //4th start from left
-    path.quadraticBezierTo(
-      40.w + xPainted,
-      start + 30.h,
-      70.w + xPainted,
-      start + 32.5.h,
-    ); //2nd the left curve , 4th conorls the middle of the deep
-    path.quadraticBezierTo(
-      100.w + xPainted,
-      start + 30.h,
-      105.w + xPainted,
-      start + 5,
-    ); //2nd the right curve , 4th start from right
-    path.quadraticBezierTo(
-      110.w + xPainted,
-      start,
-      (115.w + xPainted) > (size.width - 0.w)
-          ? (size.width - 0.w)
-          : 115.w + xPainted,
-      start,
+      cupStartX + 0.27 * cupWidth,
+      start, // control
+      cupStartX + 0.3 * cupWidth,
+      start + 17.h, // left shoulder
     );
-    path.lineTo(size.width - 30.w, start);
+    path.quadraticBezierTo(
+      cupStartX + 0.35 * cupWidth,
+      start + cupDepth, // control (left dip)
+      cupStartX + 0.5 * cupWidth,
+      start + cupDepth, // bottom
+    );
+    path.quadraticBezierTo(
+      cupEndX - 0.35 * cupWidth,
+      start + cupDepth, // control (right dip)
+      cupEndX - 0.3 * cupWidth,
+      start + 17.h, // right shoulder
+    );
+    path.quadraticBezierTo(
+      cupEndX - 0.27 * cupWidth,
+      start, // control
+      cupEndX - 0.15 * cupWidth,
+      start, // dip ends
+    );
 
+    // Top-right straight line
+    path.lineTo(rightEdge, start);
+
+    // Top-right arc
     path.quadraticBezierTo(size.width, start, size.width, start + 40.h);
+
+    // Right vertical
     path.lineTo(size.width, end - 40.h);
-    path.quadraticBezierTo(size.width, end, size.width - 40.w, end);
-    path.lineTo(40.w, end);
+
+    // Bottom-right arc
+    path.quadraticBezierTo(size.width, end, rightEdge, end);
+
+    // Bottom line
+    path.lineTo(leftEdge, end);
+
+    // Bottom-left arc
     path.quadraticBezierTo(0.0, end, 0.0, end - 40.h);
+
+    // Left vertical
     path.lineTo(0.0, start + 40.h);
-    path.quadraticBezierTo(0.0, start, 35.w, start);
+
+    // Top-left arc
+    path.quadraticBezierTo(0.0, start, leftEdge, start);
+
     path.close();
 
     canvas.drawShadow(
       path,
-      const Color(0x3F626A7D), // Your shadow color
-      10.r, // Blur radius, make responsive as you wish
-      true, // true closes the path for a proper shadow
+      const Color(0x3F626A7D), 
+      10.r, 
+      true, 
     );
     final paint = Paint()
-      ..color = AppColors.white50
+      ..color = Colors.black
       ..style = PaintingStyle.fill;
 
     canvas.drawPath(path, paint);
