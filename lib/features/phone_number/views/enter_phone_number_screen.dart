@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:logger/web.dart';
 
 import 'package:motogen/core/constants/app_colors.dart';
 
 import 'package:motogen/core/constants/app_images.dart';
+import 'package:motogen/features/phone_number/data/auth_notifier.dart';
+import 'package:motogen/features/phone_number/model/auth_state.dart';
 import 'package:motogen/features/phone_number/viewmodels/phone_number_controller_view_model.dart';
 import 'package:motogen/features/onboarding/widgets/dot_indicator.dart';
 import 'package:motogen/widgets/field_text.dart';
@@ -24,7 +27,24 @@ class EnterPhoneNumberScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen<AuthState>(authProvider, (prev, next) {
+      if (prev?.status != AuthStatus.codeSent &&
+          next.status == AuthStatus.codeSent) {
+        /*  final phone = ref
+            .read(phoneNumberControllerProvider)
+            .phoneController
+            .text
+            .trim();
+       PhoneStorage.savePhoneNumber(phone); */
+        Logger().d("debug the send code is : ${next.codeSent}");
+        onNext();
+      }
+    });
+
     final phoneVm = ref.watch(phoneNumberControllerProvider);
+    final auth = ref.watch(authProvider);
+    final authNotifier = ref.read(authProvider.notifier);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
@@ -64,11 +84,15 @@ class EnterPhoneNumberScreen extends ConsumerWidget {
                       isValid: phoneVm.isValid,
                       labelText: "شماره موبایل",
                       hintText: "09123456789",
-                      error: phoneVm.error,
+                      error: auth.status == AuthStatus.error
+                          ? auth.message
+                          : phoneVm.error,
                     ),
                   ),
 
-                 
+                  if (auth.status == AuthStatus.loading)
+                    const CircularProgressIndicator(),
+
                   Image.asset(
                     AppImages.phoneNumberPageImage,
                     width: 250.w,
@@ -77,7 +101,15 @@ class EnterPhoneNumberScreen extends ConsumerWidget {
                   SizedBox(height: 28.h),
                   DotIndicator(currentPage: currentPage, count: count),
                   SizedBox(height: 24.h),
-                  OnboardingButton(currentPage: currentPage, onPressed: onNext),
+                  OnboardingButton(
+                    currentPage: currentPage,
+                    onPressed: () async {
+                      final phone = phoneVm.phoneController.text.trim();
+                      await authNotifier.requestOtp(phone);
+                    },
+                    enabled:
+                        phoneVm.isValid && auth.status != AuthStatus.loading ,
+                  ),
                 ],
               ),
             ),

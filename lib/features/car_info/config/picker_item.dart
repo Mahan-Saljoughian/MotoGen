@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class PickerItem {
   final String id;
   final String title;
-  
+
   PickerItem({required this.id, required this.title});
   factory PickerItem.fromJson(Map<String, dynamic> json) =>
       PickerItem(id: json['id'], title: json['title']);
@@ -35,9 +35,17 @@ final carColorsProvider = Provider.autoDispose<List<PickerItem>>(
 final fuelTypesProvider = Provider.autoDispose<List<PickerItem>>(
   (ref) => [
     PickerItem(id: 'gasoline', title: 'بنزین'),
-    PickerItem(id: 'diesel', title: 'دیزل'),
-    PickerItem(id: 'gas', title: 'گازسوز'),
-    PickerItem(id: 'hybrid', title: 'هیبریدی'),
-    PickerItem(id: 'electric', title: 'برقی'),
+    PickerItem(id: 'diesel', title: 'گاز'),
+    PickerItem(id: 'gas', title: 'گازوییل'),
+    PickerItem(id: 'hybrid', title: 'بنزین-گاز'),
   ],
 );
+
+
+/* enum Fuel {
+  GASOLINE
+  GAS
+  DIESEL
+  GASOLINE_GAS
+}
+ */

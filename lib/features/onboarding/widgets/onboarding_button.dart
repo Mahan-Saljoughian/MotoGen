@@ -40,17 +40,19 @@ final isCarInfoButtonEnabledForSecondPageProvider = Provider<bool>((ref) {
 class OnboardingButton extends ConsumerWidget {
   final int currentPage;
   final VoidCallback onPressed;
+  final bool? enabled;
 
   const OnboardingButton({
     super.key,
     required this.onPressed,
     required this.currentPage,
+    this.enabled = false,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
-      onTap: _getCurrentButtonEnabled(ref)
+      onTap: enabled ?? _getCurrentButtonEnabled(ref)
           ? /* () async {
               await ref.watch(currentProvider).savePersonalInfo();
               onPressed();
@@ -61,7 +63,7 @@ class OnboardingButton extends ConsumerWidget {
         height: 48.w,
         padding: EdgeInsets.symmetric(vertical: 12.h),
         decoration: BoxDecoration(
-          color: _getCurrentButtonEnabled(ref)
+          color: enabled ?? _getCurrentButtonEnabled(ref)
               ? AppColors.orange600
               : AppColors.white700,
           borderRadius: BorderRadius.circular(50.r),
@@ -83,8 +85,6 @@ class OnboardingButton extends ConsumerWidget {
     switch (currentPage) {
       case 0:
         return ref.watch(phoneNumberControllerProvider).isValid;
-      case 1:
-        return ref.watch(codeControllerProvider).isValid;
       case 2:
         return ref.watch(personalInfoProvider).isButtonEnabled;
       case 3:
@@ -97,7 +97,7 @@ class OnboardingButton extends ConsumerWidget {
         return ref.watch(dateInputProvider).isDateValid;
 
       default:
-        return true;
+        return false;
     }
   }
 

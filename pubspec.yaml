@@ -39,10 +39,11 @@ dependencies:
   http:
   logger:  
   shamsi_date: 
-  curved_navigation_bar: 
- 
-  floating_bottom_navigation_bar:
- 
+  flutter_secure_storage: 
+  flutter_phoenix: 
+  dio: 
+  connectivity_plus: 
+  app_settings: 
 
 dev_dependencies:
   flutter_test:

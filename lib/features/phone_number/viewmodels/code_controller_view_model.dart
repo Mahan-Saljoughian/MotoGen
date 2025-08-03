@@ -31,6 +31,11 @@ class CodeControllerViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void cancelTimer() {
+    _timer?.cancel();
+    notifyListeners();
+  }
+
   void updateDigit(int index, String value) {
     digits[index] = value;
     notifyListeners();
@@ -42,9 +47,7 @@ class CodeControllerViewModel extends ChangeNotifier {
 
   bool get isTimerActive => _secondsLeft > 0;
 
-  bool get isValid => isComplete && code == "1234" && isTimerActive;
-
-    String get timerText {
+  String get timerText {
     final m = (_secondsLeft ~/ 60).toString().padLeft(2, '0');
     final s = (_secondsLeft % 60).toString().padLeft(2, '0');
     return "$m:$s";

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PhoneNumberControllerViewModel extends ChangeNotifier {
   final phoneController = TextEditingController();
@@ -37,6 +38,18 @@ class PhoneNumberControllerViewModel extends ChangeNotifier {
   void dispose() {
     phoneController.dispose();
     super.dispose();
+  }
+}
+
+class PhoneStorage {
+  static Future<void> savePhoneNumber(String phone) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString("user_phone_number", phone);
+  }
+
+ static Future<String?> loadPhoneNumnber() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString("user_phone_number");
   }
 }
 

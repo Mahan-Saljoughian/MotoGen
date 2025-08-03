@@ -7,9 +7,12 @@ import 'package:logger/logger.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/core/constants/app_images.dart';
+import 'package:motogen/features/phone_number/data/auth_notifier.dart';
+import 'package:motogen/features/phone_number/model/auth_state.dart';
 import 'package:motogen/features/phone_number/viewmodels/code_controller_view_model.dart';
 import 'package:motogen/features/onboarding/widgets/dot_indicator.dart';
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
+import 'package:motogen/features/phone_number/viewmodels/phone_number_controller_view_model.dart';
 
 class ValidateCodeScreen extends ConsumerStatefulWidget {
   final int currentPage;
@@ -63,8 +66,17 @@ class _ValidateCodeScreenState extends ConsumerState<ValidateCodeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final codeVM = ref.watch(codeControllerProvider);
+    ref.listen<AuthState>(authProvider, (prev, next) {
+      if (prev?.status != AuthStatus.confirmed &&
+          next.status == AuthStatus.confirmed) {
+        widget.onNext();
+      }
+    });
 
+    final codeVM = ref.watch(codeControllerProvider);
+    final auth = ref.watch(authProvider);
+    final authNotifier = ref.read(authProvider.notifier);
+    final bool hasError = auth.status == AuthStatus.error;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
@@ -79,7 +91,11 @@ class _ValidateCodeScreenState extends ConsumerState<ValidateCodeScreen> {
                     children: [
                       SizedBox(width: 20.w),
                       GestureDetector(
-                        onTap: widget.onBack,
+                        onTap: () {
+                          codeVM.cancelTimer();
+                          codeVM.resetCode();
+                          widget.onBack();
+                        },
                         child: SvgPicture.asset(
                           AppIcons.arrowRight,
                           width: 24.w,
@@ -119,7 +135,9 @@ class _ValidateCodeScreenState extends ConsumerState<ValidateCodeScreen> {
                           margin: EdgeInsets.symmetric(horizontal: 12.w),
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: AppColors.blue500,
+                              color: hasError
+                                  ? Color(0xffC60B0B)
+                                  : AppColors.blue500,
                               width: 1.5.w,
                             ),
                             borderRadius: BorderRadius.circular(12.r),
@@ -130,7 +148,9 @@ class _ValidateCodeScreenState extends ConsumerState<ValidateCodeScreen> {
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: AppColors.blue500,
+                              color: hasError
+                                  ? Color(0xffC60B0B)
+                                  : AppColors.blue500,
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w700,
                             ),
@@ -152,16 +172,6 @@ class _ValidateCodeScreenState extends ConsumerState<ValidateCodeScreen> {
                               ref
                                   .read(codeControllerProvider.notifier)
                                   .updateDigit(i, value);
-
-                              final codeVM = ref.read(codeControllerProvider);
-
-                              if (codeVM.isValid) {
-                                logger.i("[DEBUG] Code accepted!");
-                              } else if (codeVM.isComplete && !codeVM.isValid) {
-                                logger.i(
-                                  "[DEBUG] Invalid code or timer expired. ${codeVM.code}",
-                                );
-                              }
                             },
                           ),
                         ),
@@ -169,17 +179,33 @@ class _ValidateCodeScreenState extends ConsumerState<ValidateCodeScreen> {
                     ),
                   ),
                   SizedBox(height: 17.h),
-                  Text(
-                    codeVM.timerText,
-                    style: TextStyle(
-                      color: AppColors.blue900,
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                  hasError
+                      ? Text(
+                          auth.message ?? "کدی که وارد کردی اشتباهه!",
+                          style: TextStyle(
+                            color: Color(0xffC60B0B),
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        )
+                      : Text(
+                          codeVM.timerText,
+                          style: TextStyle(
+                            color: AppColors.blue900,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
                   SizedBox(height: 17.h),
                   GestureDetector(
                     onTap: () {
+                      final phone = auth.phoneNumber;
+                      if (phone != null && phone.isNotEmpty) {
+                        authNotifier.requestOtp(phone);
+                        Logger().d("debug the send code is : ${auth.codeSent}");
+                      } else {
+                        logger.d("Phone number is missing!");
+                      }
                       ref.read(codeControllerProvider.notifier).resetCode();
                       for (var controller in controllers) {
                         controller.clear();
@@ -223,7 +249,24 @@ class _ValidateCodeScreenState extends ConsumerState<ValidateCodeScreen> {
                   SizedBox(height: 24.h),
                   OnboardingButton(
                     currentPage: widget.currentPage,
-                    onPressed: widget.onNext,
+                    onPressed: () {
+                      final codeVM = ref.read(codeControllerProvider);
+                      if (codeVM.isComplete &&
+                          codeVM.isTimerActive &&
+                          auth.status != AuthStatus.loading &&
+                          auth.status != AuthStatus.confirmed) {
+                        final phone = auth.phoneNumber;
+                        if (phone != null && phone.isNotEmpty) {
+                          authNotifier.confirmOtp(phone, codeVM.code);
+                        } else {
+                          logger.d("Phone number is missing!");
+                        }
+                      }
+                    },
+                    enabled:
+                        codeVM.isComplete &&
+                        codeVM.isTimerActive &&
+                        auth.status != AuthStatus.loading,
                   ),
                 ],
               ),

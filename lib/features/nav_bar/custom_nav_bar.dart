@@ -40,12 +40,13 @@ class _NavBarState extends State<CustomNavBar> {
 
   @override
   void initState() {
+    super.initState();
     controller = AnimationController(
       vsync: widget.vsync,
-      duration: const Duration(milliseconds: 375),
+      duration: const Duration(milliseconds: 200),
     );
 
-    super.initState();
+    animation = Tween<double>(begin: 0.0, end: 0.0).animate(controller);
   }
 
   int getVisualIndex(int index) {
@@ -139,7 +140,7 @@ class _NavBarState extends State<CustomNavBar> {
 
     return Padding(
       padding: EdgeInsets.only(
-        bottom: 11.5.h,
+        bottom: 20.h,
         left: horizontalMargin,
         right: horizontalMargin,
       ),

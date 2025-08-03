@@ -36,14 +36,6 @@ class PersonalInfoScreen extends ConsumerWidget {
                 Row(
                   children: [
                     SizedBox(width: 20.w),
-                    GestureDetector(
-                      onTap: onBack,
-                      child: SvgPicture.asset(
-                        AppIcons.arrowRight,
-                        width: 24.w,
-                        height: 24.h,
-                      ),
-                    ),
 
                     SizedBox(width: 110.w),
                     Text(

@@ -20,100 +20,96 @@ class ChatScreen extends ConsumerWidget {
     final controller = ref.watch(chatControllerProvider);
 
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 20.h),
-          child: Center(
-            child: Column(
-              children: [
+      body: Padding(
+        padding: EdgeInsets.only(top: 20.h),
+        child: Center(
+          child: Column(
+            children: [
+              Text(
+                "چت‌بات",
+                style: TextStyle(
+                  color: AppColors.blue500,
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+
+              if (chatState.messages.isEmpty) ...[
+                Spacer(),
                 Text(
-                  "چت‌بات",
+                  "سوالات پیشنهادی",
                   style: TextStyle(
                     color: AppColors.blue500,
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w700,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-
-                if (chatState.messages.isEmpty) ...[
-                  Spacer(),
-                  Text(
-                    "سوالات پیشنهادی",
-                    style: TextStyle(
-                      color: AppColors.blue500,
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(height: 16.h),
-                  for (String question
-                      in ref
-                          .read(chatNotifierProvider.notifier)
-                          .suggestionQuestions)
-                    SuggestionQuestion(
-                      prompt: question,
-                      onPressed: () {
-                        /*  ref.read(chatControllerProvider).textController.text =
-                            question; */
-                        ref
-                            .read(chatNotifierProvider.notifier)
-                            .sendUserMessage(question);
-                      },
-                    ),
-
-                  SizedBox(height: 8.h),
-                ],
-
-                if (chatState.messages.isNotEmpty)
-                  Expanded(
-                    child: ListView.builder(
-                      controller: controller.scrollController,
-                      reverse: true,
-                      itemCount:
-                          chatState.messages.length +
-                          (chatState.isLoading ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (chatState.isLoading && index == 0) {
-                          return Padding(
-                            padding: EdgeInsets.only(left: 23.w, bottom: 18.h),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: AiLoadingAnimation(),
-                            ),
-                          );
-                        } else {
-                          final messageIndex = chatState.isLoading
-                              ? chatState.messages.length - index
-                              : chatState.messages.length - 1 - index;
-                          final message = chatState.messages[messageIndex];
-                          return message.sender == MessageSender.user
-                              ? UserMessageBubble(textMessage: message.text)
-                              : AiMessageBubble(aiMessage: message.text);
-                        }
-                      },
-                    ),
-                  ),
-
-                PromptInput(
-                  controller: controller.textController,
-                  onSend: () {
-                    final text = controller.textController.text.trim();
-                    if (text.isEmpty) return;
-                    ref
+                SizedBox(height: 8.h),
+                for (String question
+                    in ref
                         .read(chatNotifierProvider.notifier)
-                        .sendUserMessage(text);
-                    controller.clearText();
-                    Future.delayed(const Duration(milliseconds: 100), () {
-                      controller.scrollController.animateTo(
-                        0.0,
-                        duration: Duration(milliseconds: 250),
-                        curve: Curves.easeOut,
-                      );
-                    });
-                  },
-                ),
+                        .suggestionQuestions)
+                  SuggestionQuestion(
+                    prompt: question,
+                    onPressed: () {
+                      /*  ref.read(chatControllerProvider).textController.text =
+                          question; */
+                      ref
+                          .read(chatNotifierProvider.notifier)
+                          .sendUserMessage(question);
+                    },
+                  ),
+
+                SizedBox(height: 9.h),
               ],
-            ),
+
+              if (chatState.messages.isNotEmpty)
+                Expanded(
+                  child: ListView.builder(
+                    controller: controller.scrollController,
+                    reverse: true,
+                    itemCount:
+                        chatState.messages.length +
+                        (chatState.isLoading ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (chatState.isLoading && index == 0) {
+                        return Padding(
+                          padding: EdgeInsets.only(left: 23.w, bottom: 18.h),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: AiLoadingAnimation(),
+                          ),
+                        );
+                      } else {
+                        final messageIndex = chatState.isLoading
+                            ? chatState.messages.length - index
+                            : chatState.messages.length - 1 - index;
+                        final message = chatState.messages[messageIndex];
+                        return message.sender == MessageSender.user
+                            ? UserMessageBubble(textMessage: message.text)
+                            : AiMessageBubble(aiMessage: message.text);
+                      }
+                    },
+                  ),
+                ),
+
+              PromptInput(
+                controller: controller.textController,
+                onSend: () {
+                  final text = controller.textController.text.trim();
+                  if (text.isEmpty) return;
+                  ref.read(chatNotifierProvider.notifier).sendUserMessage(text);
+                  controller.clearText();
+                  Future.delayed(const Duration(milliseconds: 100), () {
+                    controller.scrollController.animateTo(
+                      0.0,
+                      duration: Duration(milliseconds: 250),
+                      curve: Curves.easeOut,
+                    );
+                  });
+                },
+              ),
+            ],
           ),
         ),
       ),
