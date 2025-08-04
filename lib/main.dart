@@ -1,11 +1,11 @@
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
-import 'package:motogen/features/onboarding/views/onboarding_indicator.dart';
+
+import 'package:motogen/main_scaffold.dart';
 
 
 void main() {
@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
       ],
       debugShowCheckedModeBanner: false,
       title: 'MotoGen',
-      home: OnboardingIndicator(),
+      home: MainScaffold(),
     );
   }
 }

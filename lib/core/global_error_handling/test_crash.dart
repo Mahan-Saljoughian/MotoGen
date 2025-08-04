@@ -1,7 +1,7 @@
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:motogen/global_error_handling/main.dart';
+import 'package:motogen/core/global_error_handling/main.dart';
 
 class TestCrash extends StatelessWidget {
   const TestCrash({super.key});

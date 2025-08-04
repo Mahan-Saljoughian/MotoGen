@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:motogen/global_error_handling/app_with_container.dart';
+import 'package:motogen/core/global_error_handling/app_with_container.dart';
 
 class GlobalErrorScreen extends StatelessWidget {
   final String error;

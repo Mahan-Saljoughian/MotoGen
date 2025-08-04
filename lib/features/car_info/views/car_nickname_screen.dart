@@ -2,15 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
-
 import 'package:motogen/core/constants/app_images.dart';
 import 'package:motogen/features/car_info/viewmodels/car_info_form_viewmodel.dart';
-import 'package:motogen/features/car_info/viewmodels/nickName_validator.dart';
-import 'package:motogen/features/chat_screen/views/chat_screen.dart';
-import 'package:motogen/features/phone_number/viewmodels/phone_number_controller_view_model.dart';
+import 'package:motogen/features/car_info/viewmodels/nick_name_validator.dart';
 import 'package:motogen/features/onboarding/widgets/dot_indicator.dart';
 import 'package:motogen/widgets/field_text.dart';
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';

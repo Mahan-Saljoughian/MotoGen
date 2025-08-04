@@ -64,7 +64,7 @@ class EnterPhoneNumberScreen extends ConsumerWidget {
                     ),
                   ),
 
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.275),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.27),
 
                   Text(
                     "برای ورود یا ایجاد حساب کاربری شماره موبایلت رو وارد کن...",
@@ -84,14 +84,10 @@ class EnterPhoneNumberScreen extends ConsumerWidget {
                       isValid: phoneVm.isValid,
                       labelText: "شماره موبایل",
                       hintText: "09123456789",
-                      error: auth.status == AuthStatus.error
-                          ? auth.message
-                          : phoneVm.error,
+                      error: auth.message ?? phoneVm.error,
+                      isBackError: auth.status == AuthStatus.error,
                     ),
                   ),
-
-                  if (auth.status == AuthStatus.loading)
-                    const CircularProgressIndicator(),
 
                   Image.asset(
                     AppImages.phoneNumberPageImage,
@@ -106,9 +102,8 @@ class EnterPhoneNumberScreen extends ConsumerWidget {
                     onPressed: () async {
                       final phone = phoneVm.phoneController.text.trim();
                       await authNotifier.requestOtp(phone);
+                  
                     },
-                    enabled:
-                        phoneVm.isValid && auth.status != AuthStatus.loading ,
                   ),
                 ],
               ),

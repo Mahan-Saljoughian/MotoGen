@@ -104,14 +104,18 @@ final yearMadeProvider = Provider.autoDispose
       });
     });
 
-ProviderListenable<AsyncValue<List<PickerItem>>> carColorsAsyncProviderBuilder(
-  CarFormState state,
-) {
-  return Provider.autoDispose<AsyncValue<List<PickerItem>>>((ref) {
-    final list = ref.watch(carColorsProvider);
-    return AsyncValue.data(list);
-  });
-}
+final colorProvider = FutureProvider.autoDispose<List<PickerItem>>((ref) async {
+  final result = await api.get('colors');
+  final List data = result['data'];
+  return data
+      .map(
+        (e) => PickerItem(
+          id: e['englishTitle'].toString(),
+          title: e['persianTitle'] as String,
+        ),
+      )
+      .toList();
+});
 
 ProviderListenable<AsyncValue<List<PickerItem>>> fuelTypesAsyncProviderBuilder(
   CarFormState state,

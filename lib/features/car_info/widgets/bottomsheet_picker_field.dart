@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
-import 'package:motogen/features/car_info/viewmodels/car_info_form_viewmodel.dart';
+
 
 class BottomsheetPickerField extends ConsumerWidget {
   final String labelText;

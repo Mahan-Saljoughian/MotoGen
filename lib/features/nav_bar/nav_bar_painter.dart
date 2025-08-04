@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:motogen/core/constants/app_colors.dart';
 
 class NavBarPainter extends CustomPainter {
   final double x;
@@ -271,7 +272,7 @@ class NavBarPainter extends CustomPainter {
     // ---- SHADOW & FILL SHAPE ----
     canvas.drawShadow(path, const Color(0x3F626A7D), 10.0, true);
     final fillPaint = Paint()
-      ..color = Colors.black
+      ..color = AppColors.white50
       ..style = PaintingStyle.fill;
     canvas.drawPath(path, fillPaint);
 

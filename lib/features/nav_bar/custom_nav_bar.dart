@@ -32,6 +32,13 @@ class _NavBarState extends State<CustomNavBar> {
     AppIcons.profile,
   ];
 
+  List<String> selectedIcons = [
+    AppIcons.homeSelected,
+    AppIcons.notifierSelected,
+    AppIcons.chatbotSelected,
+    AppIcons.profileSelected,
+  ];
+
   List<String> labels = ['خانه', 'یادآور', 'چت‌بات', 'پروفایل'];
 
   late double position;
@@ -160,6 +167,7 @@ class _NavBarState extends State<CustomNavBar> {
                   children: icons.asMap().entries.map((entry) {
                     int index = entry.key;
                     String icon = entry.value;
+                    String selectedIcon = selectedIcons[index];
                     String label = labels[index];
                     final isSelected = widget.selected == index;
 
@@ -195,18 +203,12 @@ class _NavBarState extends State<CustomNavBar> {
                               child: AnimatedSwitcher(
                                 duration: const Duration(milliseconds: 375),
                                 child: SvgPicture.asset(
-                                  icon,
+                                  isSelected ? selectedIcon : icon,
                                   key: ValueKey(
                                     isSelected ? 'yellow$index' : 'gray$index',
                                   ),
                                   width: 24.0.w,
                                   height: 24.w,
-                                  colorFilter: ColorFilter.mode(
-                                    isSelected
-                                        ? AppColors.orange600
-                                        : AppColors.blue300,
-                                    BlendMode.srcIn,
-                                  ),
                                 ),
                               ),
                             ),

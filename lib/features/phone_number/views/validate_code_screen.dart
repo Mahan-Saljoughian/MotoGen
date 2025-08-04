@@ -12,7 +12,7 @@ import 'package:motogen/features/phone_number/model/auth_state.dart';
 import 'package:motogen/features/phone_number/viewmodels/code_controller_view_model.dart';
 import 'package:motogen/features/onboarding/widgets/dot_indicator.dart';
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
-import 'package:motogen/features/phone_number/viewmodels/phone_number_controller_view_model.dart';
+
 
 class ValidateCodeScreen extends ConsumerStatefulWidget {
   final int currentPage;

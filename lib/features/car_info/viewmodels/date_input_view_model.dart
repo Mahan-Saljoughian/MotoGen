@@ -71,7 +71,8 @@ class DateInputViewModel extends ChangeNotifier {
     final inputDate = asDateTime;
     if (inputDate == null) return false;
     final now = DateTime.now();
-    return inputDate.isAfter(now);
+    final maxDate = DateTime(2030, 1, 1);
+    return inputDate.isAfter(now) && inputDate.isBefore(maxDate);
   }
 
   bool get dayValid => _dayValid;
@@ -84,7 +85,22 @@ class DateInputViewModel extends ChangeNotifier {
   bool get isFutureDateValid => _isFutureDateValid;
   bool get isDateValid => _isFutureDateValid && _isFieldsValid;
 
-  String get errorWhenFutureDate => "تاریخ معتبر انتخاب کن";
+  String get errorWhenFutureDate {
+    if (!_isFieldsValid) return "تاریخ معتبر انتخاب کن";
+    final inputDate = asDateTime;
+    if (inputDate == null) return "تاریخ معتبر انتخاب کن";
+
+    final now = DateTime.now();
+    final maxDate = DateTime(2030, 1, 1);
+
+    if (inputDate.isBefore(now) || inputDate.isAtSameMomentAs(now)) {
+      return "تاریخ باید در آینده باشد";
+    }
+    if (inputDate.isAfter(maxDate) || inputDate.isAtSameMomentAs(maxDate)) {
+      return "تاریخ نباید بعد از 2030-01-01 باشد";
+    }
+    return "تاریخ معتبر انتخاب کن";
+  }
 
   bool _isNumberInRange(String src, int min, int max) {
     if (src.isEmpty) return false;

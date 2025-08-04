@@ -27,15 +27,19 @@ class PersonalInfoViewModel extends ChangeNotifier {
     loadFromPrefs();
     /* resetSharedPref(); */
   }
-
-  static final RegExp nameRegExp = RegExp(r'^[\u0600-\u06FFa-zA-Z\s\-]+$');
-
+  static final RegExp nameRegExp = RegExp(
+    r'''[a-zA-Z0-9\u0600-\u06FF\u200C\u200D\s\-_.,!?'"()]+$''',
+  );
   static String? nameValidator(String? text) {
     if (text == null || text.trim().isEmpty) {
       return "الزامی!";
     }
-    if (!nameRegExp.hasMatch(text.trim())) {
-      return "نام معتبر وارد کنید!";
+    final trimmed = text.trim();
+    if (trimmed.length < 2 || trimmed.length > 30) {
+      return "نام باید بین 2 تا 30 کاراکتر باشد";
+    }
+    if (!nameRegExp.hasMatch(trimmed)) {
+      return "نام شامل کاراکتر های غیر مجاز است";
     }
     return null;
   }
@@ -44,8 +48,12 @@ class PersonalInfoViewModel extends ChangeNotifier {
     if (text == null || text.trim().isEmpty) {
       return "الزامی!";
     }
-    if (!nameRegExp.hasMatch(text.trim())) {
-      return "نام خانوادگی معتبر وارد کنید!";
+    final trimmed = text.trim();
+    if (trimmed.length < 2 || trimmed.length > 30) {
+      return "نام خانوادگی باید بین 2 تا 30 کاراکتر باشد";
+    }
+    if (!nameRegExp.hasMatch(trimmed)) {
+      return "نام خانوادگی شامل کاراکتر های غیر مجاز است";
     }
     return null;
   }

@@ -4,9 +4,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/features/car_info/viewmodels/car_info_form_viewmodel.dart';
 import 'package:motogen/features/car_info/viewmodels/date_input_view_model.dart';
-import 'package:motogen/features/car_info/viewmodels/nickName_validator.dart';
+import 'package:motogen/features/car_info/viewmodels/nick_name_validator.dart';
 import 'package:motogen/features/onboarding/viewmodels/personal_info_controller_view_model.dart';
-import 'package:motogen/features/phone_number/viewmodels/code_controller_view_model.dart';
+
 import 'package:motogen/features/phone_number/viewmodels/phone_number_controller_view_model.dart';
 import 'package:motogen/features/car_info/config/picker_item.dart';
 
@@ -46,26 +46,20 @@ class OnboardingButton extends ConsumerWidget {
     super.key,
     required this.onPressed,
     required this.currentPage,
-    this.enabled = false,
+    this.enabled,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final buttonEnabled = enabled ?? _getCurrentButtonEnabled(ref);
     return GestureDetector(
-      onTap: enabled ?? _getCurrentButtonEnabled(ref)
-          ? /* () async {
-              await ref.watch(currentProvider).savePersonalInfo();
-              onPressed();
-            } */ onPressed
-          : null,
+      onTap: buttonEnabled ? onPressed : null,
       child: Container(
         width: 330.w,
         height: 48.w,
         padding: EdgeInsets.symmetric(vertical: 12.h),
         decoration: BoxDecoration(
-          color: enabled ?? _getCurrentButtonEnabled(ref)
-              ? AppColors.orange600
-              : AppColors.white700,
+          color: buttonEnabled ? AppColors.orange600 : AppColors.white700,
           borderRadius: BorderRadius.circular(50.r),
         ),
         child: Text(

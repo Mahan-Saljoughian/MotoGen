@@ -88,10 +88,10 @@ class CarInfoFormViewmodel extends Notifier<CarFormState> {
   void setRawKilometerInput(String input) {
     state = state.copyWith(rawKilometersInput: input);
     final parsed = int.tryParse(input);
-    if (parsed != null && parsed >= 0 && parsed < 1000000) {
+    if (parsed != null && parsed >= 0 && parsed <= 1000000) {
       state = state.copyWith(kilometerDriven: parsed);
     } else {
-      state = state.copyWith(kilometerDriven: null); // Invalid or empty
+      state = state.copyWith(kilometerDriven: null);
     }
   }
 

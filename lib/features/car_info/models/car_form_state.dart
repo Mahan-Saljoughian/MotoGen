@@ -134,8 +134,8 @@ class CarFormState {
       return 'الزامی!';
     }
     final parsed = int.tryParse(text);
-    if (parsed == null || parsed <= 0 || parsed >= 10000000) {
-      return 'کیلومتر وارد شده معتبر نیست!';
+    if (parsed == null || parsed >= 0 && parsed <= 10000000) {
+      return 'کیلومتر باید بین 0 تا 10,000,000 باشد';
     }
     return null;
   }

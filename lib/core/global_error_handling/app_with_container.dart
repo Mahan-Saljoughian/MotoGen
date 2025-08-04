@@ -1,11 +1,11 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:motogen/global_error_handling/app_init.dart';
-import 'package:motogen/global_error_handling/connectivity_watcher.dart';
-import 'package:motogen/global_error_handling/global_error_provider.dart';
+import 'package:motogen/core/global_error_handling/app_init.dart';
+import 'package:motogen/core/global_error_handling/connectivity_watcher.dart';
+import 'package:motogen/core/global_error_handling/global_error_provider.dart';
 
 class AppWithContainer extends StatefulWidget {
   static final GlobalKey<_AppWithContainerState> globalKey = GlobalKey();

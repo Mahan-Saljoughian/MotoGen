@@ -17,35 +17,15 @@ class PickerItem {
   static const int yearNoValue = -1;
 }
 
-final carColorsProvider = Provider.autoDispose<List<PickerItem>>(
-  (ref) => [
-    PickerItem(id: 'white', title: 'سفید'),
-    PickerItem(id: 'black', title: 'مشکی'),
-    PickerItem(id: 'silver', title: 'نقره‌ای'),
-    PickerItem(id: 'gray', title: 'خاکستری'),
-    PickerItem(id: 'blue', title: 'آبی'),
-    PickerItem(id: 'red', title: 'قرمز'),
-    PickerItem(id: 'green', title: 'سبز'),
-    PickerItem(id: 'yellow', title: 'زرد'),
-    PickerItem(id: 'brown', title: 'قهوه‌ای'),
-    PickerItem(id: 'other', title: 'سایر'),
-  ],
-);
+
 
 final fuelTypesProvider = Provider.autoDispose<List<PickerItem>>(
   (ref) => [
-    PickerItem(id: 'gasoline', title: 'بنزین'),
-    PickerItem(id: 'diesel', title: 'گاز'),
-    PickerItem(id: 'gas', title: 'گازوییل'),
-    PickerItem(id: 'hybrid', title: 'بنزین-گاز'),
+    PickerItem(id: 'GASOLINE', title: 'بنزین'),
+    PickerItem(id: 'GAS', title: 'گاز'),
+    PickerItem(id: 'DIESEL', title: 'گازوییل'),
+    PickerItem(id: ' GASOLINE_GAS', title: 'بنزین-گاز'),
   ],
 );
 
 
-/* enum Fuel {
-  GASOLINE
-  GAS
-  DIESEL
-  GASOLINE_GAS
-}
- */

@@ -4,12 +4,14 @@ import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 
+
 class FieldText extends StatefulWidget {
   final TextEditingController controller;
   final bool isValid;
   final String labelText;
   final String hintText;
   final String? error;
+  final bool isBackError;
   final void Function(String)? onChanged;
 
   const FieldText({
@@ -20,6 +22,7 @@ class FieldText extends StatefulWidget {
     required this.hintText,
     this.onChanged,
     this.error,
+    this.isBackError = false,
   });
 
   @override
@@ -107,12 +110,12 @@ class _FieldTextState extends State<FieldText> {
           ),
         ),
 
-        if (widget.error != null && isInteractedOnce == true)
+        if (widget.error != null &&
+            (isInteractedOnce == true || widget.isBackError))
           Padding(
             padding: EdgeInsets.symmetric(vertical: 14.h),
             child: Align(
               alignment: Alignment.centerRight,
-
               child: Text(
                 widget.error ?? "",
                 style: TextStyle(
@@ -123,9 +126,11 @@ class _FieldTextState extends State<FieldText> {
               ),
             ),
           ),
-        if (widget.error != null && isInteractedOnce == false)
-          SizedBox(height: 42.h),
-        if (widget.error == null) SizedBox(height: 42.h),
+        if (widget.error != null &&
+            isInteractedOnce == false &&
+            !widget.isBackError)
+          SizedBox(height: 30.h),
+        if (widget.error == null) SizedBox(height: 30.h),
       ],
     );
   }

@@ -1,13 +1,13 @@
 import 'dart:ui';
-import 'package:connectivity_plus/connectivity_plus.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:motogen/global_error_handling/connectivity_watcher.dart';
+import 'package:motogen/core/global_error_handling/connectivity_watcher.dart';
 
-import 'package:motogen/global_error_handling/global_error_provider.dart';
-import 'package:motogen/global_error_handling/global_error_screen.dart';
-import 'package:motogen/global_error_handling/test_crash.dart';
+import 'package:motogen/core/global_error_handling/global_error_provider.dart';
+import 'package:motogen/core/global_error_handling/global_error_screen.dart';
+import 'package:motogen/core/global_error_handling/test_crash.dart';
 
 class AppInit extends ConsumerStatefulWidget {
   const AppInit({super.key});

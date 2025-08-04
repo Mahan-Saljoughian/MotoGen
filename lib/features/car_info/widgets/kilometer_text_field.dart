@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/features/car_info/viewmodels/car_info_form_viewmodel.dart';
 import 'package:motogen/widgets/field_text.dart';
 

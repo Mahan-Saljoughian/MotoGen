@@ -65,7 +65,7 @@ final yearMadePickConfig = PickerFieldConfig(
 
 PickerFieldConfig colorPickConfig = PickerFieldConfig(
   labelText: "رنگ خودرو",
-  providerBuilder: carColorsAsyncProviderBuilder,
+  providerBuilder: (state) => colorProvider,
   getter: (CarFormState state) => state.color,
   setter: (WidgetRef ref, value) =>
       ref.read(carInfoFormProvider.notifier).setColor(value),
