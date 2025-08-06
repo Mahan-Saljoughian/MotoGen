@@ -1,25 +1,43 @@
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:motogen/features/car_info/config/picker_item.dart';
 
+part 'car_form_state.g.dart';
+
+@HiveType(typeId: 0)
 class CarFormState {
+  @HiveField(0)
   final PickerItem? brand;
-  final PickerItem? model;
+  @HiveField(1)
   final PickerItem? type;
+  @HiveField(2)
+  final PickerItem? model;
+  @HiveField(3)
   final int? yearMade;
+  @HiveField(4)
   final PickerItem? color;
+  @HiveField(5)
   final int? kilometerDriven;
+  @HiveField(6)
   final PickerItem? fuelType;
-  final DateTime? insuranceExpiry;
+  @HiveField(7)
+  final DateTime? bodyInsuranceExpiry;
+  @HiveField(8)
   final DateTime? nextTechnicalCheck;
+  @HiveField(9)
   final String? rawKilometersInput;
+  @HiveField(10)
   final String? nickName;
+  @HiveField(11)
+  final DateTime? thirdPartyInsuranceExpiry;
   final bool isBrandInteractedOnce;
   final bool isModelInteractedOnce;
   final bool isTypeInteractedOnce;
   final bool isYearMadeInteractedOnce;
   final bool isFuelTypeInteractedOnce;
-  final bool isInsuranceExpiryInteractedOnce;
+  final bool isBodyInsuranceExpiryInteractedOnce;
   final bool isColorInteractedOnce;
   final bool isNextTechnicalCheckInteractedOnce;
+  final bool isThirdPartyInsuranceExpiryInteractedOnce;
 
   const CarFormState({
     this.brand,
@@ -29,7 +47,8 @@ class CarFormState {
     this.color,
     this.kilometerDriven,
     this.fuelType,
-    this.insuranceExpiry,
+    this.bodyInsuranceExpiry,
+    this.thirdPartyInsuranceExpiry,
     this.nextTechnicalCheck,
     this.rawKilometersInput,
     this.nickName,
@@ -38,9 +57,10 @@ class CarFormState {
     this.isTypeInteractedOnce = false,
     this.isYearMadeInteractedOnce = false,
     this.isFuelTypeInteractedOnce = false,
-    this.isInsuranceExpiryInteractedOnce = false,
+    this.isBodyInsuranceExpiryInteractedOnce = false,
     this.isColorInteractedOnce = false,
     this.isNextTechnicalCheckInteractedOnce = false,
+    this.isThirdPartyInsuranceExpiryInteractedOnce = false,
   });
 
   CarFormState copyWith({
@@ -51,18 +71,20 @@ class CarFormState {
     PickerItem? color,
     int? kilometerDriven,
     PickerItem? fuelType,
-    DateTime? insuranceExpiry,
+    DateTime? bodyInsuranceExpiry,
     DateTime? nextTechnicalCheck,
     String? rawKilometersInput,
+    DateTime? thirdPartyInsuranceExpiry,
     String? nickName,
     bool? isBrandInteractedOnce,
     bool? isModelInteractedOnce,
     bool? isTypeInteractedOnce,
     bool? isYearMadeInteractedOnce,
     bool? isFuelTypeInteractedOnce,
-    bool? isInsuranceExpiryInteractedOnce,
+    bool? isBodyInsuranceExpiryInteractedOnce,
     bool? isColorInteractedOnce,
     bool? isNextTechnicalCheckInteractedOnce,
+    bool? isThirdPartyInsuranceExpiryInteractedOnce,
   }) {
     return CarFormState(
       brand: brand ?? this.brand,
@@ -72,9 +94,11 @@ class CarFormState {
       color: color ?? this.color,
       kilometerDriven: kilometerDriven ?? this.kilometerDriven,
       fuelType: fuelType ?? this.fuelType,
-      insuranceExpiry: insuranceExpiry ?? this.insuranceExpiry,
+      bodyInsuranceExpiry: bodyInsuranceExpiry ?? this.bodyInsuranceExpiry,
       nextTechnicalCheck: nextTechnicalCheck ?? this.nextTechnicalCheck,
       rawKilometersInput: rawKilometersInput ?? this.rawKilometersInput,
+      thirdPartyInsuranceExpiry:
+          thirdPartyInsuranceExpiry ?? this.thirdPartyInsuranceExpiry,
       nickName: nickName ?? this.nickName,
       isBrandInteractedOnce:
           isBrandInteractedOnce ?? this.isBrandInteractedOnce,
@@ -85,14 +109,17 @@ class CarFormState {
           isYearMadeInteractedOnce ?? this.isYearMadeInteractedOnce,
       isFuelTypeInteractedOnce:
           isFuelTypeInteractedOnce ?? this.isFuelTypeInteractedOnce,
-      isInsuranceExpiryInteractedOnce:
-          isInsuranceExpiryInteractedOnce ??
-          this.isInsuranceExpiryInteractedOnce,
+      isBodyInsuranceExpiryInteractedOnce:
+          isBodyInsuranceExpiryInteractedOnce ??
+          this.isBodyInsuranceExpiryInteractedOnce,
       isColorInteractedOnce:
           isColorInteractedOnce ?? this.isColorInteractedOnce,
       isNextTechnicalCheckInteractedOnce:
           isNextTechnicalCheckInteractedOnce ??
           this.isNextTechnicalCheckInteractedOnce,
+      isThirdPartyInsuranceExpiryInteractedOnce:
+          isThirdPartyInsuranceExpiryInteractedOnce ??
+          this.isThirdPartyInsuranceExpiryInteractedOnce,
     );
   }
 
@@ -104,8 +131,9 @@ class CarFormState {
     "color": color?.toJson(),
     "kilometerDriven": kilometerDriven,
     "fuelType": fuelType?.toJson(),
-    "insuranceExpiry": insuranceExpiry?.toIso8601String(),
+    "bodyInsuranceExpiry": bodyInsuranceExpiry?.toIso8601String(),
     "nextTechnicalCheck": nextTechnicalCheck?.toIso8601String(),
+    "thirdPartyInsuranceExpiry": thirdPartyInsuranceExpiry?.toIso8601String(),
     "nickName": nickName,
   };
 
@@ -119,11 +147,14 @@ class CarFormState {
     fuelType: json['fuelType'] != null
         ? PickerItem.fromJson(json['fuelType'])
         : null,
-    insuranceExpiry: json['insuranceExpiry'] != null
-        ? DateTime.parse(json['insuranceExpiry'])
+    bodyInsuranceExpiry: json['bodyInsuranceExpiry'] != null
+        ? DateTime.parse(json['bodyInsuranceExpiry'])
         : null,
     nextTechnicalCheck: json['nextTechnicalCheck'] != null
         ? DateTime.parse(json['nextTechnicalCheck'])
+        : null,
+    thirdPartyInsuranceExpiry: json['thirdPartyInsuranceExpiry'] != null
+        ? DateTime.parse(json['thirdPartyInsuranceExpiry'])
         : null,
     nickName: json['nickName'],
   );
@@ -165,8 +196,8 @@ class CarFormState {
   String? get fuelTypeError =>
       isFuelTypeInteractedOnce && fuelType == null ? 'الزامی!' : null;
 
-  String? get insuranceExpiryError =>
-      isInsuranceExpiryInteractedOnce && insuranceExpiry == null
+  String? get bodyInsuranceExpiryError =>
+      isBodyInsuranceExpiryInteractedOnce && bodyInsuranceExpiry == null
       ? 'الزامی!'
       : null;
 
@@ -177,4 +208,10 @@ class CarFormState {
 
   String? get colorError =>
       isColorInteractedOnce && color == null ? 'الزامی!' : null;
+
+  String? get thirdPartyInsuranceExpiryError =>
+      isThirdPartyInsuranceExpiryInteractedOnce &&
+          thirdPartyInsuranceExpiry == null
+      ? 'الزامی!'
+      : null;
 }

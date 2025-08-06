@@ -1,7 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
+part 'picker_item.g.dart';
+
+@HiveType(typeId: 1)
 class PickerItem {
+  @HiveField(0)
   final String id;
+  @HiveField(1)
   final String title;
 
   PickerItem({required this.id, required this.title});
@@ -17,8 +23,6 @@ class PickerItem {
   static const int yearNoValue = -1;
 }
 
-
-
 final fuelTypesProvider = Provider.autoDispose<List<PickerItem>>(
   (ref) => [
     PickerItem(id: 'GASOLINE', title: 'بنزین'),
@@ -27,5 +31,3 @@ final fuelTypesProvider = Provider.autoDispose<List<PickerItem>>(
     PickerItem(id: ' GASOLINE_GAS', title: 'بنزین-گاز'),
   ],
 );
-
-

@@ -27,7 +27,7 @@ class UserMessageBubble extends StatelessWidget {
                   right: 13.w,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.blue50,
+                  color: AppColors.blue100,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(15.r),
                     topRight: Radius.circular(15.r),

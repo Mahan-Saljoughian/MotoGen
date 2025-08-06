@@ -1,13 +1,19 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:logger/logger.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/core/constants/app_images.dart';
 import 'package:motogen/features/car_info/viewmodels/car_info_form_viewmodel.dart';
 import 'package:motogen/features/car_info/viewmodels/nick_name_validator.dart';
+import 'package:motogen/features/home_screen/view/home_screen.dart';
+import 'package:motogen/features/onboarding/viewmodels/personal_info_controller_view_model.dart';
 import 'package:motogen/features/onboarding/widgets/dot_indicator.dart';
+import 'package:motogen/features/phone_number/viewmodels/phone_number_controller_view_model.dart';
 import 'package:motogen/widgets/field_text.dart';
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
 
@@ -27,6 +33,14 @@ class CarNicknameScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nicknameValidator = ref.watch(nickNameValidatorProvider);
+    final personalInfocontroller = ref.watch(personalInfoProvider);
+    final phoneNumberController = ref.watch(phoneNumberControllerProvider);
+    final carstate = ref.watch(carInfoFormProvider);
+    var logger = Logger();
+    logger.i(
+      "debug user info : firstname: ${personalInfocontroller.nameController.text} , lastName: ${personalInfocontroller.lastNameController.text} , phoneNumber:${phoneNumberController.phoneController.text}",
+    );
+    logger.i("debug car info : ${carstate.toJson()}");
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
@@ -59,7 +73,7 @@ class CarNicknameScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  SizedBox(height: 210.h),
+                  SizedBox(height: 128.h),
                   Text(
                     "ماشینت رو چی صدا میکنی؟ \n لقبش رو اینجا بنویس...",
                     style: TextStyle(
@@ -82,24 +96,80 @@ class CarNicknameScreen extends ConsumerWidget {
                     ),
                   ),
 
-                
-
                   Image.asset(
                     AppImages.nickNameCarPage,
                     width: 260.w,
                     height: 260.w,
                   ),
-                  SizedBox(height: 31.h),
+                  SizedBox(height: 85.h),
                   DotIndicator(currentPage: currentPage, count: count),
                   SizedBox(height: 24.h),
                   OnboardingButton(
                     currentPage: currentPage,
-                    onPressed: () {
-                      ref
-                          .read(carInfoFormProvider.notifier)
-                          .setNickName(
-                            nicknameValidator.nickNameController.text,
-                          );
+                    onPressed: () async {
+                      try {
+                        await ref
+                            .read(carInfoFormProvider.notifier)
+                            .completeProfile(
+                              isSetNickName: true,
+                              nickNametext:
+                                  nicknameValidator.nickNameController.text,
+                              userInfo: {
+                                'firstName': personalInfocontroller
+                                    .nameController
+                                    .text
+                                    .trim(),
+                                'lastName': personalInfocontroller
+                                    .lastNameController
+                                    .text
+                                    .trim(),
+                              },
+                              phoneNumber: phoneNumberController
+                                  .phoneController
+                                  .text
+                                  .trim(),
+                            );
+                        onNext();
+                      } catch (e) {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(e.toString())));
+                      }
+                    },
+                  ),
+                  SizedBox(height: 20.h),
+                  OnboardingButton(
+                    currentPage: 20,
+                    onPressed: () async {
+                      try {
+                        await ref
+                            .read(carInfoFormProvider.notifier)
+                            .completeProfile(
+                              isSetNickName: false,
+                              nickNametext:
+                                  nicknameValidator.nickNameController.text,
+                              userInfo: {
+                                'firstName': personalInfocontroller
+                                    .nameController
+                                    .text
+                                    .trim(),
+                                'lastName': personalInfocontroller
+                                    .lastNameController
+                                    .text
+                                    .trim(),
+                              },
+                              phoneNumber: phoneNumberController
+                                  .phoneController
+                                  .text
+                                  .trim(),
+                            );
+
+                        onNext();
+                      } catch (e) {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(e.toString())));
+                      }
                     },
                   ),
                 ],

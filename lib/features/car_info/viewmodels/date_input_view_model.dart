@@ -97,7 +97,7 @@ class DateInputViewModel extends ChangeNotifier {
       return "تاریخ باید در آینده باشد";
     }
     if (inputDate.isAfter(maxDate) || inputDate.isAtSameMomentAs(maxDate)) {
-      return "تاریخ نباید بعد از 2030-01-01 باشد";
+      return "تاریخ نباید بعد از 2030-01-01 باشد fix for later";
     }
     return "تاریخ معتبر انتخاب کن";
   }

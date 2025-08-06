@@ -45,13 +45,19 @@ final List<CarInfoFieldConfig> carInfoSecondPageFields = [
 
   CarInfoFieldConfig(
     type: FieldInputType.dateSetter,
-    dateSetFieldConfig: insuranceExpiryDateConfig,
-    errorGetter: (s) => s.insuranceExpiryError,
+    dateSetFieldConfig: bodyInsuranceExpiryDateConfig,
+    errorGetter: (s) => s.bodyInsuranceExpiryError,
   ),
 
   CarInfoFieldConfig(
     type: FieldInputType.dateSetter,
     dateSetFieldConfig: nextTechnicalCheckDateonfig,
     errorGetter: (s) => s.nextTechnicalCheckError,
+  ),
+
+  CarInfoFieldConfig(
+    type: FieldInputType.dateSetter,
+    dateSetFieldConfig: thirdPersonInsuranceExpiryDateConfig,
+    errorGetter: (s) => s.thirdPartyInsuranceExpiryError,
   ),
 ];

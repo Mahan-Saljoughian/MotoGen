@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:logger/logger.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/features/car_info/viewmodels/car_info_form_viewmodel.dart';
@@ -12,6 +13,7 @@ import 'package:motogen/features/car_info/config/date_set_field_config.dart';
 import 'package:motogen/features/car_info/widgets/bottomsheet_date_show.dart';
 import 'package:motogen/features/car_info/widgets/bottomsheet_list_show.dart';
 import 'package:motogen/features/car_info/widgets/bottomsheet_picker_field.dart';
+import 'package:motogen/features/onboarding/viewmodels/personal_info_controller_view_model.dart';
 import 'package:motogen/features/onboarding/widgets/dot_indicator.dart';
 import 'package:motogen/features/car_info/widgets/kilometer_text_field.dart';
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
@@ -33,6 +35,7 @@ class CarInfoScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+  
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -179,7 +182,7 @@ class CarInfoScreen extends ConsumerWidget {
                       ),
 
                       if (currentPage == 3) SizedBox(height: 100.h),
-                      if (currentPage == 4) SizedBox(height: 180.h),
+                      if (currentPage == 4) SizedBox(height: 100.h),
 
                       DotIndicator(currentPage: currentPage, count: count),
                       SizedBox(height: 24.h),

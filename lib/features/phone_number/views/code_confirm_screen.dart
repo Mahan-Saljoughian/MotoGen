@@ -7,19 +7,20 @@ import 'package:logger/logger.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/core/constants/app_images.dart';
+import 'package:motogen/features/home_screen/view/home_screen.dart';
 import 'package:motogen/features/phone_number/data/auth_notifier.dart';
 import 'package:motogen/features/phone_number/model/auth_state.dart';
 import 'package:motogen/features/phone_number/viewmodels/code_controller_view_model.dart';
 import 'package:motogen/features/onboarding/widgets/dot_indicator.dart';
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
+import 'package:motogen/main_scaffold.dart';
 
-
-class ValidateCodeScreen extends ConsumerStatefulWidget {
+class CodeConfirmScreen extends ConsumerStatefulWidget {
   final int currentPage;
   final int count;
   final VoidCallback onNext;
   final VoidCallback onBack;
-  const ValidateCodeScreen({
+  const CodeConfirmScreen({
     super.key,
     required this.currentPage,
     required this.count,
@@ -28,10 +29,10 @@ class ValidateCodeScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ValidateCodeScreen> createState() => _ValidateCodeScreenState();
+  ConsumerState<CodeConfirmScreen> createState() => _ValidateCodeScreenState();
 }
 
-class _ValidateCodeScreenState extends ConsumerState<ValidateCodeScreen> {
+class _ValidateCodeScreenState extends ConsumerState<CodeConfirmScreen> {
   late final List<TextEditingController> controllers;
   late final List<FocusNode> focusNodes;
   final logger = Logger();
@@ -67,9 +68,14 @@ class _ValidateCodeScreenState extends ConsumerState<ValidateCodeScreen> {
   @override
   Widget build(BuildContext context) {
     ref.listen<AuthState>(authProvider, (prev, next) {
-      if (prev?.status != AuthStatus.confirmed &&
-          next.status == AuthStatus.confirmed) {
-        widget.onNext();
+      if (next.status == AuthStatus.confirmed) {
+        if (next.isProfileCompleted == true) {
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => MainScaffold()));
+        } else {
+          widget.onNext();
+        }
       }
     });
 
@@ -155,7 +161,6 @@ class _ValidateCodeScreenState extends ConsumerState<ValidateCodeScreen> {
                               fontWeight: FontWeight.w700,
                             ),
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
                               LengthLimitingTextInputFormatter(1),
                             ],
                             decoration: InputDecoration(

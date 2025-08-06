@@ -17,30 +17,21 @@ class PhoneNumberControllerViewModel extends ChangeNotifier {
 
   static final RegExp phoneRegExp = RegExp(r'^09\d{9}$');
 
-  String normalizePersianDigits(String input) {
-    const englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-    for (int i = 0; i < 10; i++) {
-      input = input.replaceAll(persianDigits[i], englishDigits[i]);
-    }
-    return input;
-  }
-
   String? phoneNumberValidator(String? input) {
-    if (input == null || input.trim().isEmpty) {
+    if (input == null || input.isEmpty) {
       return " شماره موبایلـت رو وارد کن";
     }
-    final normalized = normalizePersianDigits(input.trim());
-    if (!phoneRegExp.hasMatch(normalized)) {
+    if (!phoneRegExp.hasMatch(input)) {
       return "یک شماره موبایل معتبر وارد کن!";
     }
     return null;
   }
 
   void _onTextChanged() {
-    _error = phoneNumberValidator(phoneController.text.trim());
+    final normalized = normalizePersianDigits(phoneController.text.trim());
+    _error = phoneNumberValidator(normalized);
     _isValid = _error == null;
-    
+
     notifyListeners();
   }
 
@@ -51,18 +42,15 @@ class PhoneNumberControllerViewModel extends ChangeNotifier {
   }
 }
 
-class PhoneStorage {
-  static Future<void> savePhoneNumber(String phone) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString("user_phone_number", phone);
-  }
-
-  static Future<String?> loadPhoneNumnber() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString("user_phone_number");
-  }
-}
-
 final phoneNumberControllerProvider = ChangeNotifierProvider(
   (ref) => PhoneNumberControllerViewModel(),
 );
+
+String normalizePersianDigits(String input) {
+  const englishDigits = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
+  for (int i = 0; i < 10; i++) {
+    input = input.replaceAll(persianDigits[i], englishDigits[i]);
+  }
+  return input;
+}

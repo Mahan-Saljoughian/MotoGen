@@ -23,13 +23,15 @@ class PromptInput extends StatelessWidget {
             child: TextField(
               controller: controller,
               style: TextStyle(
-                color: AppColors.blue500,
+                color: AppColors.blue100,
                 fontSize: 10.sp,
                 fontWeight: FontWeight.w500,
               ),
               minLines: 1,
               maxLines: 3,
               decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
                 hintText: "سوالت رو اینجا بپرس...",
                 hintStyle: TextStyle(
                   color: AppColors.blue100,

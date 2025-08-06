@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:motogen/features/phone_number/viewmodels/phone_number_controller_view_model.dart';
 
 class CodeControllerViewModel extends ChangeNotifier {
   final List<String> digits = List.filled(4, "");
@@ -37,7 +38,7 @@ class CodeControllerViewModel extends ChangeNotifier {
   }
 
   void updateDigit(int index, String value) {
-    digits[index] = value;
+    digits[index] = normalizePersianDigits(value);
     notifyListeners();
   }
 

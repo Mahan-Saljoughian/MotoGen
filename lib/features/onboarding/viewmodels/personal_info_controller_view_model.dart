@@ -24,8 +24,6 @@ class PersonalInfoViewModel extends ChangeNotifier {
   PersonalInfoViewModel() {
     nameController.addListener(_onNameChanged);
     lastNameController.addListener(_onLastNameChanged);
-    loadFromPrefs();
-    /* resetSharedPref(); */
   }
   static final RegExp nameRegExp = RegExp(
     r'''[a-zA-Z0-9\u0600-\u06FF\u200C\u200D\s\-_.,!?'"()]+$''',
@@ -70,34 +68,6 @@ class PersonalInfoViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadFromPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final name = prefs.getString('name') ?? '';
-    final lastName = prefs.getString('last_name') ?? '';
-    nameController.text = name;
-    lastNameController.text = lastName;
-    _onNameChanged();
-    _onLastNameChanged();
-  }
-
-  Future<void> saveToPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('name', nameController.text.trim());
-    await prefs.setString('last_name', lastNameController.text.trim());
-  }
-
-  /* Future<void> resetSharedPref() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.remove('name');
-    prefs.remove('last_name');
-  } */
-
-  Future<void> printSavedPersonalInfo() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedName = prefs.getString('name') ?? '(no name)';
-    final savedLastName = prefs.getString('last_name') ?? '(no lastName)';
-    Logger().i('saved info: $savedName $savedLastName');
-  }
 
   @override
   void dispose() {

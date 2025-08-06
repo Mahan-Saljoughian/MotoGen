@@ -16,11 +16,11 @@ class DateSetFieldConfig {
   });
 }
 
-DateSetFieldConfig insuranceExpiryDateConfig = DateSetFieldConfig(
+DateSetFieldConfig bodyInsuranceExpiryDateConfig = DateSetFieldConfig(
   labelText: "تاریخ انقضای بیمه",
-  getter: (CarFormState state) => state.insuranceExpiry,
+  getter: (CarFormState state) => state.bodyInsuranceExpiry,
   setter: (WidgetRef ref, value) =>
-      ref.read(carInfoFormProvider.notifier).setInsuranceExpiry(value),
+      ref.read(carInfoFormProvider.notifier).setBodyInsuranceExpiry(value),
 );
 
 DateSetFieldConfig nextTechnicalCheckDateonfig = DateSetFieldConfig(
@@ -28,6 +28,14 @@ DateSetFieldConfig nextTechnicalCheckDateonfig = DateSetFieldConfig(
   getter: (CarFormState state) => state.nextTechnicalCheck,
   setter: (WidgetRef ref, value) =>
       ref.read(carInfoFormProvider.notifier).setNextTechnicalCheck(value),
+);
+
+
+DateSetFieldConfig thirdPersonInsuranceExpiryDateConfig = DateSetFieldConfig(
+  labelText: "بیمه شخص 3",
+  getter: (CarFormState state) => state.thirdPartyInsuranceExpiry,
+  setter: (WidgetRef ref, value) =>
+      ref.read(carInfoFormProvider.notifier).setThirdPersonInsuranceExpiry(value),
 );
 
 String formatJalaliDate(DateTime date) {

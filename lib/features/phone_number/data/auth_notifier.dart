@@ -20,7 +20,7 @@ class AuthNotifier extends Notifier<AuthState> {
         'phoneNumber': phone,
       });
       final success = response['success'] == true;
-      final message = response['messaeg'] as String?;
+      final message = response['message'] as String?;
       final codeSent = response['data'];
 
       if (success) {

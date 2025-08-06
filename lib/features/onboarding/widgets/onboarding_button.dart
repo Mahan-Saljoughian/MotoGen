@@ -33,8 +33,9 @@ final isCarInfoButtonEnabledForSecondPageProvider = Provider<bool>((ref) {
 
   return isKmValid &&
       state.fuelType != null &&
-      state.insuranceExpiry != null &&
-      state.nextTechnicalCheck != null;
+      state.bodyInsuranceExpiry != null &&
+      state.nextTechnicalCheck != null &&
+      state.thirdPartyInsuranceExpiry != null;
 });
 
 class OnboardingButton extends ConsumerWidget {
@@ -52,6 +53,16 @@ class OnboardingButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final buttonEnabled = enabled ?? _getCurrentButtonEnabled(ref);
+    final Color textColor = currentPage == 20
+        ? AppColors.orange600
+        : AppColors.black50;
+    final Color buttonBackgroundColor = currentPage == 20
+        ? AppColors.orange50
+        : AppColors.orange600;
+    final Color borderColor = currentPage == 20
+        ? AppColors.orange600
+        : Colors.transparent;
+
     return GestureDetector(
       onTap: buttonEnabled ? onPressed : null,
       child: Container(
@@ -59,13 +70,14 @@ class OnboardingButton extends ConsumerWidget {
         height: 48.w,
         padding: EdgeInsets.symmetric(vertical: 12.h),
         decoration: BoxDecoration(
-          color: buttonEnabled ? AppColors.orange600 : AppColors.white700,
+          color: buttonEnabled ? buttonBackgroundColor : AppColors.white700,
           borderRadius: BorderRadius.circular(50.r),
+          border: Border.all(color: borderColor),
         ),
         child: Text(
           _getCurrentButtonText(),
           style: TextStyle(
-            color: AppColors.black50,
+            color: textColor,
             fontSize: 16.sp,
             fontWeight: FontWeight.w700,
           ),
@@ -88,7 +100,11 @@ class OnboardingButton extends ConsumerWidget {
       case 5:
         return ref.watch(nickNameValidatorProvider).isNickNameValid;
       case 10:
-        return ref.watch(dateInputProvider).isDateValid;
+        return ref
+            .watch(dateInputProvider)
+            .isDateValid; //button for date bottomsheet
+      case 20:
+        return true; // skip nickName set
 
       default:
         return false;
@@ -108,7 +124,9 @@ class OnboardingButton extends ConsumerWidget {
       case 5:
         return "ورود به برنامه";
       case 10:
-        return "تایید";
+        return "تایید"; //button for date bottomsheet
+      case 20:
+        return "ادامه بدون لقب"; // skip nickName set
       default:
         return "تایید و ادامه";
     }

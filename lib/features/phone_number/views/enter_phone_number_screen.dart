@@ -30,12 +30,6 @@ class EnterPhoneNumberScreen extends ConsumerWidget {
     ref.listen<AuthState>(authProvider, (prev, next) {
       if (prev?.status != AuthStatus.codeSent &&
           next.status == AuthStatus.codeSent) {
-        /*  final phone = ref
-            .read(phoneNumberControllerProvider)
-            .phoneController
-            .text
-            .trim();
-       PhoneStorage.savePhoneNumber(phone); */
         Logger().d("debug the send code is : ${next.codeSent}");
         onNext();
       }
@@ -44,6 +38,10 @@ class EnterPhoneNumberScreen extends ConsumerWidget {
     final phoneVm = ref.watch(phoneNumberControllerProvider);
     final auth = ref.watch(authProvider);
     final authNotifier = ref.read(authProvider.notifier);
+
+    final phoneNumberString = normalizePersianDigits(
+      phoneVm.phoneController.text.trim(),
+    );
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -100,9 +98,7 @@ class EnterPhoneNumberScreen extends ConsumerWidget {
                   OnboardingButton(
                     currentPage: currentPage,
                     onPressed: () async {
-                      final phone = phoneVm.phoneController.text.trim();
-                      await authNotifier.requestOtp(phone);
-                  
+                      await authNotifier.requestOtp(phoneNumberString);
                     },
                   ),
                 ],

@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:motogen/features/car_info/config/car_info_config_list.dart';
 import 'package:motogen/features/car_info/views/car_info_screen.dart';
 import 'package:motogen/features/car_info/views/car_nickname_screen.dart';
+import 'package:motogen/features/home_screen/view/home_screen.dart';
 import 'package:motogen/features/onboarding/views/personal_info_screen.dart';
 import 'package:motogen/features/phone_number/views/enter_phone_number_screen.dart';
-import 'package:motogen/features/phone_number/views/validate_code_screen.dart';
+import 'package:motogen/features/phone_number/views/code_confirm_screen.dart';
+import 'package:motogen/main_scaffold.dart';
 
 class OnboardingIndicator extends ConsumerStatefulWidget {
   const OnboardingIndicator({super.key});
@@ -45,13 +47,12 @@ class _OnboardingIndicatorState extends ConsumerState<OnboardingIndicator> {
               physics: NeverScrollableScrollPhysics(),
               onPageChanged: (index) => setState(() => _currentPage = index),
               children: [
-                //Learn(),
                 EnterPhoneNumberScreen(
                   currentPage: _currentPage,
                   count: count,
                   onNext: _nextPage,
                 ),
-                ValidateCodeScreen(
+                CodeConfirmScreen(
                   currentPage: _currentPage,
                   count: count,
                   onNext: _nextPage,
@@ -80,7 +81,11 @@ class _OnboardingIndicatorState extends ConsumerState<OnboardingIndicator> {
                 CarNicknameScreen(
                   currentPage: _currentPage,
                   count: count,
-                  onNext: _nextPage,
+                  onNext: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => MainScaffold()),
+                    );
+                  },
                   onBack: _prevPage,
                 ),
               ],

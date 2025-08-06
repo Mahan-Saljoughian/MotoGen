@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:logger/web.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/features/chat_screen/model/chat_message.dart';
 import 'package:motogen/features/chat_screen/viewmodels/chat_controller.dart';
@@ -10,6 +11,7 @@ import 'package:motogen/features/chat_screen/widgets/ai_message_bubble.dart';
 import 'package:motogen/features/chat_screen/widgets/prompt_input.dart';
 import 'package:motogen/features/chat_screen/widgets/suggestion_question.dart';
 import 'package:motogen/features/chat_screen/widgets/user_message_bubble.dart';
+import 'package:motogen/features/onboarding/viewmodels/personal_info_controller_view_model.dart';
 
 class ChatScreen extends ConsumerWidget {
   const ChatScreen({super.key});
@@ -18,8 +20,9 @@ class ChatScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final chatState = ref.watch(chatNotifierProvider);
     final controller = ref.watch(chatControllerProvider);
-
+    
     return Scaffold(
+      backgroundColor: AppColors.blue50,
       body: Padding(
         padding: EdgeInsets.only(top: 20.h),
         child: Center(

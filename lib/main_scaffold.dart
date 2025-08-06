@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/features/chat_screen/views/chat_screen.dart';
 import 'package:motogen/features/home_screen/view/home_screen.dart';
 import 'package:motogen/features/nav_bar/custom_nav_bar.dart';
 import 'package:motogen/features/profile_screen/view/profile_screen.dart';
-
 
 class MainScaffold extends StatefulWidget {
   const MainScaffold({super.key});
@@ -24,18 +24,16 @@ class _MainScaffoldState extends State<MainScaffold>
     ProfileScreen(),
   ];
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.blue50,
+
       extendBody: true,
 
       body: SafeArea(
         child: Stack(
           children: [
-
-
-            /// Main content
             Positioned.fill(
               child: IndexedStack(index: selected, children: pages),
             ),
