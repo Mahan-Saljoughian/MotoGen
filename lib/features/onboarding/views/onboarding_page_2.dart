@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_images.dart';
-import 'package:motogen/features/onboarding/views/onboarding_indicator.dart';
 
 class OnboardingPage2 extends StatelessWidget {
   const OnboardingPage2({super.key});
@@ -55,11 +54,8 @@ class OnboardingPage2 extends StatelessWidget {
 
                 GestureDetector(
                   onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => OnboardingIndicator(),
-                      ),
-                    );
+                    Navigator.pushReplacementNamed(context, '/onboardingIndicator');
+
                   },
                   child: Container(
                     width: 330.w,

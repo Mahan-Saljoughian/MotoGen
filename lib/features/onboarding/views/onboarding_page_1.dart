@@ -4,7 +4,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/core/constants/app_images.dart';
-import 'package:motogen/features/onboarding/views/onboarding_page_2.dart';
 
 class OnboardingPage1 extends StatelessWidget {
   const OnboardingPage1({super.key});
@@ -64,11 +63,8 @@ class OnboardingPage1 extends StatelessWidget {
                   padding: EdgeInsets.only(right: 280.w),
                   child: GestureDetector(
                     onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => OnboardingPage2(),
-                        ),
-                      );
+                     Navigator.pushReplacementNamed(context, '/onboardingPage2');
+
                     },
 
                     child: Container(

@@ -20,7 +20,7 @@ class SuggestionQuestion extends ConsumerWidget {
         margin: EdgeInsets.symmetric(vertical: 8.h),
         padding: EdgeInsets.symmetric(vertical: 7.h, horizontal: 10.w),
         decoration: BoxDecoration(
-          color: AppColors.blue50,
+          color: AppColors.blue75,
           borderRadius: BorderRadius.circular(60.23.r),
         ),
         child: Text(

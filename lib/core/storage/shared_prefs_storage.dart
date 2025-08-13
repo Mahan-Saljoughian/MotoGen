@@ -31,8 +31,7 @@ class SharedPrefsStorage {
     if (firstName != null) await saveFirstName(firstName);
     if (lastName != null) await saveLastName(lastName);
     if (phoneNumber != null) await savePhoneNumber(phoneNumber);
-    if (isProfileCompleted != null)
-      await saveIsProfileCompleted(isProfileCompleted);
+    if (isProfileCompleted != null) await saveIsProfileCompleted(isProfileCompleted);
   }
   // ----------------- load methods ------------------------
 

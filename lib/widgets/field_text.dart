@@ -3,26 +3,34 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
-
+import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
 
 class FieldText extends StatefulWidget {
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final bool isValid;
   final String labelText;
   final String hintText;
   final String? error;
+  final bool isNumberOnly;
   final bool isBackError;
+  final bool isShowNeededIcon;
+  final bool isTomanCost;
+  final bool isNotes;
   final void Function(String)? onChanged;
 
   const FieldText({
     super.key,
-    required this.controller,
+    this.controller,
     required this.isValid,
     required this.labelText,
     required this.hintText,
     this.onChanged,
     this.error,
     this.isBackError = false,
+    this.isNumberOnly = false,
+    this.isShowNeededIcon = true,
+    this.isTomanCost = false,
+    this.isNotes = false,
   });
 
   @override
@@ -30,88 +38,132 @@ class FieldText extends StatefulWidget {
 }
 
 class _FieldTextState extends State<FieldText> {
+  late final TextEditingController _internalController;
   bool isInteractedOnce = false;
+
+  TextEditingController get _ctrl => widget.controller ?? _internalController;
+  @override
+  void initState() {
+    super.initState();
+    if (widget.controller == null) {
+      _internalController = TextEditingController();
+    }
+  }
+
+  @override
+  void dispose() {
+    if (widget.controller == null) {
+      _internalController.dispose();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final showError =
+        widget.error != null && (isInteractedOnce || widget.isBackError);
     return Column(
       children: [
-        TextField(
-          keyboardType:
-              (widget.labelText == "شماره موبایل" ||
-                  widget.labelText == "کیلومتر")
-              ? TextInputType.number
-              : TextInputType.text,
-          controller: widget.controller,
-          onChanged: widget.onChanged,
-          onSubmitted: (value) {
-            if (!isInteractedOnce) {
-              setState(() {
-                isInteractedOnce = true;
-              });
-            }
-          },
+        Stack(
+          alignment: Alignment.centerLeft,
+          children: [
+            SizedBox(
+              height: widget.isNotes ? 180.h : null,
+              child: TextField(
+                keyboardType: widget.isNumberOnly
+                    ? TextInputType.number
+                    : TextInputType.text,
+                maxLines: widget.isNotes ? null : 1,
 
-          decoration: InputDecoration(
-            labelText: widget.labelText,
-            labelStyle: TextStyle(
-              color: widget.isValid || isInteractedOnce == false
-                  ? AppColors.blue500
-                  : Color(0xFFC60B0B),
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-            floatingLabelBehavior: FloatingLabelBehavior.always,
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.r),
-              borderSide: BorderSide(
-                width: 1.5.w,
-                color: widget.isValid || isInteractedOnce == false
-                    ? AppColors.blue500
-                    : Color(0xFFC60B0B),
-              ),
-            ),
+                inputFormatters: widget.isNumberOnly
+                    ? [FarsiOrEnglishDigitsInputFormatter()]
+                    : null,
+                controller: _ctrl,
+                onChanged: widget.onChanged,
+                onSubmitted: (_) {
+                  if (!isInteractedOnce) {
+                    setState(() {
+                      isInteractedOnce = true;
+                    });
+                  }
+                },
 
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12.r),
-              borderSide: BorderSide(
-                width: 1.5,
-                color: widget.isValid || isInteractedOnce == false
-                    ? AppColors.blue500
-                    : Color(0xFFC60B0B),
-              ),
-            ),
-
-            hintText: widget.hintText,
-            hintStyle: TextStyle(
-              color: AppColors.black100,
-              fontSize: 15.sp,
-              fontWeight: FontWeight.w600,
-            ),
-            contentPadding: EdgeInsets.only(right: 24.w),
-            suffixIcon:
-                widget.error != null &&
-                    isInteractedOnce == true &&
-                    widget.labelText != "شماره موبایل" &&
-                    widget.labelText != "لقب"
-                ? Padding(
-                    padding: EdgeInsets.only(left: 10.w),
-                    child: SvgPicture.asset(
-                      AppIcons.errorCircle,
-                      height: 24.h,
-                      width: 24.w,
+                decoration: InputDecoration(
+                  labelText: widget.labelText,
+                  labelStyle: TextStyle(
+                    color: widget.isValid || isInteractedOnce == false
+                        ? AppColors.blue500
+                        : Color(0xFFC60B0B),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                    borderSide: BorderSide(
+                      width: 1.5.w,
+                      color: widget.isValid || isInteractedOnce == false
+                          ? AppColors.blue500
+                          : Color(0xFFC60B0B),
                     ),
-                  )
-                : null,
+                  ),
 
-            suffixIconConstraints: BoxConstraints(
-              minWidth: 24.w,
-              minHeight: 24.w,
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                    borderSide: BorderSide(
+                      width: 1.5,
+                      color: widget.isValid || isInteractedOnce == false
+                          ? AppColors.blue500
+                          : Color(0xFFC60B0B),
+                    ),
+                  ),
+
+                  hintText: widget.hintText,
+                  hintStyle: TextStyle(
+                    color: AppColors.black100,
+                    fontSize: 15.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  contentPadding: widget.isNotes
+                      ? EdgeInsets.only(right: 24.w, left: 10.w, top: 21.h)
+                      : EdgeInsets.only(right: 24.w, left: 10.w),
+                  suffixIcon:
+                      widget.error != null &&
+                          isInteractedOnce == true &&
+                          widget.isShowNeededIcon
+                      ? Padding(
+                          padding: EdgeInsets.only(left: 10.w),
+                          child: SvgPicture.asset(
+                            AppIcons.errorCircle,
+                            height: 24.h,
+                            width: 24.w,
+                          ),
+                        )
+                      : null,
+
+                  suffixIconConstraints: BoxConstraints(
+                    minWidth: 24.w,
+                    minHeight: 24.w,
+                  ),
+                ),
+              ),
             ),
-          ),
+            if (widget.isTomanCost && !showError)
+              Positioned(
+                left: 15.w,
+                child: Text(
+                  "تومان",
+                  style: TextStyle(
+                    color: AppColors.blue500,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+          ],
         ),
 
-        if (widget.error != null &&
-            (isInteractedOnce == true || widget.isBackError))
+        if (showError)
           Padding(
             padding: EdgeInsets.symmetric(vertical: 14.h),
             child: Align(

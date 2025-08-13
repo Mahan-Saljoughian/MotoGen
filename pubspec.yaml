@@ -40,9 +40,11 @@ dependencies:
   logger:  
   shamsi_date: 
   flutter_secure_storage: ^9.2.4
+  flutter_inner_shadow: 
+  percent_indicator: 
+  intl: 
   
   hive_flutter: 
-
 
   flutter_phoenix: 
   dio: 
@@ -79,6 +81,7 @@ flutter:
    - assets/images/
    - assets/icons/
    - assets/icons/nav_bar/
+   - assets/icons/services/
   
 
   # An image asset can refer to one or more resolution-specific "variants", see

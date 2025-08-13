@@ -27,13 +27,8 @@ class UserMessageBubble extends StatelessWidget {
                   right: 13.w,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.blue100,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(15.r),
-                    topRight: Radius.circular(15.r),
-                    bottomLeft: Radius.circular(15.r),
-                    bottomRight: Radius.circular(3.r),
-                  ),
+                  color: AppColors.blue75,
+                  borderRadius: BorderRadius.circular(15.r),
                 ),
                 child: Text(
                   textMessage,
@@ -49,9 +44,13 @@ class UserMessageBubble extends StatelessWidget {
               ),
               Positioned(
                 bottom: 0,
-                right: -4,
+                right: -4.7.w,
                 child: SvgPicture.asset(
-                  AppIcons.whiteTail,
+                  AppIcons.whiteTailRight,
+                  colorFilter: ColorFilter.mode(
+                    AppColors.blue75,
+                    BlendMode.srcIn,
+                  ),
                   width: 20.w,
                   height: 14.h,
                 ),

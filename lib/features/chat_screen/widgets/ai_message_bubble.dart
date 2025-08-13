@@ -30,12 +30,7 @@ class AiMessageBubble extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: AppColors.blue400,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(15.r),
-                      topRight: Radius.circular(15.r),
-                      bottomLeft: Radius.circular(3.r),
-                      bottomRight: Radius.circular(15.r),
-                    ),
+                    borderRadius: BorderRadius.circular(15.r),
                   ),
                   child: Text(
                     aiMessage,
@@ -51,9 +46,9 @@ class AiMessageBubble extends StatelessWidget {
                 ),
                 Positioned(
                   bottom: 0,
-                  left: -4,
+                  left: -4.7.w,
                   child: SvgPicture.asset(
-                    AppIcons.blueTail,
+                    AppIcons.blueTailLeft,
                     width: 20.w,
                     height: 14.h,
                   ),

@@ -2,64 +2,88 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
-import 'package:motogen/features/car_info/viewmodels/car_info_form_viewmodel.dart';
-import 'package:motogen/features/car_info/viewmodels/date_input_view_model.dart';
+import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
+import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
+import 'package:motogen/features/bottom_sheet/viewmodels/date_input_view_model.dart';
 import 'package:motogen/features/car_info/viewmodels/nick_name_validator.dart';
-import 'package:motogen/features/onboarding/viewmodels/personal_info_controller_view_model.dart';
-
-import 'package:motogen/features/phone_number/viewmodels/phone_number_controller_view_model.dart';
-import 'package:motogen/features/car_info/config/picker_item.dart';
+import 'package:motogen/features/user_info/viewmodels/code_controller_view_model.dart';
+import 'package:motogen/features/user_info/viewmodels/personal_info_controller_view_model.dart';
+import 'package:motogen/features/user_info/viewmodels/phone_number_controller_view_model.dart';
+import 'package:motogen/features/bottom_sheet/config/picker_item.dart';
 
 final isCarInfoButtonEnabledForFirstPageProvider = Provider<bool>((ref) {
-  final state = ref.watch(carInfoFormProvider);
+  final state = ref.watch(carStateNotifierProvider);
+  final selectedCar = state.currentCar;
+  if (selectedCar == null) return false;
   final hasBrand =
-      state.brand != null && state.brand != PickerItem.noValueString;
+      selectedCar.brand != null &&
+      selectedCar.brand != PickerItem.noValueString;
   final hasModel =
-      state.model != null && state.model != PickerItem.noValueString;
-  final hasType = state.type != null && state.type != PickerItem.noValueString;
-  final hasYear = state.yearMade != null && state.yearMade != -1;
-  final hasColor = state.color != null;
+      selectedCar.model != null &&
+      selectedCar.model != PickerItem.noValueString;
+  final hasType =
+      selectedCar.type != null && selectedCar.type != PickerItem.noValueString;
+  final hasYear = selectedCar.yearMade != null && selectedCar.yearMade != -1;
+  final hasColor = selectedCar.color != null;
 
   return hasBrand && hasModel && hasType && hasYear && hasColor;
 });
 
 final isCarInfoButtonEnabledForSecondPageProvider = Provider<bool>((ref) {
-  final state = ref.watch(carInfoFormProvider);
-
-  final rawKm = state.rawKilometersInput ?? '';
-  final parsedKm = int.tryParse(rawKm);
+  final state = ref.watch(carStateNotifierProvider);
+  final selectedCar = state.currentCar;
+  if (selectedCar == null) return false;
+  final rawKm = selectedCar.rawKilometersInput ?? '';
+  final normalizedKm =
+      FarsiOrEnglishDigitsInputFormatter.normalizePersianDigits(rawKm);
+  final parsedKm = int.tryParse(normalizedKm);
 
   final isKmValid = parsedKm != null && parsedKm > 0 && parsedKm < 10000000;
 
   return isKmValid &&
-      state.fuelType != null &&
-      state.bodyInsuranceExpiry != null &&
-      state.nextTechnicalCheck != null &&
-      state.thirdPartyInsuranceExpiry != null;
+      selectedCar.fuelType != null &&
+      selectedCar.thirdPartyInsuranceExpiry != null &&
+      selectedCar.nextTechnicalCheck != null;
 });
 
+enum PagesTitleEnum { repairInfo, skipNickName, dateBottomSheet }
+
 class OnboardingButton extends ConsumerWidget {
-  final int currentPage;
+  final int? currentPage;
   final VoidCallback onPressed;
   final bool? enabled;
-
+  final String? text;
+  final PagesTitleEnum? pagesTitleEnum;
   const OnboardingButton({
     super.key,
     required this.onPressed,
-    required this.currentPage,
+    this.currentPage,
     this.enabled,
+    this.pagesTitleEnum,
+    this.text,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final buttonEnabled = enabled ?? _getCurrentButtonEnabled(ref);
-    final Color textColor = currentPage == 20
+    final buttonEnabled = currentPage != null
+        ? _getCurrentButtonEnabledWithCurrentPage(ref)
+        : pagesTitleEnum != null
+        ? _getCurrentButtonEnabledWithPagesTitleEnum(ref)
+        : (enabled ?? false);
+
+    final buttonText = currentPage != null
+        ? _getCurrentButtonTextWithCurrentPage()
+        : pagesTitleEnum != null
+        ? _getCurrentButtonTextWithPagesTitleEnum()
+        : text ?? "pick a text";
+    final Color textColor = pagesTitleEnum == PagesTitleEnum.skipNickName
         ? AppColors.orange600
         : AppColors.black50;
-    final Color buttonBackgroundColor = currentPage == 20
+    final Color buttonBackgroundColor =
+        pagesTitleEnum == PagesTitleEnum.skipNickName
         ? AppColors.orange50
         : AppColors.orange600;
-    final Color borderColor = currentPage == 20
+    final Color borderColor = pagesTitleEnum == PagesTitleEnum.skipNickName
         ? AppColors.orange600
         : Colors.transparent;
 
@@ -75,7 +99,7 @@ class OnboardingButton extends ConsumerWidget {
           border: Border.all(color: borderColor),
         ),
         child: Text(
-          _getCurrentButtonText(),
+          buttonText,
           style: TextStyle(
             color: textColor,
             fontSize: 16.sp,
@@ -87,10 +111,12 @@ class OnboardingButton extends ConsumerWidget {
     );
   }
 
-  bool _getCurrentButtonEnabled(WidgetRef ref) {
+  bool _getCurrentButtonEnabledWithCurrentPage(WidgetRef ref) {
     switch (currentPage) {
       case 0:
         return ref.watch(phoneNumberControllerProvider).isValid;
+      case 1:
+        return ref.watch(codeControllerProvider).isComplete;
       case 2:
         return ref.watch(personalInfoProvider).isButtonEnabled;
       case 3:
@@ -99,19 +125,25 @@ class OnboardingButton extends ConsumerWidget {
         return ref.watch(isCarInfoButtonEnabledForSecondPageProvider);
       case 5:
         return ref.watch(nickNameValidatorProvider).isNickNameValid;
-      case 10:
-        return ref
-            .watch(dateInputProvider)
-            .isDateValid; //button for date bottomsheet
-      case 20:
-        return true; // skip nickName set
-
       default:
         return false;
     }
   }
 
-  String _getCurrentButtonText() {
+  bool _getCurrentButtonEnabledWithPagesTitleEnum(WidgetRef ref) {
+    switch (pagesTitleEnum) {
+      case PagesTitleEnum.dateBottomSheet:
+        return ref
+            .watch(dateInputProvider)
+            .isDateValid; //button for date bottomsheet
+      case PagesTitleEnum.skipNickName:
+        return true; // skip nickName set
+      default:
+        return false;
+    }
+  }
+
+  String _getCurrentButtonTextWithCurrentPage() {
     switch (currentPage) {
       case 0:
         return "دریافت کد تایید";
@@ -123,10 +155,19 @@ class OnboardingButton extends ConsumerWidget {
         return "تایید و ادامه";
       case 5:
         return "ورود به برنامه";
-      case 10:
+      default:
+        return "تایید و ادامه";
+    }
+  }
+
+  String _getCurrentButtonTextWithPagesTitleEnum() {
+    switch (pagesTitleEnum) {
+      case PagesTitleEnum.dateBottomSheet:
         return "تایید"; //button for date bottomsheet
-      case 20:
+      case PagesTitleEnum.skipNickName:
         return "ادامه بدون لقب"; // skip nickName set
+      case PagesTitleEnum.repairInfo:
+        return "ثبت";
       default:
         return "تایید و ادامه";
     }

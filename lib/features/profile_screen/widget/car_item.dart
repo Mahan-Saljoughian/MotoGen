@@ -1,51 +1,194 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_inner_shadow/flutter_inner_shadow.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
+import 'package:motogen/core/constants/app_images.dart';
 
-class CarItem extends StatelessWidget {
-  const CarItem({super.key});
+import 'dart:math' as math;
+
+import 'package:motogen/features/profile_screen/viewmodel/profile_use_case_notifier.dart';
+
+class CarItem extends ConsumerWidget {
+  final int index;
+  final String carId;
+  final String nickName;
+  final String brandTitle;
+  final String modelTitle;
+  final String typeTitle;
+  final bool editMode;
+
+  const CarItem({
+    super.key,
+    required this.index,
+    required this.carId,
+    required this.nickName,
+    required this.brandTitle,
+    required this.modelTitle,
+    required this.typeTitle,
+    this.editMode = true,
+  });
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 65.h,
-      padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
-
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.blue200),
-        borderRadius: BorderRadius.circular(12.r),
-      ),
-      child: Row(
-        children: [
-          SvgPicture.asset(AppIcons.car, width: 33.w, height: 33.w),
-          SizedBox(width: 16.w),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "چنگیز خان",
-                style: TextStyle(
-                  color: AppColors.blue800,
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              SizedBox(height: 3.h),
-              Text(
-                "پژو 206 تیپ 5",
-                style: TextStyle(
-                  color: AppColors.blue800,
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(width: 180.w),
-          SvgPicture.asset(AppIcons.edit, width: 24.w, height: 24.h),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final backGroundColor = index % 2 == 0
+        ? AppColors.blue300
+        : AppColors.orange300;
+    final nickNameTextColor = index % 2 == 0
+        ? AppColors.orange300
+        : AppColors.blue400;
+    final carNameTextColor = index % 2 == 0
+        ? Colors.white
+        : AppColors.orange900;
+    final shadowColor = index % 2 == 0
+        ? Color(0xFF14213D).withAlpha(130)
+        : Color(0xFFB3740c).withAlpha(153);
+    final carImage = index % 2 == 0
+        ? AppImages.carCardWhite
+        : AppImages.carCardDark;
+    final editIconColor = index % 2 == 0
+        ? AppColors.blue75
+        : AppColors.blue500;
+    final trashIconColor = index % 2 == 0
+        ? Color(0xFFE15454)
+        : Color(0xFFC60B0B);
+    return GestureDetector(
+      onTap: editMode ? () {} : () {},
+      child: InnerShadow(
+        shadows: [
+          BoxShadow(blurRadius: 8, offset: Offset(0, 0), color: shadowColor),
         ],
+
+        child: Padding(
+          padding: EdgeInsets.only(left: 16.w),
+          child: Container(
+            width: 320.w,
+            height: 160.h,
+            padding: EdgeInsets.only(
+              right: 24.w,
+              left: 12.w,
+              top: 13.h,
+              bottom: 13.h,
+            ),
+
+            decoration: BoxDecoration(
+              color: backGroundColor,
+              borderRadius: BorderRadius.circular(15.r),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                SizedBox(
+                  height: 24.h,
+                  child: editMode
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            GestureDetector(
+                              onTap: () {},
+                              child: SvgPicture.asset(
+                                AppIcons.edit,
+                                colorFilter: ColorFilter.mode(
+                                  editIconColor,
+                                  BlendMode.srcIn,
+                                ),
+                                width: 24.w,
+                                height: 24.h,
+                              ),
+                            ),
+                            SizedBox(width: 10.w),
+                            GestureDetector(
+                              onTap: () async {
+                                final confirmed = await showDialog<bool>(
+                                  context: context,
+                                  builder: (_) => AlertDialog(
+                                    title: Text("delete car"),
+                                    content: Text("are us sure?"),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, false),
+                                        child: Text('cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.pop(context, true),
+                                        child: Text('Confirm'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                if (confirmed == true) {
+                                  ref
+                                      .read(profileUseCaseProvider.notifier)
+                                      .deleteSelectedCar(carId);
+                                }
+                              },
+                              child: SvgPicture.asset(
+                                AppIcons.trash,
+                                colorFilter: ColorFilter.mode(
+                                  trashIconColor,
+                                  BlendMode.srcIn,
+                                ),
+                                width: 24.w,
+                                height: 24.h,
+                              ),
+                            ),
+                          ],
+                        )
+                      : null,
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          nickName,
+                          style: TextStyle(
+                            color: nickNameTextColor,
+                            fontSize: 24.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        SizedBox(height: 14.h),
+                        Container(
+                          constraints: BoxConstraints(
+                            maxWidth: 100.w,
+                          ), // adjust
+                          child: Text(
+                            "$brandTitle $modelTitle $typeTitle",
+                            style: TextStyle(
+                              color: carNameTextColor,
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 24.h),
+                      child: Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.rotationY(math.pi),
+                        child: Image.asset(
+                          carImage,
+                          width: 176.w,
+                          height: 67.h,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -2,8 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:motogen/core/services/api_service.dart';
 
-import 'package:motogen/features/car_info/config/picker_item.dart';
-import 'package:motogen/features/car_info/models/car_form_state.dart';
+import 'package:motogen/features/bottom_sheet/config/picker_item.dart';
+import 'package:motogen/features/car_info/models/car_form_state_item.dart';
 
 final api = ApiService();
 final carBrandsProvider = FutureProvider.autoDispose<List<PickerItem>>((
@@ -117,8 +117,17 @@ final colorProvider = FutureProvider.autoDispose<List<PickerItem>>((ref) async {
       .toList();
 });
 
+final fuelTypesProvider = Provider.autoDispose<List<PickerItem>>(
+  (ref) => [
+    PickerItem(id: 'GASOLINE', title: 'بنزین'),
+    PickerItem(id: 'GAS', title: 'گاز'),
+    PickerItem(id: 'DIESEL', title: 'گازوییل'),
+    PickerItem(id: ' GASOLINE_GAS', title: 'بنزین-گاز'),
+  ],
+);
+
 ProviderListenable<AsyncValue<List<PickerItem>>> fuelTypesAsyncProviderBuilder(
-  CarFormState state,
+  CarFormStateItem state,
 ) {
   return Provider.autoDispose<AsyncValue<List<PickerItem>>>((ref) {
     final list = ref.watch(fuelTypesProvider);

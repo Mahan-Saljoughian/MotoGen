@@ -2,21 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:logger/logger.dart';
 import 'package:motogen/core/constants/app_colors.dart';
-import 'package:motogen/core/storage/hive_storage.dart';
-import 'package:motogen/features/car_info/config/car_info_config_list.dart';
-import 'package:motogen/features/car_info/views/car_info_screen.dart';
-import 'package:motogen/features/car_info/views/car_nickname_screen.dart';
+import 'package:motogen/core/services/token_expire.dart';
+import 'package:motogen/features/car_info/viewmodels/car_use_case_notifier.dart';
+import 'package:motogen/features/chat_screen/views/chat_screen.dart';
+import 'package:motogen/features/car_sevices/bag/view/bag_screen.dart';
+import 'package:motogen/features/car_sevices/refuel/view/refuel_screen.dart';
+import 'package:motogen/features/home_screen/view/home_screen.dart';
 import 'package:motogen/features/onboarding/views/onboarding_indicator.dart';
-import 'package:motogen/features/onboarding/views/onboarding_page_1.dart';
-import 'package:motogen/features/phone_number/views/code_confirm_screen.dart';
-
+import 'package:motogen/features/onboarding/views/onboarding_page_2.dart';
+import 'package:motogen/features/profile_screen/view/profile_screen.dart';
+import 'package:motogen/features/car_sevices/oil/view/oil_screen.dart';
+import 'package:motogen/features/car_sevices/repair/view/repair_screen.dart';
+import 'package:motogen/features/user_info/viewmodels/user_use_case_notifier.dart';
 import 'package:motogen/main_scaffold.dart';
+
+//phoneNumber : 09372578150
+//phoneNumber : 09372578159
+
+//09464646165
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await HiveStorage.init();
+  //await HiveStorage.init();
   runApp(
     ProviderScope(
       child: ScreenUtilInit(
@@ -29,12 +39,59 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+  var logger = Logger();
+  bool _isLoggedIn = false;
+  bool _isLoading = true;
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(_initApp);
+  }
+
+  Future<void> _initApp() async {
+    final storage = const FlutterSecureStorage();
+    final accessToken = await storage.read(key: 'accessToken');
+    
+
+    if (accessToken == null || accessToken.isEmpty) {
+      _isLoggedIn = false;
+      logger.i("debug No access token, go to login");
+    } else if (isTokenExpired(accessToken)) {
+      _isLoggedIn = false;
+      logger.w("debug Access token expired, go to login");
+      await storage.delete(key: 'accessToken');
+    } else {
+      _isLoggedIn = true;
+      try {
+        await ref.read(userUseCaseProvider.notifier).getUserProfile();
+        await ref.read(carUseCaseProvider.notifier).fetchAllCars();
+        logger.i("debug Fetched cars at startup with saved token");
+      } catch (e) {
+        logger.e("debug Car fetch failed: $e");
+        _isLoggedIn = false;
+        await storage.delete(key: 'accessToken');
+      }
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const MaterialApp(
+        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+      );
+    }
     return MaterialApp(
       theme: ThemeData(
         fontFamily: "IRANSansXFaNum",
@@ -48,24 +105,20 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       debugShowCheckedModeBanner: false,
+      routes: {
+        '/onboardingIndicator': (context) => const OnboardingIndicator(),
+        '/mainApp': (context) => const MainScaffold(),
+        '/home': (context) => const HomeScreen(),
+        '/chat': (context) => const ChatScreen(),
+        '/profile': (context) => const ProfileScreen(),
+        '/refuel': (context) => const FuelScreen(),
+        '/onboardingPage2': (context) => const OnboardingPage2(),
+        '/oil': (context) => const OilScreen(),
+        '/bag': (context) => const BagScreen(),
+        '/repair': (context) => const RepairScreen(),
+      },
       title: 'MotoGen',
-      home: CarInfoScreen(
-        currentPage: 1,
-        count: 5,
-        onBack: () {},
-        onNext: () {},
-        carInfoField: carInfoSecondPageFields,
-      ) /* CarNicknameScreen(
-        currentPage: 5,
-        count: 5,
-        onNext: () {},
-        onBack: () {},
-      ), */ /* CodeConfirmScreen(
-        count: 5,
-        currentPage: 2,
-        onNext: () {},
-        onBack: () {},
-      ), */,
+      home: _isLoggedIn ? MainScaffold() : OnboardingIndicator(),
     );
   }
 }

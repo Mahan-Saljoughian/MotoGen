@@ -7,4 +7,10 @@ class AppImages {
   static const String phoneCodePageImage =
       "assets/images/E-mail marketing campaign.png";
   static const String nickNameCarPage = "assets/images/Choosing a car.png";
+
+  static const String carCardWhite = "assets/images/car_card_white.png";
+
+  static const String carCardDark = "assets/images/car_card_dark.png";
+  static const String fuel = "assets/images/fuel.png";
+  static const String bag = "assets/images/bag.png";
 }

@@ -1,119 +1,187 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:logger/logger.dart'; // Add if not already
+import 'package:logger/logger.dart';
 import 'package:motogen/core/constants/app_colors.dart';
-import 'package:motogen/core/storage/hive_storage.dart'; // Add this
-import 'package:motogen/core/storage/shared_prefs_storage.dart'; // Add this
-import 'package:motogen/features/car_info/models/car_form_state.dart'; // Add for CarFormState
+import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
+import 'package:motogen/features/home_screen/widget/service_navigator.dart';
+import 'package:motogen/features/home_screen/widget/time_left_circle.dart';
+import 'package:motogen/features/profile_screen/widget/car_item.dart';
+import 'package:motogen/features/user_info/viewmodels/personal_info_controller_view_model.dart';
+import 'package:motogen/features/user_info/viewmodels/phone_number_controller_view_model.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final logger = Logger();
-
+    final personalInfocontroller = ref.watch(personalInfoProvider);
+    final phoneNumberController = ref.watch(phoneNumberControllerProvider);
+    final carFormState = ref.watch(carStateNotifierProvider);
+    logger.i(
+      "debug user info : firstname: ${personalInfocontroller.nameController.text} , lastName: ${personalInfocontroller.lastNameController.text} , phoneNumber:${phoneNumberController.phoneController.text}",
+    );
+    logger.i("debug car info : ${carFormState.currentCar?.toJson()}");
+    /*  for (var i = 0; i < carFormState.cars.length; i++) {
+      logger.i("debug Car $i: ${carFormState.cars[i].toJson()}");
+    } */
     return Scaffold(
       backgroundColor: AppColors.blue50,
-      body: Padding(
-        padding: EdgeInsets.only(top: 20.h),
-        child: Center(
-          child: Column(
-            children: [
-              Text(
-                "خانه",
-                style: TextStyle(
-                  color: AppColors.blue500,
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w700,
-                ),
+      body: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 20.h),
+            alignment: Alignment.center,
+            child: Text(
+              "خانه",
+              style: TextStyle(
+                color: AppColors.blue500,
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w700,
               ),
-              SizedBox(height: 20.h),
-              // Debug Button: Load and Log User Info (SharedPrefs)
-              ElevatedButton(
-                onPressed: () async {
-                  final userInfo = await SharedPrefsStorage.loadUserInfo();
-                  if (userInfo != null) {
-                    logger.i('debug User Info Loaded: $userInfo');
-                  } else {
-                    logger.w('debug No user info found in SharedPrefs');
-                  }
-                },
-                child: const Text('Load and Log User Info'),
-              ),
-              SizedBox(height: 10.h),
-              // Debug Button: Load and Log Car Info (Hive)
-              ElevatedButton(
-                onPressed: () async {
-                  final carInfo = await HiveStorage.loadCarInfo();
-                  if (carInfo != null) {
-                    logger.i(
-                      ' debug Car Info Loaded: ${carInfo.toJson()}',
-                    ); // Assuming toJson() exists
-                  } else {
-                    logger.w('debug No car info found in Hive');
-                  }
-                },
-                child: const Text('Load and Log Car Info'),
-              ),
-
-              FutureBuilder(
-                future: Future.wait([
-                  SharedPrefsStorage.loadUserInfo(),
-                  HiveStorage.loadCarInfo(),
-                ]),
-                builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-                  if (!snapshot.hasData) {
-                    return const CircularProgressIndicator();
-                  }
-                  final userInfo = snapshot.data![0]; // User info object
-                  final carInfo = snapshot.data![1]; // Car info object
-
-                  if (userInfo == null && carInfo == null) {
-                    return const Text('هیچ اطلاعاتی موجود نیست');
-                  }
-
-                  return Column(
-                    children: [
-                      if (userInfo != null) ...[
-                        Text(
-                          "User Info:",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        ...userInfo.entries
-                            .map((e) => Text('${e.key}: ${e.value}'))
-                            .toList(),
-                        SizedBox(height: 20),
-                      ],
-                      if (carInfo != null) ...[
-                        Text(
-                          "Car Info:",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        ...prettyPrintCarInfo(carInfo.toJson()),
-                      ],
-                    ],
-                  );
-                },
-              ),
-            ],
+            ),
           ),
-        ),
+
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  if (!carFormState.hasCars) ...[
+                    Text("no cars available"),
+                  ] else ...[
+                    Padding(
+                      padding: EdgeInsets.only(right: 40.w),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: carFormState.cars.asMap().entries.map((
+                            entry,
+                          ) {
+                            final index = entry.key;
+                            final car = entry.value;
+                            return CarItem(
+                              index: index,
+                              carId: car.carId ?? "",
+                              nickName: car.nickName ?? "",
+                              brandTitle: car.brand?.title ?? "",
+                              modelTitle: car.model?.title ?? "",
+                              typeTitle: car.type?.title ?? "",
+                              editMode: false,
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 31.h),
+
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 40.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "چیزی تا اتمام اعتبارشون باقی نمونده...",
+                            style: TextStyle(
+                              color: AppColors.blue900,
+                              height: 0,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0,
+                            ),
+                          ),
+                          SizedBox(height: 23.h),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              TimeLeftCircle(
+                                daysLeft: 50,
+                                totalDays: 100,
+                                serviceTitle: "بیمه بدنه",
+                              ),
+                              TimeLeftCircle(
+                                daysLeft: 40,
+                                totalDays: 100,
+                                serviceTitle: "معاینه فنی",
+                              ),
+                              TimeLeftCircle(
+                                daysLeft: 20,
+                                totalDays: 100,
+                                serviceTitle: "بیمه شخص ثالث",
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 23.h),
+                          Text(
+                            "یادت نره سرویس و بررسی کنی!",
+                            style: TextStyle(
+                              color: AppColors.blue900,
+                              height: 0,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0,
+                            ),
+                          ),
+                          SizedBox(height: 23.h),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              TimeLeftCircle(
+                                daysLeft: 50,
+                                totalDays: 100,
+                                serviceTitle: "بررسی آب و روغن",
+                              ),
+                              TimeLeftCircle(
+                                daysLeft: 40,
+                                totalDays: 100,
+                                serviceTitle: "تنظیم باد لاستیک",
+                              ),
+                              TimeLeftCircle(
+                                daysLeft: 20,
+                                totalDays: 100,
+                                serviceTitle: "تعویض روغن ترمز",
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 28.h),
+                          Text(
+                            "هرکاری برای ماشینت کردی اینجا ثبت کن!",
+                            style: TextStyle(
+                              color: AppColors.blue900,
+                              height: 1.8,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0,
+                            ),
+                          ),
+                          SizedBox(height: 12.h),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ServiceNavigator(index: 0),
+
+                              ServiceNavigator(index: 1),
+                            ],
+                          ),
+                          SizedBox(height: 20.h),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              ServiceNavigator(index: 3),
+
+                              ServiceNavigator(index: 2),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
-}
-
-List<Widget> prettyPrintCarInfo(Map<String, dynamic> map) {
-  List<Widget> result = [];
-  map.forEach((key, value) {
-    if (value is Map) {
-      // e.g. value = {id: ..., title: ...}
-      final subTitle = value['title'] ?? value.values.first;
-      result.add(Text('$key: $subTitle'));
-    } else {
-      result.add(Text('$key: $value'));
-    }
-  });
-  return result;
 }
