@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
-import 'package:motogen/features/car_sevices/refuel/model/refuel_state_item.dart';
-import 'package:motogen/features/car_sevices/refuel/view/add_refuel_screen.dart';
+import 'package:motogen/features/car_services/refuel/model/refuel_state_item.dart';
+import 'package:motogen/features/car_services/refuel/view/refuel_form_screen.dart';
 
 extension RefuelDraftSetters on WidgetRef {
   void updateDraft(RefuelStateItem Function(RefuelStateItem) updater) {

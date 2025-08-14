@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_inner_shadow/flutter_inner_shadow.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,7 +6,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/core/services/format_functions.dart';
-import 'package:motogen/features/car_sevices/refuel/model/refuel_state_item.dart';
+import 'package:motogen/features/car_services/refuel/model/refuel_state_item.dart';
+import 'package:motogen/features/car_services/refuel/view/refuel_form_screen.dart';
 
 class RefuelItem extends StatelessWidget {
   final RefuelStateItem refuelItem;
@@ -16,9 +18,9 @@ class RefuelItem extends StatelessWidget {
     final titleByIndex = ["تاریخ:", "مقدار افزوده:", "روش پرداخت:", "هزینه:"];
     final valueByIndex = [
       formatJalaliDate(refuelItem.date!),
-      formatLiter(refuelItem.liters!),
+      "${formatDecimal(refuelItem.liters!)} لیتر",
       refuelItem.paymentMethod?.title,
-      formatTomanCost(refuelItem.cost!),
+      "${formatTomanCost(refuelItem.cost!)} تومان",
     ];
 
     return InnerShadow(
@@ -102,7 +104,15 @@ class RefuelItem extends StatelessWidget {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            RefuelFormScreen(initialItem: refuelItem),
+                      ),
+                    );
+                  },
                   child: Container(
                     width: 84.w,
                     height: 21.h,

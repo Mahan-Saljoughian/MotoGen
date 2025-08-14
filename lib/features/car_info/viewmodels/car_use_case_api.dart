@@ -1,22 +1,11 @@
-// features/car_info/viewmodels/car_use_case_notifier.dart
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logger/logger.dart';
 import 'package:motogen/features/bottom_sheet/config/picker_item.dart';
 import 'package:motogen/features/car_info/data/car_respository.dart';
 import 'package:motogen/features/car_info/models/car_form_state_item.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 
-final carUseCaseProvider = NotifierProvider<CarUseCaseNotifier, void>(
-  () => CarUseCaseNotifier(),
-);
-
-class CarUseCaseNotifier extends Notifier<void> {
-  final _carRepository = CarRespository();
-
-  @override
-  void build() {
-    // No state needed
-  }
+extension CarUseCaseApi on CarStateNotifier {
+  CarRespository get _carRepository => CarRespository();
 
   Future<Map<String, dynamic>> completeProfile({
     required bool isSetNickName,
@@ -24,23 +13,20 @@ class CarUseCaseNotifier extends Notifier<void> {
     required Map<String, String> userInfo,
   }) async {
     try {
-      final stateNotifier = ref.read(carStateNotifierProvider.notifier);
-      stateNotifier.ensureCarExists();
+      ensureCarExists();
       if (isSetNickName) {
-        stateNotifier.setNickName(nickNametext.trim());
+        setNickName(nickNametext.trim());
       }
-      final currentCarState =
-          ref.read(carStateNotifierProvider).currentCar ??
-          const CarFormStateItem();
+
       final response = await _carRepository.completeProfile(
-        currentCarState,
+        currentCar,
         userInfo,
       );
       final data = response['data'];
       final carId = data['carId'] as String?;
 
       if (carId != null) {
-        stateNotifier.updateCarIdFromNull(carId);
+        updateCarIdFromNull(carId);
       }
       return response;
     } catch (e) {
@@ -50,7 +36,6 @@ class CarUseCaseNotifier extends Notifier<void> {
   }
 
   Future<void> fetchAllCars() async {
-    final stateNotifier = ref.read(carStateNotifierProvider.notifier);
     final carsData = await _carRepository.getAllCars();
 
     final cars = carsData.map((car) {
@@ -62,6 +47,30 @@ class CarUseCaseNotifier extends Notifier<void> {
         nickName: car['nickName'] ?? '',
       );
     }).toList();
-    stateNotifier.setCars(cars);
+    setCars(cars);
+  }
+
+  Future<void> deleteSelectedCar(String carId) async {
+    try {
+      final indexToRemove = currentState.cars.indexWhere(
+        (car) => car.carId == carId,
+      );
+      if (indexToRemove == -1) {
+        throw Exception("Car with ID $carId not found in state.");
+      }
+
+      final response = await _carRepository.deleteCarInfoById(carId);
+
+      if (response['success'] != true) {
+        throw Exception(response['message'] ?? "Failed to delete car");
+      }
+
+      final updatedCars = List<CarFormStateItem>.from(currentState.cars);
+      updatedCars.removeAt(indexToRemove);
+      setCars(updatedCars);
+    } catch (e) {
+      Logger().e("Error deleting car (id: $carId): $e");
+      rethrow;
+    }
   }
 }

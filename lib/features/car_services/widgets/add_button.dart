@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
-import 'package:motogen/features/car_sevices/refuel/view/add_refuel_screen.dart';
+import 'package:motogen/features/car_services/refuel/view/refuel_form_screen.dart';
 
 class AddButton extends StatelessWidget {
   const AddButton({super.key});
@@ -16,7 +16,7 @@ class AddButton extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => AddRefuelScreen()),
+            MaterialPageRoute(builder: (_) => RefuelFormScreen()),
           );
         },
         child: Container(

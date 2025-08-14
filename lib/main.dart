@@ -6,17 +6,18 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/services/token_expire.dart';
-import 'package:motogen/features/car_info/viewmodels/car_use_case_notifier.dart';
+import 'package:motogen/features/car_info/viewmodels/car_use_case_api.dart';
+import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/chat_screen/views/chat_screen.dart';
-import 'package:motogen/features/car_sevices/bag/view/bag_screen.dart';
-import 'package:motogen/features/car_sevices/refuel/view/refuel_screen.dart';
+import 'package:motogen/features/car_services/bag/view/bag_screen.dart';
+import 'package:motogen/features/car_services/refuel/view/refuel_screen.dart';
 import 'package:motogen/features/home_screen/view/home_screen.dart';
 import 'package:motogen/features/onboarding/views/onboarding_indicator.dart';
 import 'package:motogen/features/onboarding/views/onboarding_page_2.dart';
 import 'package:motogen/features/profile_screen/view/profile_screen.dart';
-import 'package:motogen/features/car_sevices/oil/view/oil_screen.dart';
-import 'package:motogen/features/car_sevices/repair/view/repair_screen.dart';
-import 'package:motogen/features/user_info/viewmodels/user_use_case_notifier.dart';
+import 'package:motogen/features/car_services/oil/view/oil_screen.dart';
+import 'package:motogen/features/car_services/repair/view/repair_screen.dart';
+import 'package:motogen/features/user_info/viewmodels/user_use_case_api.dart';
 import 'package:motogen/main_scaffold.dart';
 
 //phoneNumber : 09372578150
@@ -59,7 +60,6 @@ class _MyAppState extends ConsumerState<MyApp> {
   Future<void> _initApp() async {
     final storage = const FlutterSecureStorage();
     final accessToken = await storage.read(key: 'accessToken');
-    
 
     if (accessToken == null || accessToken.isEmpty) {
       _isLoggedIn = false;
@@ -71,8 +71,8 @@ class _MyAppState extends ConsumerState<MyApp> {
     } else {
       _isLoggedIn = true;
       try {
-        await ref.read(userUseCaseProvider.notifier).getUserProfile();
-        await ref.read(carUseCaseProvider.notifier).fetchAllCars();
+        await ref.getUserProfile();
+        await ref.read(carStateNotifierProvider.notifier).fetchAllCars();
         logger.i("debug Fetched cars at startup with saved token");
       } catch (e) {
         logger.e("debug Car fetch failed: $e");

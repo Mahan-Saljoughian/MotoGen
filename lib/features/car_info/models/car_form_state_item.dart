@@ -1,6 +1,6 @@
 import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
 import 'package:motogen/features/bottom_sheet/config/picker_item.dart';
-import 'package:motogen/features/car_sevices/refuel/model/refuel_state_item.dart';
+import 'package:motogen/features/car_services/refuel/model/refuel_state_item.dart';
 
 //dart run build_runner build --delete-conflicting-outputs
 

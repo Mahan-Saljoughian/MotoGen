@@ -7,6 +7,7 @@ class FieldTextConfig {
   final String? hintText;
   final String? error;
   final bool isNumberOnly;
+  final bool isDotNumber;
   final bool isTomanCost;
   final bool isNotes;
   final void Function(String)? onChanged;
@@ -18,6 +19,7 @@ class FieldTextConfig {
     this.hintText,
     this.error,
     this.isNumberOnly = false,
+    this.isDotNumber = false,
     this.isTomanCost = false,
      this.isNotes = false,
     this.onChanged,

@@ -6,10 +6,12 @@ import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/core/constants/app_images.dart';
+import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
+import 'package:motogen/features/car_info/viewmodels/car_use_case_api.dart';
 
 import 'dart:math' as math;
 
-import 'package:motogen/features/profile_screen/viewmodel/profile_use_case_notifier.dart';
+import 'package:motogen/widgets/confirm_bottom_sheet.dart';
 
 class CarItem extends ConsumerWidget {
   final int index;
@@ -48,9 +50,7 @@ class CarItem extends ConsumerWidget {
     final carImage = index % 2 == 0
         ? AppImages.carCardWhite
         : AppImages.carCardDark;
-    final editIconColor = index % 2 == 0
-        ? AppColors.blue75
-        : AppColors.blue500;
+    final editIconColor = index % 2 == 0 ? AppColors.blue75 : AppColors.blue500;
     final trashIconColor = index % 2 == 0
         ? Color(0xFFE15454)
         : Color(0xFFC60B0B);
@@ -62,7 +62,7 @@ class CarItem extends ConsumerWidget {
         ],
 
         child: Padding(
-          padding: EdgeInsets.only(left: 16.w),
+          padding: EdgeInsets.only(left: 0.w),
           child: Container(
             width: 320.w,
             height: 160.h,
@@ -101,30 +101,15 @@ class CarItem extends ConsumerWidget {
                             SizedBox(width: 10.w),
                             GestureDetector(
                               onTap: () async {
-                                final confirmed = await showDialog<bool>(
+                                await showConfirmBottomSheet(
                                   context: context,
-                                  builder: (_) => AlertDialog(
-                                    title: Text("delete car"),
-                                    content: Text("are us sure?"),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.pop(context, false),
-                                        child: Text('cancel'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () =>
-                                            Navigator.pop(context, true),
-                                        child: Text('Confirm'),
-                                      ),
-                                    ],
-                                  ),
+                                  isDelete: true,
+                                  onConfirm: () {
+                                    return ref
+                                        .read(carStateNotifierProvider.notifier)
+                                        .deleteSelectedCar(carId);
+                                  },
                                 );
-                                if (confirmed == true) {
-                                  ref
-                                      .read(profileUseCaseProvider.notifier)
-                                      .deleteSelectedCar(carId);
-                                }
                               },
                               child: SvgPicture.asset(
                                 AppIcons.trash,

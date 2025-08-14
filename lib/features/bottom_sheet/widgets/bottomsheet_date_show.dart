@@ -12,11 +12,13 @@ import 'package:shamsi_date/shamsi_date.dart';
 class BottomsheetDateShow<T> extends ConsumerStatefulWidget {
   final DateFieldConfig<T> dateSetFieldConfig;
   final T state;
+  final DateUsageType usageType;
 
   const BottomsheetDateShow({
     super.key,
     required this.dateSetFieldConfig,
     required this.state,
+    required this.usageType,
   });
 
   @override
@@ -50,6 +52,18 @@ class _BottomsheetDateShowState<T>
       text: jalaliDate?.year.toString() ?? "",
     );
     focusNodes = List.generate(3, (_) => FocusNode());
+
+    if (jalaliDate != null) {
+      Future.microtask(() {
+        final dateVM = ref.read(dateInputProvider(widget.usageType).notifier);
+        dateVM.markDayInteracted();
+        dateVM.markMonthInteracted();
+        dateVM.markYearInteracted();
+        dateVM.setDay(jalaliDate!.day.toString());
+        dateVM.setMonth(jalaliDate.month.toString());
+        dateVM.setYear(jalaliDate.year.toString());
+      });
+    }
   }
 
   @override
@@ -107,7 +121,7 @@ class _BottomsheetDateShowState<T>
 
   @override
   Widget build(BuildContext context) {
-    final dateVM = ref.watch(dateInputProvider);
+    final dateVM = ref.watch(dateInputProvider(widget.usageType));
     final inputConfigs = getInputConfigs(dateVM);
 
     return SingleChildScrollView(
@@ -285,13 +299,13 @@ class _BottomsheetDateShowState<T>
                   ],
                 ],
               ),
-              if (!dateVM.isFutureDateValid && dateVM.isFieldsValid)
+              if (!dateVM.isDateValid() && dateVM.isFieldsValid)
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 20.h),
                   child: Align(
                     alignment: Alignment.centerRight,
                     child: Text(
-                      dateVM.errorWhenFutureDate,
+                      dateVM.errorText(),
                       style: TextStyle(
                         color: Color(0xFFC60B0B),
                         fontSize: 12,
@@ -301,14 +315,16 @@ class _BottomsheetDateShowState<T>
                   ),
                 ),
               if (!dateVM.isFieldsValid) SizedBox(height: 60.h),
-              if (dateVM.isDateValid) SizedBox(height: 60.h),
+              if (dateVM.isDateValid()) SizedBox(height: 60.h),
               OnboardingButton(
                 onPressed: () {
-                  final pickedDate = dateVM.asDateTime;
+                  final pickedDate = dateVM.asDateTime();
                   widget.dateSetFieldConfig.setter(ref, pickedDate);
                   Navigator.of(context).pop(pickedDate);
                 },
-                pagesTitleEnum: PagesTitleEnum.dateBottomSheet,
+                pagesTitleEnum: widget.usageType == DateUsageType.insurance
+                    ? PagesTitleEnum.dateBottomSheetInsurance
+                    : PagesTitleEnum.dateBottomSheetServices,
               ),
             ],
           ),

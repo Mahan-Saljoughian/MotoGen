@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
+import 'package:motogen/features/bottom_sheet/config/date_field_config.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/bottom_sheet/viewmodels/date_input_view_model.dart';
 import 'package:motogen/features/car_info/viewmodels/nick_name_validator.dart';
@@ -46,7 +47,12 @@ final isCarInfoButtonEnabledForSecondPageProvider = Provider<bool>((ref) {
       selectedCar.nextTechnicalCheck != null;
 });
 
-enum PagesTitleEnum { repairInfo, skipNickName, dateBottomSheet }
+enum PagesTitleEnum {
+  repairInfo,
+  skipNickName,
+  dateBottomSheetInsurance,
+  dateBottomSheetServices,
+}
 
 class OnboardingButton extends ConsumerWidget {
   final int? currentPage;
@@ -132,10 +138,14 @@ class OnboardingButton extends ConsumerWidget {
 
   bool _getCurrentButtonEnabledWithPagesTitleEnum(WidgetRef ref) {
     switch (pagesTitleEnum) {
-      case PagesTitleEnum.dateBottomSheet:
+      case PagesTitleEnum.dateBottomSheetInsurance:
         return ref
-            .watch(dateInputProvider)
-            .isDateValid; //button for date bottomsheet
+            .watch(dateInputProvider(DateUsageType.insurance))
+            .isDateValid(); //button for date bottomsheet insurance
+      case PagesTitleEnum.dateBottomSheetServices:
+        return ref
+            .watch(dateInputProvider(DateUsageType.services))
+            .isDateValid(); //button for date bottomsheet for services
       case PagesTitleEnum.skipNickName:
         return true; // skip nickName set
       default:
@@ -162,8 +172,10 @@ class OnboardingButton extends ConsumerWidget {
 
   String _getCurrentButtonTextWithPagesTitleEnum() {
     switch (pagesTitleEnum) {
-      case PagesTitleEnum.dateBottomSheet:
-        return "تایید"; //button for date bottomsheet
+      case PagesTitleEnum.dateBottomSheetInsurance:
+        return "تایید"; //button for date bottomsheet insurance
+      case PagesTitleEnum.dateBottomSheetServices:
+        return "تایید"; //button for date bottomsheet for services
       case PagesTitleEnum.skipNickName:
         return "ادامه بدون لقب"; // skip nickName set
       case PagesTitleEnum.repairInfo:

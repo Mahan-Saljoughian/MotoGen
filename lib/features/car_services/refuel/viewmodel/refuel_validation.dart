@@ -1,5 +1,5 @@
 import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
-import 'package:motogen/features/car_sevices/refuel/model/refuel_state_item.dart';
+import 'package:motogen/features/car_services/refuel/model/refuel_state_item.dart';
 
 extension RefuelValidation on RefuelStateItem {
   String? get litersError {

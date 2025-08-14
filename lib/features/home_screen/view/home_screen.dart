@@ -50,27 +50,38 @@ class HomeScreen extends ConsumerWidget {
                   if (!carFormState.hasCars) ...[
                     Text("no cars available"),
                   ] else ...[
-                    Padding(
-                      padding: EdgeInsets.only(right: 40.w),
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: carFormState.cars.asMap().entries.map((
-                            entry,
-                          ) {
-                            final index = entry.key;
-                            final car = entry.value;
-                            return CarItem(
-                              index: index,
-                              carId: car.carId ?? "",
-                              nickName: car.nickName ?? "",
-                              brandTitle: car.brand?.title ?? "",
-                              modelTitle: car.model?.title ?? "",
-                              typeTitle: car.type?.title ?? "",
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          for (
+                            var i = 0;
+                            i < carFormState.cars.length;
+                            i++
+                          ) ...[
+                            if (i == 0 && carFormState.cars.length > 1)
+                              SizedBox(width: 40.w),
+                            CarItem(
+                              index: i,
+                              carId: carFormState.cars[i].carId ?? "",
+                              nickName: carFormState.cars[i].nickName ?? "",
+                              brandTitle:
+                                  carFormState.cars[i].brand?.title ?? "",
+                              modelTitle:
+                                  carFormState.cars[i].model?.title ?? "",
+                              typeTitle: carFormState.cars[i].type?.title ?? "",
                               editMode: false,
-                            );
-                          }).toList(),
-                        ),
+                            ),
+                            // Middle spacing
+                            if (i != carFormState.cars.length - 1)
+                              SizedBox(width: 16.w),
+
+                            // Right padding only for last item
+                            if (i == carFormState.cars.length - 1 &&
+                                carFormState.cars.length > 1)
+                              SizedBox(width: 40.w),
+                          ],
+                        ],
                       ),
                     ),
                     SizedBox(height: 31.h),

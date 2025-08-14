@@ -51,6 +51,7 @@ class BuildFormFields<T> extends ConsumerWidget {
               isValid: fieldConfig.textConfig!.isValid,
               error: fieldConfig.textConfig!.error,
               isNumberOnly: fieldConfig.textConfig!.isNumberOnly,
+              isDotNumber: fieldConfig.textConfig!.isDotNumber,
               isTomanCost: fieldConfig.textConfig!.isTomanCost,
               isNotes: fieldConfig.textConfig!.isNotes,
               onChanged: fieldConfig.textConfig!.onChanged,
@@ -75,6 +76,7 @@ class BuildFormFields<T> extends ConsumerWidget {
                   builder: (_) => BottomsheetDateShow<T>(
                     dateSetFieldConfig: fieldConfig.dateSetFieldConfig!,
                     state: state,
+                    usageType: fieldConfig.dateSetFieldConfig!.usageType,
                   ),
                 );
                 fieldConfig.dateSetFieldConfig!.setter(ref, pickedDate);

@@ -12,9 +12,11 @@ class FieldText extends StatefulWidget {
   final String hintText;
   final String? error;
   final bool isNumberOnly;
+  final bool isDotNumber;
   final bool isBackError;
   final bool isShowNeededIcon;
   final bool isTomanCost;
+
   final bool isNotes;
   final void Function(String)? onChanged;
 
@@ -28,6 +30,7 @@ class FieldText extends StatefulWidget {
     this.error,
     this.isBackError = false,
     this.isNumberOnly = false,
+    this.isDotNumber = false,
     this.isShowNeededIcon = true,
     this.isTomanCost = false,
     this.isNotes = false,
@@ -70,13 +73,20 @@ class _FieldTextState extends State<FieldText> {
             SizedBox(
               height: widget.isNotes ? 180.h : null,
               child: TextField(
-                keyboardType: widget.isNumberOnly
+                style: TextStyle(
+                  color: Color(0xFF080E1A),
+                  fontSize: 15.sp,
+                  fontWeight: FontWeight.w500,
+                ),
+                keyboardType: widget.isNumberOnly || widget.isDotNumber
                     ? TextInputType.number
                     : TextInputType.text,
                 maxLines: widget.isNotes ? null : 1,
 
                 inputFormatters: widget.isNumberOnly
                     ? [FarsiOrEnglishDigitsInputFormatter()]
+                    : widget.isDotNumber
+                    ? [FarsiOrEnglishDigitsInputFormatter(allowDecimal: true)]
                     : null,
                 controller: _ctrl,
                 onChanged: widget.onChanged,
@@ -181,8 +191,8 @@ class _FieldTextState extends State<FieldText> {
         if (widget.error != null &&
             isInteractedOnce == false &&
             !widget.isBackError)
-          SizedBox(height: 30.h),
-        if (widget.error == null) SizedBox(height: 30.h),
+          SizedBox(height: 26.h),
+        if (widget.error == null) SizedBox(height: 26.h),
       ],
     );
   }

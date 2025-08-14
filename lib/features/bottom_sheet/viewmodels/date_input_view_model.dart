@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
+import 'package:motogen/features/bottom_sheet/config/date_field_config.dart';
 import 'package:shamsi_date/shamsi_date.dart';
 
 class DateInputViewModel extends ChangeNotifier {
+  final DateUsageType usageType;
+  DateInputViewModel({required this.usageType});
+
   String _day = '';
   String _month = '';
   String _year = '';
@@ -53,28 +57,43 @@ class DateInputViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  DateTime? get asDateTime {
+  DateTime? asDateTime() {
     if (!_isFieldsValid) return null;
     try {
-      final jalali = Jalali(
+      final baseJalali = Jalali(
         int.parse(_year),
         int.parse(_month),
         int.parse(_day),
-      );
-      return jalali.toDateTime();
+      ).toDateTime();
+      if (usageType == DateUsageType.services) {
+        final now = DateTime.now();
+        return DateTime(
+          baseJalali.year,
+          baseJalali.month,
+          baseJalali.day,
+          now.hour,
+          now.minute,
+          now.second,
+        );
+      }
+      return baseJalali;
     } catch (_) {
       return null;
     }
   }
 
-  bool get _isFutureDateValid {
+  bool isDateValid() {
     if (!_isFieldsValid) return false;
-    final inputDate = asDateTime;
-    if (inputDate == null) return false;
+    final date = asDateTime();
+    if (date == null) return false;
     final now = DateTime.now();
-    final maxDate = now.add(const Duration(days: 366));
-    //final maxDate = DateTime(now.year + 1, now.month, now.day + 1);
-    return inputDate.isAfter(now) && inputDate.isBefore(maxDate);
+    switch (usageType) {
+      case DateUsageType.insurance:
+        final maxDate = now.add(const Duration(days: 366));
+        return date.isBefore(maxDate);
+      case DateUsageType.services:
+        return date.isBefore(now) || date.isAtSameMomentAs(now);
+    }
   }
 
   bool get dayValid => _dayValid;
@@ -84,24 +103,22 @@ class DateInputViewModel extends ChangeNotifier {
   bool get _isFieldsValid => _dayValid && _monthValid && _yearValid;
   bool get isFieldsValid => _isFieldsValid;
 
-  bool get isFutureDateValid => _isFutureDateValid;
-  bool get isDateValid => _isFutureDateValid && _isFieldsValid;
-
-  String get errorWhenFutureDate {
+  String errorText() {
     if (!_isFieldsValid) return "تاریخ معتبر انتخاب کن";
-    final inputDate = asDateTime;
-    if (inputDate == null) return "تاریخ معتبر انتخاب کن";
-
+    final date = asDateTime();
+    if (date == null) return "تاریخ معتبر انتخاب کن";
     final now = DateTime.now();
-    final maxDate = now.add(const Duration(days: 366));
 
-    if (inputDate.isBefore(now) || inputDate.isAtSameMomentAs(now)) {
-      return "تاریخ باید در آینده باشد";
+    switch (usageType) {
+      case DateUsageType.insurance:
+        final maxDate = now.add(const Duration(days: 366));
+        if (!date.isBefore(maxDate)) return "تاریخ نباید بعد از یک سال باشد";
+        return "تاریخ معتبر انتخاب کن";
+
+      case DateUsageType.services:
+        if (date.isAfter(now)) return "تاریخ نمی‌تواند در آینده باشد";
+        return "تاریخ معتبر انتخاب کن";
     }
-    if (inputDate.isAfter(maxDate) || inputDate.isAtSameMomentAs(maxDate)) {
-      return "تاریخ نباید بعد از یک سال باشد";
-    }
-    return "تاریخ معتبر انتخاب کن";
   }
 
   bool _isNumberInRange(String src, int min, int max) {
@@ -112,7 +129,7 @@ class DateInputViewModel extends ChangeNotifier {
   }
 }
 
-final dateInputProvider =
-    ChangeNotifierProvider.autoDispose<DateInputViewModel>(
-      (ref) => DateInputViewModel(),
+final dateInputProvider = ChangeNotifierProvider.autoDispose
+    .family<DateInputViewModel, DateUsageType>(
+      (ref, usageType) => DateInputViewModel(usageType: usageType),
     );

@@ -1,37 +1,46 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:motogen/features/bottom_sheet/config/picker_item.dart';
-import 'package:motogen/features/car_sevices/refuel/model/refuel_state_item.dart';
+import 'package:motogen/features/car_services/refuel/model/refuel_state_item.dart';
+import 'package:motogen/features/car_services/refuel/viewmodel/refuel_use_case_api.dart';
 
 final refuelListProvider =
-    NotifierProvider.family<RefuelListNotifier, List<RefuelStateItem>, String>(
-      RefuelListNotifier.new,
-    );
+    AsyncNotifierProvider.family<
+      RefuelListNotifier,
+      List<RefuelStateItem>,
+      String
+    >(RefuelListNotifier.new);
 
-class RefuelListNotifier extends FamilyNotifier<List<RefuelStateItem>, String> {
+class RefuelListNotifier
+    extends FamilyAsyncNotifier<List<RefuelStateItem>, String> {
   @override
-  List<RefuelStateItem> build(String carId) {
-    // Load from backend/local if needed
-    return [];
+  Future<List<RefuelStateItem>> build(String carId) async {
+    return await fetchAllRefuels(carId);
   }
 
   void addRefuel(RefuelStateItem refuel) {
-    state = [...state, refuel];
+    state = state.whenData((items) => [...items, refuel]);
   }
 
   void updateRefuel(RefuelStateItem updated) {
-    state = [
-      for (final r in state)
-        if (r.refuelId == updated.refuelId) updated else r,
-    ];
+    state = state.whenData(
+      (items) => items
+          .map((r) => r.refuelId == updated.refuelId ? updated : r)
+          .toList(),
+    );
   }
 
-  void deleteRefuel(String refuelId) {
-    state = state.where((r) => r.refuelId != refuelId).toList();
+  void deleteRefuelById(String refuelId) {
+    state = state.whenData(
+      (items) => items.where((r) => r.refuelId != refuelId).toList(),
+    );
   }
 
   RefuelStateItem? getRefuelById(String refuelId) {
-    final index = state.indexWhere((r) => r.refuelId == refuelId);
-    return index == -1 ? null : state[index];
+    final items = state.valueOrNull;
+    if (items == null) return null;
+
+    final index = items.indexWhere((r) => r.refuelId == refuelId);
+    return index == -1 ? null : items[index];
   }
 
   void createDraftRefuel() {

@@ -9,6 +9,10 @@ final carStateNotifierProvider =
     NotifierProvider<CarStateNotifier, CarFormState>(() => CarStateNotifier());
 
 class CarStateNotifier extends Notifier<CarFormState> {
+  CarFormState get currentState => state;
+  CarFormStateItem get currentCar =>
+      state.currentCar ?? const CarFormStateItem();
+
   final kilometeDrivenController = TextEditingController();
 
   @override
@@ -150,17 +154,16 @@ class CarStateNotifier extends Notifier<CarFormState> {
     );
   }
 
- void updateCarIdFromNull(String newId) {
-  final updatedCars = state.cars.map((car) {
-    if (car.carId == null) {
-      return car.copyWith(carId: newId);
-    }
-    return car;
-  }).toList();
+  void updateCarIdFromNull(String newId) {
+    final updatedCars = state.cars.map((car) {
+      if (car.carId == null) {
+        return car.copyWith(carId: newId);
+      }
+      return car;
+    }).toList();
 
-  state = state.copyWith(cars: updatedCars, currentCarId: newId);
-}
-
+    state = state.copyWith(cars: updatedCars, currentCarId: newId);
+  }
 
   // New: Switch selected car
   void selectCar(String currentCarId) {

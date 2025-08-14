@@ -5,7 +5,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/core/constants/app_images.dart';
-import 'package:motogen/features/car_info/viewmodels/car_use_case_notifier.dart';
+import 'package:motogen/features/car_info/viewmodels/car_use_case_api.dart';
+import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/car_info/viewmodels/nick_name_validator.dart';
 
 import 'package:motogen/features/user_info/viewmodels/personal_info_controller_view_model.dart';
@@ -99,7 +100,7 @@ class CarNicknameScreen extends ConsumerWidget {
                     onPressed: () async {
                       try {
                         await ref
-                            .read(carUseCaseProvider.notifier)
+                            .read(carStateNotifierProvider.notifier)
                             .completeProfile(
                               isSetNickName: true,
                               nickNametext:
@@ -135,7 +136,7 @@ class CarNicknameScreen extends ConsumerWidget {
                     onPressed: () async {
                       try {
                         await ref
-                            .read(carUseCaseProvider.notifier)
+                            .read(carStateNotifierProvider.notifier)
                             .completeProfile(
                               isSetNickName: false,
                               nickNametext:

@@ -8,13 +8,13 @@ String formatJalaliDate(DateTime date) {
 
 String formatTomanCost(double cost) {
   final formatter = NumberFormat("#,###", "en_US");
-  return "${formatter.format(cost)} تومان";
+  return formatter.format(cost);
 }
 
-String formatLiter(double liter) {
-  if (liter % 1 == 0) {
-    return "${liter.toInt().toString()} لیتر";
+String formatDecimal(double decimal) {
+  if (decimal % 1 == 0) {
+    return decimal.toInt().toString();
   } else {
-    return "${liter.toString()} لیتر";
+    return decimal.toString();
   }
 }

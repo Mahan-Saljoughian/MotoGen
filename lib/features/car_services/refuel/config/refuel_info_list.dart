@@ -5,14 +5,17 @@ import 'package:motogen/features/bottom_sheet/config/picker_field_config.dart';
 import 'package:motogen/features/bottom_sheet/config/picker_item.dart';
 import 'package:motogen/features/bottom_sheet/config/car_info_field_config.dart';
 import 'package:motogen/features/bottom_sheet/config/field_text_config.dart';
-import 'package:motogen/features/car_sevices/refuel/model/refuel_state_item.dart';
-import 'package:motogen/features/car_sevices/refuel/viewmodel/refuel_validation.dart';
-import 'package:motogen/features/car_sevices/refuel/view/add_refuel_screen.dart';
-import 'package:motogen/features/car_sevices/refuel/viewmodel/refuel_draft_setters.dart';
+import 'package:motogen/features/car_services/refuel/model/refuel_state_item.dart';
+import 'package:motogen/features/car_services/refuel/viewmodel/refuel_validation.dart';
+import 'package:motogen/features/car_services/refuel/view/refuel_form_screen.dart';
+import 'package:motogen/features/car_services/refuel/viewmodel/refuel_draft_setters.dart';
 
 List<CarInfoFieldConfig<RefuelStateItem>> buildRefuelInfoFields(
   RefuelStateItem draft,
   WidgetRef ref,
+  TextEditingController litersController,
+  TextEditingController costController,
+  TextEditingController notesController,
 ) {
   return [
     CarInfoFieldConfig<RefuelStateItem>(
@@ -28,7 +31,7 @@ List<CarInfoFieldConfig<RefuelStateItem>> buildRefuelInfoFields(
         hintText: "10",
         labelText: "مقدار افزوده",
         error: draft.litersError,
-        isNumberOnly: true,
+        isDotNumber: true,
         onChanged: ref.setRawLiters,
       ),
     ),
@@ -65,10 +68,6 @@ List<CarInfoFieldConfig<RefuelStateItem>> buildRefuelInfoFields(
   ];
 }
 
-final litersController = TextEditingController();
-final costController = TextEditingController();
-final notesController = TextEditingController();
-
 DateFieldConfig<RefuelStateItem> refuelDateConfig =
     DateFieldConfig<RefuelStateItem>(
       labelText: "تاریخ",
@@ -80,6 +79,7 @@ DateFieldConfig<RefuelStateItem> refuelDateConfig =
           isDateInteractedOnce: true,
         );
       },
+      usageType: DateUsageType.services,
     );
 
 PickerFieldConfig<RefuelStateItem> refuelPaymentMethodConfig =

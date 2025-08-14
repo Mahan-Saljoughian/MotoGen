@@ -6,12 +6,12 @@ import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/core/constants/app_images.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
-import 'package:motogen/features/car_sevices/refuel/data/refuel_sort.dart';
-import 'package:motogen/features/car_sevices/refuel/model/refuel_state_item.dart';
-import 'package:motogen/features/car_sevices/refuel/viewmodel/refuel_list_notifier.dart';
-import 'package:motogen/features/car_sevices/refuel/widget/refuel_item.dart';
-import 'package:motogen/features/car_sevices/widgets/add_button.dart';
-import 'package:motogen/features/car_sevices/widgets/help_to_add_text_box.dart';
+import 'package:motogen/features/car_services/refuel/data/refuel_sort.dart';
+import 'package:motogen/features/car_services/refuel/model/refuel_state_item.dart';
+import 'package:motogen/features/car_services/refuel/viewmodel/refuel_list_notifier.dart';
+import 'package:motogen/features/car_services/refuel/widget/refuel_item.dart';
+import 'package:motogen/features/car_services/widgets/add_button.dart';
+import 'package:motogen/features/car_services/widgets/help_to_add_text_box.dart';
 
 class FuelScreen extends ConsumerWidget {
   const FuelScreen({super.key});
@@ -19,15 +19,8 @@ class FuelScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final carId = ref.watch(carStateNotifierProvider).currentCarId;
-    final refuels = ref.watch(refuelListProvider(carId ?? ''));
-    debugPrint('debug Current refuels list: $refuels');
+    final refuelsAsync = ref.watch(refuelListProvider(carId ?? ""));
 
-    // Or if you want each item formatted:
-    for (final r in refuels) {
-      debugPrint(
-        'debug Refuel | liters: ${r.liters}, cost: ${r.cost}, notes: ${r.notes}, date: ${r.date}',
-      );
-    }
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -59,19 +52,51 @@ class FuelScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  if (refuels.isEmpty) ...[
-                    Padding(
-                      padding: EdgeInsets.only(top: 252.h, bottom: 7.h),
-                      child: _buildEmptyStateUI(),
-                    ),
-                  ] else ...[
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 40.h),
-                        child: _buildFilledStateUI(ref, refuels),
+                  refuelsAsync.when(
+                    data: (refuels) {
+                      debugPrint('debug Current refuels list: $refuels');
+                      for (final r in refuels) {
+                        debugPrint('debug Refuel | refuelId : {${r.refuelId}}');
+                      }
+
+                      if (refuels.isEmpty) {
+                        return Padding(
+                          padding: EdgeInsets.only(top: 252.h, bottom: 7.h),
+                          child: _buildEmptyStateUI(),
+                        );
+                      } else {
+                        return Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.only(top: 40.h),
+                            child: _buildFilledStateUI(ref, refuels),
+                          ),
+                        );
+                      }
+                    },
+                    loading: () => Expanded(
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.blue500,
+                        ),
                       ),
                     ),
-                  ],
+                    error: (err, stack) {
+                      debugPrint('⛔ Refuel list load error: $err');
+                      debugPrintStack(stackTrace: stack);
+
+                      return Expanded(
+                        child: Center(
+                          child: Text(
+                            'خطا در بارگذاری سوخت‌ها',
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 14.sp,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),

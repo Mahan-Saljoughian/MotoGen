@@ -22,6 +22,5 @@ class ChatController extends ChangeNotifier {
 final chatControllerProvider =
     ChangeNotifierProvider.autoDispose<ChatController>((ref) {
       final vm = ChatController();
-      ref.onDispose(vm.dispose);
       return vm;
     });

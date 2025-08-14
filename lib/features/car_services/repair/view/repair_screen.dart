@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/core/constants/app_images.dart';
-import 'package:motogen/features/car_sevices/widgets/help_to_add_text_box.dart';
+import 'package:motogen/features/car_services/widgets/help_to_add_text_box.dart';
 
 class RepairScreen extends StatelessWidget {
   const RepairScreen({super.key});

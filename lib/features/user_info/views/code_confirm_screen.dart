@@ -8,14 +8,15 @@ import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/core/constants/app_images.dart';
 import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
-import 'package:motogen/features/car_info/viewmodels/car_use_case_notifier.dart';
+import 'package:motogen/features/car_info/viewmodels/car_use_case_api.dart';
+import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/user_info/model/auth_state.dart';
 import 'package:motogen/features/user_info/viewmodels/auth_notifier.dart';
 
 import 'package:motogen/features/user_info/viewmodels/code_controller_view_model.dart';
 import 'package:motogen/features/onboarding/widgets/dot_indicator.dart';
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
-import 'package:motogen/features/user_info/viewmodels/user_use_case_notifier.dart';
+import 'package:motogen/features/user_info/viewmodels/user_use_case_api.dart';
 
 
 class CodeConfirmScreen extends ConsumerStatefulWidget {
@@ -73,8 +74,8 @@ class _ValidateCodeScreenState extends ConsumerState<CodeConfirmScreen> {
     ref.listen<AuthState>(authProvider, (prev, next) async {
       if (next.status == AuthStatus.confirmed) {
         if (next.isProfileCompleted == true) {
-          await ref.read(userUseCaseProvider.notifier).getUserProfile();
-          await ref.read(carUseCaseProvider.notifier).fetchAllCars();
+          await ref.getUserProfile();
+          await ref.read(carStateNotifierProvider.notifier).fetchAllCars();
           if(context.mounted){
             Navigator.pushReplacementNamed(context, '/mainApp');
           }

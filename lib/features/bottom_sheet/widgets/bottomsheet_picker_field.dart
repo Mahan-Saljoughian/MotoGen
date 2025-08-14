@@ -5,7 +5,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 
-
 class BottomsheetPickerField extends ConsumerWidget {
   final String labelText;
   final String? selectedText;
@@ -63,16 +62,13 @@ class BottomsheetPickerField extends ConsumerWidget {
               ),
               suffixIcon: Padding(
                 padding: EdgeInsets.only(left: 10.w),
-                child: //Icon(Icons.keyboard_arrow_down),
-                SvgPicture.asset(
+                child: SvgPicture.asset(
                   AppIcons.arrowDown,
                   height: 24.h,
                   width: 24.w,
 
                   colorFilter: ColorFilter.mode(
-                    errorText == null
-                        ? AppColors.blue500
-                        : Color(0xFFC60B0B), // Desired color
+                    errorText == null ? AppColors.blue500 : Color(0xFFC60B0B),
                     BlendMode.srcIn,
                   ),
                 ),
@@ -87,10 +83,10 @@ class BottomsheetPickerField extends ConsumerWidget {
               displayText,
               style: TextStyle(
                 color: selectedText != null && defaultDisable
-                    ? AppColors.black600
+                    ? Color(0xFF080E1A)
                     : AppColors.black100,
                 fontSize: 15.sp,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -110,7 +106,7 @@ class BottomsheetPickerField extends ConsumerWidget {
               ),
             ),
           ),
-        if (errorText == null) SizedBox(height: 42.h),
+        if (errorText == null) SizedBox(height: 26.h),
       ],
     );
   }
