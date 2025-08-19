@@ -1,5 +1,6 @@
 // lib/features/auth/viewmodels/auth_notifier.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:motogen/core/services/format_functions.dart';
 
 import 'package:motogen/features/user_info/data/auth_repository.dart';
 import 'package:motogen/features/user_info/model/auth_state.dart';
@@ -30,7 +31,7 @@ class AuthNotifier extends Notifier<AuthState> {
     } catch (e) {
       state = state.copyWith(
         status: AuthStatus.error,
-        message: e.toString().replaceFirst('Exception: ', ''),
+        message: formatPersianError(e),
       );
     }
   }
@@ -50,14 +51,11 @@ class AuthNotifier extends Notifier<AuthState> {
         refreshToken: data['refreshToken'] as String?,
         isProfileCompleted: isProfileCompleted,
       );
-
     } catch (e) {
       state = state.copyWith(
         status: AuthStatus.error,
-        message: e.toString().replaceFirst('Exception: ', ''),
+        message: formatPersianError(e),
       );
     }
   }
-
-  
 }

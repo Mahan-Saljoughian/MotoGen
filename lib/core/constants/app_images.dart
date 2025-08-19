@@ -12,5 +12,5 @@ class AppImages {
 
   static const String carCardDark = "assets/images/car_card_dark.png";
   static const String fuel = "assets/images/fuel.png";
-  static const String bag = "assets/images/bag.png";
+  static const String purchases = "assets/images/purchases.png";
 }

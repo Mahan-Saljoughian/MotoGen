@@ -29,9 +29,21 @@ class BuildFormFields<T> extends ConsumerWidget {
         final fieldConfig = fields[idx];
         switch (fieldConfig.type) {
           case FieldInputType.picker:
+            final fieldPickerConfig = fieldConfig.pickerConfig!;
+            String? selectedText;
+            if (fieldPickerConfig.isMultiSelect) {
+              // Safe: join titles of selected items
+              final items = fieldPickerConfig.multiGetter!(state);
+              if (items.isNotEmpty) {
+                selectedText = items.map((e) => e.title).join(', ');
+              }
+            } else {
+              selectedText = fieldPickerConfig.getter!(state)?.title;
+            }
+
             return BottomsheetPickerField(
               labelText: fieldConfig.pickerConfig!.labelText,
-              selectedText: fieldConfig.pickerConfig!.getter(state)?.title,
+              selectedText: selectedText,
               onPressed: () {
                 BottomsheetListShow.showSelectionBottomSheet<T>(
                   context: ref.context,
@@ -51,7 +63,7 @@ class BuildFormFields<T> extends ConsumerWidget {
               isValid: fieldConfig.textConfig!.isValid,
               error: fieldConfig.textConfig!.error,
               isNumberOnly: fieldConfig.textConfig!.isNumberOnly,
-              isDotNumber: fieldConfig.textConfig!.isDotNumber,
+
               isTomanCost: fieldConfig.textConfig!.isTomanCost,
               isNotes: fieldConfig.textConfig!.isNotes,
               onChanged: fieldConfig.textConfig!.onChanged,

@@ -36,7 +36,7 @@ class AppIcons {
   static const String profileCircle = "assets/icons/profile_circle.svg";
   static const String setting = "assets/icons/setting.svg";
 
-  static const String bag = "assets/icons/services/bag.svg";
+  static const String purchases = "assets/icons/services/purchases.svg";
   static const String fuel = "assets/icons/services/fuel.svg";
   static const String oil = "assets/icons/services/oil.svg";
   static const String repair = "assets/icons/services/repair.svg";

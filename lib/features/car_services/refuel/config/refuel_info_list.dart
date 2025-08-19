@@ -7,7 +7,6 @@ import 'package:motogen/features/bottom_sheet/config/car_info_field_config.dart'
 import 'package:motogen/features/bottom_sheet/config/field_text_config.dart';
 import 'package:motogen/features/car_services/refuel/model/refuel_state_item.dart';
 import 'package:motogen/features/car_services/refuel/viewmodel/refuel_validation.dart';
-import 'package:motogen/features/car_services/refuel/view/refuel_form_screen.dart';
 import 'package:motogen/features/car_services/refuel/viewmodel/refuel_draft_setters.dart';
 
 List<CarInfoFieldConfig<RefuelStateItem>> buildRefuelInfoFields(
@@ -21,7 +20,7 @@ List<CarInfoFieldConfig<RefuelStateItem>> buildRefuelInfoFields(
     CarInfoFieldConfig<RefuelStateItem>(
       type: FieldInputType.dateSetter,
       dateSetFieldConfig: refuelDateConfig,
-      errorGetter: (s) => s.refuelDateError,
+      errorGetter: (s) => s.dateError,
     ),
     CarInfoFieldConfig<RefuelStateItem>(
       type: FieldInputType.text,
@@ -31,7 +30,7 @@ List<CarInfoFieldConfig<RefuelStateItem>> buildRefuelInfoFields(
         hintText: "10",
         labelText: "مقدار افزوده",
         error: draft.litersError,
-        isDotNumber: true,
+        isNumberOnly: true,
         onChanged: ref.setRawLiters,
       ),
     ),

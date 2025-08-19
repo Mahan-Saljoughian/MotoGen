@@ -41,76 +41,90 @@ class EnterPhoneNumberScreen extends ConsumerWidget {
     final auth = ref.watch(authProvider);
     final authNotifier = ref.read(authProvider.notifier);
 
-    final phoneNumberString = FarsiOrEnglishDigitsInputFormatter.normalizePersianDigits(
-      phoneVm.phoneController.text.trim(),
-    );
+    final phoneNumberString =
+        FarsiOrEnglishDigitsInputFormatter.normalizePersianDigits(
+          phoneVm.phoneController.text.trim(),
+        );
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 20.h),
-            child: Center(
-              child: Column(
-                children: [
-                  Text(
-                    "حساب کاربری",
-                    style: TextStyle(
-                      color: AppColors.blue500,
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
+    return Stack(
+      children: [
+        Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 20.h),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Text(
+                        "حساب کاربری",
+                        style: TextStyle(
+                          color: AppColors.blue500,
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.27,
+                      ),
+
+                      Text(
+                        "برای ورود یا ایجاد حساب کاربری شماره موبایلت رو وارد کن...",
+                        style: TextStyle(
+                          color: AppColors.blue900,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+
+                      SizedBox(height: 36.h),
+
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 40.w),
+                        child: FieldText(
+                          controller: phoneVm.phoneController,
+                          isValid: phoneVm.isValid,
+                          labelText: "شماره موبایل",
+                          hintText: "09123456789",
+                          error: auth.message ?? phoneVm.error,
+                          isNumberOnly: true,
+                          isShowNeededIcon: false,
+                          isBackError: auth.status == AuthStatus.error,
+                        ),
+                      ),
+
+                      Image.asset(
+                        AppImages.phoneNumberPageImage,
+                        width: 250.w,
+                        height: 250.w,
+                      ),
+                    ],
                   ),
-
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.27),
-
-                  Text(
-                    "برای ورود یا ایجاد حساب کاربری شماره موبایلت رو وارد کن...",
-                    style: TextStyle(
-                      color: AppColors.blue900,
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-
-                  SizedBox(height: 36.h),
-
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 40.w),
-                    child: FieldText(
-                      controller: phoneVm.phoneController,
-                      isValid: phoneVm.isValid,
-                      labelText: "شماره موبایل",
-                      hintText: "09123456789",
-                      error: auth.message ?? phoneVm.error,
-                      isNumberOnly: true,
-                    isShowNeededIcon: false,
-                      isBackError: auth.status == AuthStatus.error,
-                    ),
-                  ),
-
-                  Image.asset(
-                    AppImages.phoneNumberPageImage,
-                    width: 250.w,
-                    height: 250.w,
-                  ),
-                  SizedBox(height: 28.h),
-                  DotIndicator(currentPage: currentPage, count: count),
-                  SizedBox(height: 24.h),
-                  OnboardingButton(
-                    currentPage: currentPage,
-                    onPressed: () async {
-                      await authNotifier.requestOtp(phoneNumberString);
-                    },
-                  ),
-                ],
+                ),
               ),
             ),
           ),
         ),
-      ),
+        Positioned(
+          bottom: 74.h,
+          right: 43.w,
+          child: Column(
+            children: [
+              DotIndicator(currentPage: currentPage, count: count),
+              SizedBox(height: 24.h),
+              OnboardingButton(
+                currentPage: currentPage,
+                onPressed: () async {
+                  await authNotifier.requestOtp(phoneNumberString);
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   final String _baseUrl =
+      //'https://motogen-api-nest.onrender.com';
       'http://10.0.2.2:3000'; // Use 10.0.2.2 for Android emulator
   //'http://192.168.219.6:3000';
 
@@ -48,7 +49,6 @@ class ApiService {
     }
   }
 
-
   Future<dynamic> patch(
     String endpoint,
     Map<String, dynamic> data, {
@@ -70,11 +70,8 @@ class ApiService {
     }
   }
 
-
-  
   Future<dynamic> delete(
-    String endpoint,
-   {
+    String endpoint, {
     Map<String, String>? headers,
   }) async {
     final url = Uri.parse('$_baseUrl/$endpoint');
@@ -82,15 +79,10 @@ class ApiService {
     final mergedHeaders = {...defaultHeaders, ...?headers};
 
     try {
-      final response = await http.delete(
-        url,
-        headers: mergedHeaders,
-      );
+      final response = await http.delete(url, headers: mergedHeaders);
       return _handleResponse(response);
     } catch (e) {
       throw Exception('API DELETE error: $e');
     }
   }
-
-  
 }

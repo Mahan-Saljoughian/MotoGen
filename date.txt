@@ -1,0 +1,42 @@
+date
+
+part    maxLength: 100
+
+purchaseCategory       [ BODY_AND_TRIM, CONSUMABLE, MECHANICAL ]
+
+
+cost   minimum: 1
+maximum: 1000000000
+
+
+location    maxLength: 100
+
+notes       maxLength: 5000
+
+
+post toJson
+ "date": "2025-08-06T14:30:00.000Z",
+  "part": "لنت ترمز جلو",
+  "purchaseCategory": "CONSUMABLE",
+  "cost": 250000,
+  "location": "فروشگاه سرعت",
+  "notes": "خرید شمع"
+
+
+  fromAPiJson
+  {
+  "success": true,
+  "message": "لیست خرید ها استخراج شد.",
+  "data": [
+    {
+      "id": "cmeh0q6bl0001em74abgvpehy",
+      "date": "2025-08-06T14:30:00.000Z",
+      "part": "لنت ترمز جلو",
+      "purchaseCategory": "CONSUMABLE",
+      "cost": 250000,
+      "location": "فروشگاه سرعت",
+      "notes": "خرید شمع",
+      "carId": "cmef7yizs0004em28qxgxk76k"
+    }
+  ]
+}

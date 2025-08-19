@@ -28,11 +28,11 @@ class CarInfoScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: [
-            SingleChildScrollView(
+    return Stack(
+      children: [
+        Scaffold(
+          body: SafeArea(
+            child: SingleChildScrollView(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 20.h),
                 child: Center(
@@ -74,24 +74,25 @@ class CarInfoScreen extends ConsumerWidget {
                           fieldsBuilder: (state, ref) => carInfoField,
                         ),
                       ),
-
-                      if (currentPage == 3) SizedBox(height: 100.h),
-                      if (currentPage == 4) SizedBox(height: 100.h),
-
-                      DotIndicator(currentPage: currentPage, count: count),
-                      SizedBox(height: 24.h),
-                      OnboardingButton(
-                        currentPage: currentPage,
-                        onPressed: onNext,
-                      ),
                     ],
                   ),
                 ),
               ),
             ),
-          ],
+          ),
         ),
-      ),
+        Positioned(
+          bottom: 74.h,
+          right: 43.w,
+          child: Column(
+            children: [
+              DotIndicator(currentPage: currentPage, count: count),
+              SizedBox(height: 24.h),
+              OnboardingButton(currentPage: currentPage, onPressed: onNext),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

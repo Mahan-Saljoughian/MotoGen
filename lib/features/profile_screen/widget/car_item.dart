@@ -55,7 +55,11 @@ class CarItem extends ConsumerWidget {
         ? Color(0xFFE15454)
         : Color(0xFFC60B0B);
     return GestureDetector(
-      onTap: editMode ? () {} : () {},
+      onTap: editMode
+          ? () {}
+          : () {
+              ref.read(carStateNotifierProvider.notifier).selectCar(carId);
+            },
       child: InnerShadow(
         shadows: [
           BoxShadow(blurRadius: 8, offset: Offset(0, 0), color: shadowColor),
@@ -109,6 +113,7 @@ class CarItem extends ConsumerWidget {
                                         .read(carStateNotifierProvider.notifier)
                                         .deleteSelectedCar(carId);
                                   },
+                                  isPopOnce: true,
                                 );
                               },
                               child: SvgPicture.asset(

@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
-import 'package:motogen/core/services/format_functions.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/car_services/refuel/config/refuel_info_list.dart';
 import 'package:motogen/features/car_services/refuel/model/refuel_state_item.dart';
@@ -41,8 +40,8 @@ class _RefuelFormScreenState extends ConsumerState<RefuelFormScreen> {
               ispaymentMethodInteractedOnce: true,
             );
 
-        litersController.text = formatDecimal(widget.initialItem!.liters!);
-        costController.text = formatDecimal(widget.initialItem!.cost!);
+        litersController.text = widget.initialItem!.liters!.toString();
+        costController.text = widget.initialItem!.cost!.toString();
         notesController.text = widget.initialItem!.notes ?? '';
 
         ref.setRawLiters(litersController.text);
@@ -65,8 +64,9 @@ class _RefuelFormScreenState extends ConsumerState<RefuelFormScreen> {
     final isEdit = widget.initialItem != null;
     final draft = ref.watch(refuelDraftProvider);
     final carId = ref.read(carStateNotifierProvider).currentCarId;
+
     debugPrint(
-      'debug DRAFT: id=${draft.refuelId}, '
+      'debug refuel DRAFT: id=${draft.refuelId}, '
       'date=${draft.date}, '
       'paymentMethod=${draft.paymentMethod}, '
       'liter=${draft.liters}'
@@ -76,10 +76,10 @@ class _RefuelFormScreenState extends ConsumerState<RefuelFormScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Padding(
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
               padding: EdgeInsets.only(top: 20.h, right: 20.w),
               child: Column(
                 children: [
@@ -126,8 +126,8 @@ class _RefuelFormScreenState extends ConsumerState<RefuelFormScreen> {
                                   await showConfirmBottomSheet(
                                     context: context,
                                     isDelete: true,
-                                    onConfirm: () {
-                                      return ref
+                                    onConfirm: () async {
+                                      await ref
                                           .read(
                                             refuelListProvider(carId!).notifier,
                                           )
@@ -135,12 +135,11 @@ class _RefuelFormScreenState extends ConsumerState<RefuelFormScreen> {
                                             carId,
                                             draft.refuelId!,
                                           );
-                                    },
-                                    onReset: () {
+
                                       ref
                                           .read(refuelDraftProvider.notifier)
                                           .state = RefuelStateItem(
-                                        refuelId: "temp_id",
+                                        refuelId: "refuel_temp_id",
                                       );
                                     },
                                   );
@@ -173,56 +172,66 @@ class _RefuelFormScreenState extends ConsumerState<RefuelFormScreen> {
                 ],
               ),
             ),
-            Positioned(
-              bottom: 90,
-              right: 40,
-              child: OnboardingButton(
-                enabled: ref.watch(isRepairInfoButtonEnabled),
-                text: "ثبت",
-                onPressed: () async {
-                  try {
+          ),
+          Positioned(
+            bottom: 70.h,
+            right: 43.w,
+            child: OnboardingButton(
+              enabled: ref.watch(isRefuelInfoButtonEnabled),
+              text: "ثبت",
+              onPressed: () async {
+                try {
+                  if (isEdit) {
+                    await showConfirmBottomSheet(
+                      context: context,
+                      onConfirm: () async {
+                        await ref
+                            .read(refuelListProvider(carId!).notifier)
+                            .updateRefuelFromDraft(
+                              draft,
+                              widget.initialItem!,
+                              carId,
+                            );
+                        // refreshes the refuel list
+                        ref.invalidate(refuelListProvider(carId));
+                        // Reset draft
+                        ref.read(refuelDraftProvider.notifier).state =
+                            RefuelStateItem(refuelId: "refuel_temp_id");
+                      },
+                    );
+                  } else {
                     await ref
                         .read(refuelListProvider(carId!).notifier)
                         .addRefuelFromDraft(draft, carId);
-
+                    // refreshes the refuel list
+                    ref.invalidate(refuelListProvider(carId));
                     // Reset draft
                     ref.read(refuelDraftProvider.notifier).state =
-                        RefuelStateItem(refuelId: "temp_id");
+                        RefuelStateItem(refuelId: "refuel_temp_id");
+                  }
 
+                  if (!isEdit) {
                     if (context.mounted) {
                       Navigator.of(context).pop();
                     }
-                  } catch (e) {
-                    // handle error (snackbar, dialog, etc.)
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('خطا در ثبت سوخت جدید')),
-                      );
-                    }
                   }
-                },
-              ),
+                } catch (e) {
+                  // handle error (snackbar, dialog, etc.)
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: isEdit
+                            ? Text('خطا در ویرایش سوخت ')
+                            : Text('خطا در ثبت سوخت جدید'),
+                      ),
+                    );
+                  }
+                }
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
-
-// Local provider still scoped to this screen
-final refuelDraftProvider = StateProvider<RefuelStateItem>(
-  (ref) => RefuelStateItem(refuelId: "temp_id"),
-);
-
-// Local provider inside build so it uses the same ProviderScope override
-final isRepairInfoButtonEnabled = Provider<bool>((ref) {
-  final refuelState = ref.watch(refuelDraftProvider);
-  return refuelState.isLitersValid &&
-      refuelState.isCostValid &&
-      refuelState.isNoteValid &&
-      refuelState.date != null &&
-      refuelState.liters != null &&
-      refuelState.paymentMethod != null &&
-      refuelState.cost != null;
-});

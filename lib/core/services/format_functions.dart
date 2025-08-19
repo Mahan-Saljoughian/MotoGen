@@ -6,15 +6,13 @@ String formatJalaliDate(DateTime date) {
   return '${j.year}/${j.month.toString().padLeft(2, '0')}/${j.day.toString().padLeft(2, '0')}';
 }
 
-String formatTomanCost(double cost) {
+String formatNumberByThreeDigit(int number) {
   final formatter = NumberFormat("#,###", "en_US");
-  return formatter.format(cost);
+  return formatter.format(number);
 }
 
-String formatDecimal(double decimal) {
-  if (decimal % 1 == 0) {
-    return decimal.toInt().toString();
-  } else {
-    return decimal.toString();
-  }
+String formatPersianError(Object e) {
+  final raw = e.toString();
+  final match = RegExp(r'([\u0600-\u06FF].*)').firstMatch(raw);
+  return match != null ? match.group(1)?.trim() ?? '' : raw;
 }

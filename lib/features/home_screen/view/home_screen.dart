@@ -10,6 +10,7 @@ import 'package:motogen/features/profile_screen/widget/car_item.dart';
 import 'package:motogen/features/user_info/viewmodels/personal_info_controller_view_model.dart';
 import 'package:motogen/features/user_info/viewmodels/phone_number_controller_view_model.dart';
 
+
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -169,18 +170,24 @@ class HomeScreen extends ConsumerWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              ServiceNavigator(index: 0),
+                              ServiceNavigator(
+                                serviceTitle: ServiceTitle.refuel,
+                              ),
 
-                              ServiceNavigator(index: 1),
+                              ServiceNavigator(serviceTitle: ServiceTitle.oil),
                             ],
                           ),
                           SizedBox(height: 20.h),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              ServiceNavigator(index: 3),
+                              ServiceNavigator(
+                                serviceTitle: ServiceTitle.repair,
+                              ),
 
-                              ServiceNavigator(index: 2),
+                              ServiceNavigator(
+                                serviceTitle: ServiceTitle.purchases,
+                              ),
                             ],
                           ),
                         ],

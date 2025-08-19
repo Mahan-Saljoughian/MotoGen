@@ -8,22 +8,17 @@ import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/services/token_expire.dart';
 import 'package:motogen/features/car_info/viewmodels/car_use_case_api.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
+import 'package:motogen/features/car_services/base/view/service_screen.dart';
 import 'package:motogen/features/chat_screen/views/chat_screen.dart';
-import 'package:motogen/features/car_services/bag/view/bag_screen.dart';
-import 'package:motogen/features/car_services/refuel/view/refuel_screen.dart';
+
 import 'package:motogen/features/home_screen/view/home_screen.dart';
+import 'package:motogen/features/home_screen/widget/service_navigator.dart';
 import 'package:motogen/features/onboarding/views/onboarding_indicator.dart';
 import 'package:motogen/features/onboarding/views/onboarding_page_2.dart';
 import 'package:motogen/features/profile_screen/view/profile_screen.dart';
-import 'package:motogen/features/car_services/oil/view/oil_screen.dart';
-import 'package:motogen/features/car_services/repair/view/repair_screen.dart';
+
 import 'package:motogen/features/user_info/viewmodels/user_use_case_api.dart';
 import 'package:motogen/main_scaffold.dart';
-
-//phoneNumber : 09372578150
-//phoneNumber : 09372578159
-
-//09464646165
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -111,11 +106,15 @@ class _MyAppState extends ConsumerState<MyApp> {
         '/home': (context) => const HomeScreen(),
         '/chat': (context) => const ChatScreen(),
         '/profile': (context) => const ProfileScreen(),
-        '/refuel': (context) => const FuelScreen(),
+        '/refuel': (context) =>
+            const ServiceScreen(serviceTitle: ServiceTitle.refuel),
         '/onboardingPage2': (context) => const OnboardingPage2(),
-        '/oil': (context) => const OilScreen(),
-        '/bag': (context) => const BagScreen(),
-        '/repair': (context) => const RepairScreen(),
+        '/oil': (context) =>
+            const ServiceScreen(serviceTitle: ServiceTitle.oil),
+        '/purchases': (context) =>
+            const ServiceScreen(serviceTitle: ServiceTitle.purchases),
+        '/repair': (context) =>
+            const ServiceScreen(serviceTitle: ServiceTitle.repair),
       },
       title: 'MotoGen',
       home: _isLoggedIn ? MainScaffold() : OnboardingIndicator(),

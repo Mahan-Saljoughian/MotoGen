@@ -139,18 +139,22 @@ class ProfileScreen extends ConsumerWidget {
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: carFormState.cars.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final car = entry.value;
-                    return CarItem(
-                      index: index,
-                      carId: car.carId ?? "",
-                      nickName: car.nickName ?? "",
-                      brandTitle: car.brand?.title ?? "",
-                      modelTitle: car.model?.title ?? "",
-                      typeTitle: car.type?.title ?? "",
-                    );
-                  }).toList(),
+                  children: [
+                    for (var i = 0; i < carFormState.cars.length; i++) ...[
+                      CarItem(
+                        index: i,
+                        carId: carFormState.cars[i].carId ?? "",
+                        nickName: carFormState.cars[i].nickName ?? "",
+                        brandTitle: carFormState.cars[i].brand?.title ?? "",
+                        modelTitle: carFormState.cars[i].model?.title ?? "",
+                        typeTitle: carFormState.cars[i].type?.title ?? "",
+                        editMode: true,
+                      ),
+                      // Middle spacing
+                      if (i != carFormState.cars.length - 1)
+                        SizedBox(width: 16.w),
+                    ],
+                  ],
                 ),
               ),
             ],

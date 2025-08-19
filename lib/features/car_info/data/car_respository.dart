@@ -1,41 +1,20 @@
-
 import 'package:logger/web.dart';
 import 'package:motogen/core/services/api_service.dart';
 
 import 'package:motogen/core/storage/token_flutter_secure_storage.dart';
 import 'package:motogen/features/car_info/models/car_form_state_item.dart';
 
-
 class CarRespository {
   final ApiService _api = ApiService();
   var logger = Logger();
-
 
   Future<Map<String, dynamic>> completeProfile(
     CarFormStateItem carState,
     Map<String, dynamic> userInfo,
   ) async {
     final accessToken = await getAccessToken();
-    final data = {
-      'userInformation': userInfo,
-      'carInformation': {
-        'productYear': carState.yearMade,
-        'color': carState.color?.id,
-        'kilometer': carState.kilometerDriven,
-        'fuel': carState.fuelType?.id,
-        'thirdPartyInsuranceExpiry': carState.thirdPartyInsuranceExpiry
-            ?.toIso8601String(),
-        if (carState.bodyInsuranceExpiry != null)
-          'bodyInsuranceExpiry': carState.bodyInsuranceExpiry
-              ?.toIso8601String(),
-        'nextTechnicalInspectionDate': carState.nextTechnicalCheck
-            ?.toIso8601String(),
-        'carTrimId': carState.type?.id,
-        if (carState.nickName != null && carState.nickName!.trim().isNotEmpty)
-          'nickName': carState.nickName,
-      },
-    };
 
+    final data = carState.toApiJson(userInfo: userInfo);
     final response = await _api.post(
       "users/me/complete-profile",
       data,
@@ -176,23 +155,7 @@ class CarRespository {
     try {
       final accessToken = await getAccessToken();
 
-      final data = {
-        "productYear": carState.yearMade,
-        "color": carState.color?.id,
-        "kilometer": carState.kilometerDriven,
-        "fuel": carState.fuelType?.id,
-
-        'thirdPartyInsuranceExpiry': carState.thirdPartyInsuranceExpiry
-            ?.toIso8601String(),
-        if (carState.bodyInsuranceExpiry != null)
-          "bodyInsuranceExpiry": carState.bodyInsuranceExpiry
-              ?.toIso8601String(),
-        "nextTechnicalInspectionDate": carState.nextTechnicalCheck
-            ?.toIso8601String(),
-        "carTrimId": carState.type?.id,
-        if (carState.nickName != null && carState.nickName!.trim().isNotEmpty)
-          'nickName': carState.nickName,
-      };
+      final data = carState.toApiJson();
       final response = await _api.post(
         "users/me/cars",
         data,

@@ -9,9 +9,7 @@ class FarsiOrEnglishDigitsInputFormatter extends TextInputFormatter {
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
-    final allowedChars = allowDecimal
-        ? RegExp(r'[0-9۰-۹\.\٫]')
-        : RegExp(r'[0-9۰-۹]');
+    final allowedChars = RegExp(r'[0-9۰-۹]');
     final newText = newValue.text
         .split('')
         .where((ch) => allowedChars.hasMatch(ch))
@@ -25,7 +23,6 @@ class FarsiOrEnglishDigitsInputFormatter extends TextInputFormatter {
     for (int i = 0; i < 10; i++) {
       input = input.replaceAll(persianDigits[i], englishDigits[i]);
     }
-    input = input.replaceAll('٫', '.');
     return input;
   }
 }

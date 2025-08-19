@@ -12,7 +12,6 @@ class FieldText extends StatefulWidget {
   final String hintText;
   final String? error;
   final bool isNumberOnly;
-  final bool isDotNumber;
   final bool isBackError;
   final bool isShowNeededIcon;
   final bool isTomanCost;
@@ -30,7 +29,7 @@ class FieldText extends StatefulWidget {
     this.error,
     this.isBackError = false,
     this.isNumberOnly = false,
-    this.isDotNumber = false,
+
     this.isShowNeededIcon = true,
     this.isTomanCost = false,
     this.isNotes = false,
@@ -63,6 +62,7 @@ class _FieldTextState extends State<FieldText> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("debug ${widget.error}");
     final showError =
         widget.error != null && (isInteractedOnce || widget.isBackError);
     return Column(
@@ -78,15 +78,13 @@ class _FieldTextState extends State<FieldText> {
                   fontSize: 15.sp,
                   fontWeight: FontWeight.w500,
                 ),
-                keyboardType: widget.isNumberOnly || widget.isDotNumber
+                keyboardType: widget.isNumberOnly
                     ? TextInputType.number
                     : TextInputType.text,
                 maxLines: widget.isNotes ? null : 1,
 
                 inputFormatters: widget.isNumberOnly
                     ? [FarsiOrEnglishDigitsInputFormatter()]
-                    : widget.isDotNumber
-                    ? [FarsiOrEnglishDigitsInputFormatter(allowDecimal: true)]
                     : null,
                 controller: _ctrl,
                 onChanged: widget.onChanged,
@@ -188,6 +186,7 @@ class _FieldTextState extends State<FieldText> {
               ),
             ),
           ),
+
         if (widget.error != null &&
             isInteractedOnce == false &&
             !widget.isBackError)

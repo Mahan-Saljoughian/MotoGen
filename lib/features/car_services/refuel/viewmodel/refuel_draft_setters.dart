@@ -1,7 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
+import 'package:motogen/features/car_services/base/viewmodel/shared_draft_setters.dart';
 import 'package:motogen/features/car_services/refuel/model/refuel_state_item.dart';
-import 'package:motogen/features/car_services/refuel/view/refuel_form_screen.dart';
+
+final refuelDraftProvider = StateProvider<RefuelStateItem>(
+  (ref) => RefuelStateItem(refuelId: "refuel_temp_id"),
+);
 
 extension RefuelDraftSetters on WidgetRef {
   void updateDraft(RefuelStateItem Function(RefuelStateItem) updater) {
@@ -12,7 +16,7 @@ extension RefuelDraftSetters on WidgetRef {
   void setRawLiters(String input) {
     final normalized =
         FarsiOrEnglishDigitsInputFormatter.normalizePersianDigits(input);
-    final parsed = double.tryParse(normalized);
+    final parsed = int.tryParse(normalized);
     updateDraft(
       (draft) => draft.copyWith(
         rawLitersInput: input,
@@ -24,24 +28,10 @@ extension RefuelDraftSetters on WidgetRef {
   }
 
   void setRawCost(String input) {
-    final normalized =
-        FarsiOrEnglishDigitsInputFormatter.normalizePersianDigits(input);
-    final parsed = double.tryParse(normalized);
-    updateDraft(
-      (draft) => draft.copyWith(
-        rawCostInput: input,
-        cost: (parsed != null && parsed >= 1500 && parsed <= 10000000)
-            ? parsed
-            : null,
-      ),
-    );
+    setCostField(refuelDraftProvider, input, min: 1500, max: 10000000);
   }
 
   void setRawNotes(String input) {
-    updateDraft(
-      (draft) => draft.copyWith(
-        notes: input.length <= 5000 ? input : input.substring(0, 5000),
-      ),
-    );
+    setNotes(refuelDraftProvider, input);
   }
 }

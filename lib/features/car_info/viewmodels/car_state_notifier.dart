@@ -20,6 +20,54 @@ class CarStateNotifier extends Notifier<CarFormState> {
     return const CarFormState();
   }
 
+
+
+
+
+  // New: For multi-car, add a new car to the list
+  void addNewCar(CarFormStateItem newCarFormStateItem) {
+    state = state.copyWith(
+      cars: [...state.cars, newCarFormStateItem],
+      currentCarId: newCarFormStateItem.carId,
+    );
+  }
+
+  void updateCarIdFromNull(String newId) {
+    final updatedCars = state.cars.map((car) {
+      if (car.carId == null) {
+        return car.copyWith(carId: newId);
+      }
+      return car;
+    }).toList();
+
+    state = state.copyWith(cars: updatedCars, currentCarId: newId);
+  }
+
+  // New: Switch selected car
+  void selectCar(String currentCarId) {
+    if (state.cars.any((car) => car.carId == currentCarId)) {
+      state = state.copyWith(currentCarId: currentCarId);
+    }
+  }
+
+  void setCars(List<CarFormStateItem> cars) {
+    String? newCurrentCarId = state.currentCarId;
+
+    if (cars.isEmpty) {
+      newCurrentCarId = null;
+    } else if (newCurrentCarId == null ||
+        !cars.any((c) => c.carId == newCurrentCarId)) {
+      newCurrentCarId = cars
+          .firstWhere((c) => c.carId != null, orElse: () => cars.first)
+          .carId;
+    }
+
+    state = state.copyWith(cars: cars, currentCarId: newCurrentCarId);
+  }
+
+
+  
+
   void _ensureCarExists() {
     if (state.cars.isEmpty) {
       final newCar = CarFormStateItem();
@@ -146,44 +194,4 @@ class CarStateNotifier extends Notifier<CarFormState> {
     });
   }
 
-  // New: For multi-car, add a new car to the list
-  void addNewCar(CarFormStateItem newCarFormStateItem) {
-    state = state.copyWith(
-      cars: [...state.cars, newCarFormStateItem],
-      currentCarId: newCarFormStateItem.carId,
-    );
-  }
-
-  void updateCarIdFromNull(String newId) {
-    final updatedCars = state.cars.map((car) {
-      if (car.carId == null) {
-        return car.copyWith(carId: newId);
-      }
-      return car;
-    }).toList();
-
-    state = state.copyWith(cars: updatedCars, currentCarId: newId);
-  }
-
-  // New: Switch selected car
-  void selectCar(String currentCarId) {
-    if (state.cars.any((car) => car.carId == currentCarId)) {
-      state = state.copyWith(currentCarId: currentCarId);
-    }
-  }
-
-  void setCars(List<CarFormStateItem> cars) {
-    String? newCurrentCarId = state.currentCarId;
-
-    if (cars.isEmpty) {
-      newCurrentCarId = null;
-    } else if (newCurrentCarId == null ||
-        !cars.any((c) => c.carId == newCurrentCarId)) {
-      newCurrentCarId = cars
-          .firstWhere((c) => c.carId != null, orElse: () => cars.first)
-          .carId;
-    }
-
-    state = state.copyWith(cars: cars, currentCarId: newCurrentCarId);
-  }
 }

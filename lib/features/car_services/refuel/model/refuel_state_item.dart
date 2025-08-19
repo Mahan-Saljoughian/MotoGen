@@ -1,14 +1,29 @@
+import 'package:motogen/core/services/format_functions.dart';
 import 'package:motogen/features/bottom_sheet/config/picker_item.dart';
+import 'package:motogen/features/car_services/base/model/service_model.dart';
+import 'package:motogen/features/car_services/base/viewmodel/shared_draft_setters.dart';
+import 'package:motogen/features/car_services/base/viewmodel/shared_draft_validation.dart';
 
-class RefuelStateItem {
+
+class RefuelStateItem
+    with DateValidationForService, CostValidation, NotesValidation
+    implements
+        CostSetters<RefuelStateItem>,
+        NotesSetters<RefuelStateItem>,
+        ServiceModel {
   final String? refuelId;
+  @override
   final DateTime? date;
-  final double? liters;
+  final int? liters;
   final String? rawLitersInput;
   final PickerItem? paymentMethod;
-  final double? cost;
+  @override
+  final int? cost;
+  @override
   final String? rawCostInput;
+  @override
   final String? notes;
+  @override
   final bool isDateInteractedOnce;
   final bool ispaymentMethodInteractedOnce;
 
@@ -25,15 +40,45 @@ class RefuelStateItem {
     this.ispaymentMethodInteractedOnce = false,
   });
 
+  @override
+  String get id => refuelId!;
+
+  @override
+  List<String> getTitleByIndex() => [
+    "تاریخ:",
+    "مقدار افزوده:",
+    "روش پرداخت:",
+    "هزینه:",
+  ];
+  @override
+  List<String> getValueByIndex() => [
+    formatJalaliDate(date!),
+    "$liters لیتر",
+    paymentMethod?.title ?? "",
+    "${formatNumberByThreeDigit(cost!)} تومان",
+  ];
+  @override
+  List<String> getTitleByIndexForMoreItems() => [];
+  @override
+  List<String> getValueByIndexForMoreItems() => [];
+
+  @override
+  String? get serviceNotes => notes;
+
+  @override
   RefuelStateItem copyWith({
+    String? part, //unused
+    int? kilometer, //unused
+    String? rawKilometerInput, //unused
+    int? cost,
+    String? rawCostInput,
+    String? location,
+    String? notes,
     String? refuelId,
     DateTime? date,
-    double? liters,
+    int? liters,
     String? rawLitersInput,
     PickerItem? paymentMethod,
-    double? cost,
-    String? rawCostInput,
-    String? notes,
     bool? isDateInteractedOnce,
     bool? ispaymentMethodInteractedOnce,
   }) {
@@ -65,18 +110,46 @@ class RefuelStateItem {
       RefuelStateItem(
         refuelId: json['refuelId'],
         date: json['date'] != null ? DateTime.parse(json['date']) : null,
-        liters: json['liters'] != null
-            ? (json['liters'] as num).toDouble()
-            : null,
+        liters: json['liters'],
         paymentMethod: json['paymentMethod'] != null
             ? PickerItem.fromJson(json['paymentMethod'])
             : null,
-        cost: json['cost'] != null ? (json['cost'] as num).toDouble() : null,
+        cost: json['cost'],
         notes: json['notes'],
       );
 
-  String? get refuelDateError =>
-      isDateInteractedOnce && date == null ? 'الزامی!' : null;
+  Map<String, dynamic> toApiJson() {
+    final data = <String, dynamic>{
+      'liters': liters,
+      'cost': cost,
+      'paymentMethod': paymentMethod?.id,
+      'date': date?.toIso8601String(),
+      if (notes != null && notes!.trim().isNotEmpty) 'notes': notes,
+    };
+    return data;
+  }
+
+  factory RefuelStateItem.fromApiJson(
+    Map<String, dynamic> json,
+    List<PickerItem> paymentMethods,
+  ) {
+    return RefuelStateItem(
+      refuelId: json['id'] as String,
+      date: json['date'] != null
+          ? DateTime.parse(json['date'] as String)
+          : null,
+      liters: json['liters'],
+      cost: json['cost'],
+      paymentMethod: paymentMethods.firstWhere(
+        (payment) => payment.id == (json['paymentMethod'] ?? ''),
+        orElse: () => PickerItem(
+          id: json['paymentMethod'] ?? '',
+          title: json['paymentMethod'] ?? '',
+        ),
+      ),
+      notes: json['notes'],
+    );
+  }
 
   String? get refuelPaymentMethodError =>
       ispaymentMethodInteractedOnce && paymentMethod == null ? 'الزامی!' : null;

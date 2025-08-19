@@ -1,6 +1,7 @@
 import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
 import 'package:motogen/features/bottom_sheet/config/picker_item.dart';
 import 'package:motogen/features/car_services/refuel/model/refuel_state_item.dart';
+import 'package:motogen/features/car_services/repair/model/repair_state_item.dart';
 
 //dart run build_runner build --delete-conflicting-outputs
 
@@ -19,6 +20,7 @@ class CarFormStateItem {
   final DateTime? thirdPartyInsuranceExpiry;
   final String? rawKilometersInput;
   final List<RefuelStateItem> refuels;
+  final List<RepairStateItem> repairs;
   final bool isBrandInteractedOnce;
   final bool isModelInteractedOnce;
   final bool isTypeInteractedOnce;
@@ -44,6 +46,7 @@ class CarFormStateItem {
     this.rawKilometersInput,
     this.nickName,
     this.refuels = const [],
+    this.repairs = const [],
     this.isBrandInteractedOnce = false,
     this.isModelInteractedOnce = false,
     this.isTypeInteractedOnce = false,
@@ -70,6 +73,7 @@ class CarFormStateItem {
     DateTime? thirdPartyInsuranceExpiry,
     String? nickName,
     List<RefuelStateItem>? refuels,
+    List<RepairStateItem>? repairs,
     bool? isBrandInteractedOnce,
     bool? isModelInteractedOnce,
     bool? isTypeInteractedOnce,
@@ -96,6 +100,7 @@ class CarFormStateItem {
           thirdPartyInsuranceExpiry ?? this.thirdPartyInsuranceExpiry,
       nickName: nickName ?? this.nickName,
       refuels: refuels ?? this.refuels,
+         repairs: repairs ?? this.repairs,
       isBrandInteractedOnce:
           isBrandInteractedOnce ?? this.isBrandInteractedOnce,
       isModelInteractedOnce:
@@ -133,6 +138,7 @@ class CarFormStateItem {
     "thirdPartyInsuranceExpiry": thirdPartyInsuranceExpiry?.toIso8601String(),
     "nickName": nickName,
     "refuels": refuels.map((r) => r.toJson()).toList(),
+    "repairs": repairs.map((r) => r.toJson()).toList(),
   };
 
   factory CarFormStateItem.fromJson(
@@ -163,8 +169,31 @@ class CarFormStateItem {
             ?.map((e) => RefuelStateItem.fromJson(e as Map<String, dynamic>))
             .toList() ??
         const [],
+        repairs:
+        (json['repairs'] as List<dynamic>?)
+            ?.map((e) => RepairStateItem.fromJson(e as Map<String, dynamic>))
+            .toList() ??
+        const [],
   );
 
+ Map<String, dynamic> toApiJson({Map<String, dynamic>? userInfo}) {
+    return {
+      if (userInfo != null) 'userInformation': userInfo,
+      'carInformation': {
+        'productYear': yearMade,
+        'color': color?.id,
+        'kilometer': kilometerDriven,
+        'fuel': fuelType?.id,
+        'thirdPartyInsuranceExpiry': thirdPartyInsuranceExpiry?.toIso8601String(),
+        if (bodyInsuranceExpiry != null)
+          'bodyInsuranceExpiry': bodyInsuranceExpiry?.toIso8601String(),
+        'nextTechnicalInspectionDate': nextTechnicalCheck?.toIso8601String(),
+        'carTrimId': type?.id,
+        if (nickName != null && nickName!.trim().isNotEmpty) 'nickName': nickName,
+      },
+    };
+  }
+  
   String? get kilometerError {
     final text = rawKilometersInput;
     if (text == null || text.trim().isEmpty) {

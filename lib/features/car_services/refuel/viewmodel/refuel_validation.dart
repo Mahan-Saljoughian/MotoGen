@@ -1,5 +1,10 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
+
 import 'package:motogen/features/car_services/refuel/model/refuel_state_item.dart';
+import 'package:motogen/features/car_services/refuel/viewmodel/refuel_draft_setters.dart';
+
+
 
 extension RefuelValidation on RefuelStateItem {
   String? get litersError {
@@ -10,7 +15,7 @@ extension RefuelValidation on RefuelStateItem {
         FarsiOrEnglishDigitsInputFormatter.normalizePersianDigits(
           rawLitersInput!,
         );
-    final parsed = double.tryParse(normalized);
+    final parsed = int.tryParse(normalized);
     if (parsed == null || parsed < 1 || parsed > 100) {
       return 'مقدار باید بین 1 تا 100 لیتر باشد';
     }
@@ -19,30 +24,18 @@ extension RefuelValidation on RefuelStateItem {
 
   bool get isLitersValid => litersError == null;
 
-  String? get costError {
-    if (rawCostInput == null || rawCostInput!.trim().isEmpty) {
-      return 'الزامی';
-    }
-    final normalized =
-        FarsiOrEnglishDigitsInputFormatter.normalizePersianDigits(
-          rawCostInput!,
-        );
-    final parsed = double.tryParse(normalized);
-    if (parsed == null || parsed < 1500 || parsed > 10000000) {
-      return 'هزینه باید بین 1,500 تا 10,000,000 باشد';
-    }
-    return null;
-  }
-
-  bool get isCostValid => costError == null;
-
-  String? get notesError {
-    if (notes == null || notes!.trim().isEmpty) return null;
-    if (notes!.length > 5000) {
-      return 'حداکثر طول متن 5000 کاراکتر است';
-    }
-    return null;
-  }
-
-  bool get isNoteValid => notesError == null;
 }
+
+// Local provider for refuel button logic
+final isRefuelInfoButtonEnabled = Provider<bool>((ref) {
+  final refuelState = ref.watch(refuelDraftProvider);
+  return refuelState.isLitersValid &&
+      refuelState.isCostValid &&
+      refuelState.isNoteValid &&
+      refuelState.date != null &&
+      refuelState.liters != null &&
+      refuelState.paymentMethod != null &&
+      refuelState.cost != null;
+});
+
+

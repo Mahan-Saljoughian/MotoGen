@@ -4,18 +4,25 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
+import 'package:motogen/features/car_services/base/model/service_model.dart';
+
+enum ServiceTitle { refuel, oil, purchases, repair }
+
 
 class ServiceNavigator extends StatelessWidget {
-  final int index;
-  const ServiceNavigator({super.key, required this.index});
+  final ServiceTitle serviceTitle;
+  const ServiceNavigator({super.key, required this.serviceTitle});
+  
 
   @override
   Widget build(BuildContext context) {
-    final textBasedIndex = ["سوخت", "روغن", "خرید", "تعمیرات"];
+    final index = serviceTitle.index;
+    final text = getServiceTitle(serviceTitle);
+   
     final iconBasedIndex = [
       {"icon": AppIcons.fuel, "width": 39.w, "height": 48.5.h},
       {"icon": AppIcons.oil, "width": 39.2.w, "height": 45.4.h},
-      {"icon": AppIcons.bag, "width": 35.3.w, "height": 44.2.h},
+      {"icon": AppIcons.purchases, "width": 35.3.w, "height": 44.2.h},
       {"icon": AppIcons.repair, "width": 45.w, "height": 42.5.h},
     ];
     final backGroundColor = index % 2 == 0
@@ -28,7 +35,7 @@ class ServiceNavigator extends StatelessWidget {
     final onTapFunction = [
       () => Navigator.pushReplacementNamed(context, '/refuel'),
       () => Navigator.pushReplacementNamed(context, '/oil'),
-      () => Navigator.pushReplacementNamed(context, '/bag'),
+      () => Navigator.pushReplacementNamed(context, '/purchases'),
       () => Navigator.pushReplacementNamed(context, '/repair'),
     ];
     return GestureDetector(
@@ -55,7 +62,7 @@ class ServiceNavigator extends StatelessWidget {
               ),
 
               Text(
-                textBasedIndex[index],
+               text,
                 style: TextStyle(
                   color: AppColors.orange50,
                   fontSize: 16.sp,

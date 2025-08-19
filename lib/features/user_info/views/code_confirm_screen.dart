@@ -18,7 +18,6 @@ import 'package:motogen/features/onboarding/widgets/dot_indicator.dart';
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
 import 'package:motogen/features/user_info/viewmodels/user_use_case_api.dart';
 
-
 class CodeConfirmScreen extends ConsumerStatefulWidget {
   final int currentPage;
   final int count;
@@ -76,7 +75,7 @@ class _ValidateCodeScreenState extends ConsumerState<CodeConfirmScreen> {
         if (next.isProfileCompleted == true) {
           await ref.getUserProfile();
           await ref.read(carStateNotifierProvider.notifier).fetchAllCars();
-          if(context.mounted){
+          if (context.mounted) {
             Navigator.pushReplacementNamed(context, '/mainApp');
           }
         } else {
@@ -89,205 +88,223 @@ class _ValidateCodeScreenState extends ConsumerState<CodeConfirmScreen> {
     final auth = ref.watch(authProvider);
     final authNotifier = ref.read(authProvider.notifier);
     final bool hasError = auth.status == AuthStatus.error;
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 20.h),
-            child: Center(
-              child: Column(
-                children: [
-                  Row(
+    return Stack(
+      children: [
+        Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: SafeArea(
+            child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 20.h),
+                child: Center(
+                  child: Column(
                     children: [
-                      SizedBox(width: 20.w),
-                      GestureDetector(
-                        onTap: () {
-                          codeVM.cancelTimer();
-                          codeVM.resetCode();
-                          widget.onBack();
-                        },
-                        child: SvgPicture.asset(
-                          AppIcons.arrowRight,
-                          width: 24.w,
-                          height: 24.h,
-                        ),
-                      ),
-                      SizedBox(width: 110.w),
-                      Text(
-                        "حساب کاربری",
-                        style: TextStyle(
-                          color: AppColors.blue500,
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 224.h),
-                  Text(
-                    "کد تایید پیامک شده به موبایلت رو وارد کن...",
-                    style: TextStyle(
-                      color: AppColors.blue900,
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  SizedBox(height: 25.h),
-                  Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(
-                        4,
-                        (i) => Container(
-                          width: 46.w,
-                          height: 46.w,
-                          margin: EdgeInsets.symmetric(horizontal: 12.w),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: hasError
-                                  ? Color(0xFFC60B0B)
-                                  : AppColors.blue500,
-                              width: 1.5.w,
-                            ),
-                            borderRadius: BorderRadius.circular(12.r),
-                          ),
-                          child: TextField(
-                            controller: controllers[i],
-                            focusNode: focusNodes[i],
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: hasError
-                                  ? Color(0xFFC60B0B)
-                                  : AppColors.blue500,
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w700,
-                            ),
-                            inputFormatters: [
-                              FarsiOrEnglishDigitsInputFormatter(),
-                              LengthLimitingTextInputFormatter(1),
-                            ],
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                            ),
-                            onChanged: (value) {
-                              if (value.length == 1 && i < 3) {
-                                focusNodes[i + 1].requestFocus();
-                              }
-                              if (value.isEmpty && i > 0) {
-                                focusNodes[i - 1].requestFocus();
-                              }
-
-                              ref
-                                  .read(codeControllerProvider.notifier)
-                                  .updateDigit(i, value);
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 17.h),
-                  hasError
-                      ? Text(
-                          auth.message ?? "کدی که وارد کردی اشتباهه!",
-                          style: TextStyle(
-                            color: Color(0xFFC60B0B),
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        )
-                      : Text(
-                          codeVM.timerText,
-                          style: TextStyle(
-                            color: AppColors.blue900,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                  SizedBox(height: 17.h),
-                  GestureDetector(
-                    onTap: () {
-                      final phone = auth.phoneNumber;
-                      if (phone != null && phone.isNotEmpty) {
-                        authNotifier.requestOtp(phone);
-                        Logger().d("debug the send code is : ${auth.codeSent}");
-                      } else {
-                        logger.d("Phone number is missing!");
-                      }
-                      ref.read(codeControllerProvider.notifier).resetCode();
-                      for (var controller in controllers) {
-                        controller.clear();
-                      }
-                      ref.read(codeControllerProvider.notifier).startTimer();
-                      focusNodes[0].requestFocus();
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 134.w),
-                      child: Row(
+                      Row(
                         children: [
-                          SvgPicture.asset(
-                            AppIcons.rotateLeft,
-                            height: 24.h,
-                            width: 24.w,
+                          SizedBox(width: 20.w),
+                          GestureDetector(
+                            onTap: () {
+                              codeVM.cancelTimer();
+                              codeVM.resetCode();
+                              widget.onBack();
+                            },
+                            child: SvgPicture.asset(
+                              AppIcons.arrowRight,
+                              width: 24.w,
+                              height: 24.h,
+                            ),
                           ),
-                          SizedBox(width: 5.w),
+                          SizedBox(width: 110.w),
                           Text(
-                            "ارسال مجدد کد",
+                            "حساب کاربری",
                             style: TextStyle(
-                              color: Color(0xFF3D89F6),
-                              fontSize: 14.sp,
+                              color: AppColors.blue500,
+                              fontSize: 16.sp,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
                         ],
                       ),
-                    ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.2,
+                      ),
+
+                      Text(
+                        "کد تایید پیامک شده به موبایلت رو وارد کن...",
+                        style: TextStyle(
+                          color: AppColors.blue900,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      SizedBox(height: 25.h),
+                      Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(
+                            4,
+                            (i) => Container(
+                              width: 46.w,
+                              height: 46.w,
+                              margin: EdgeInsets.symmetric(horizontal: 12.w),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: hasError
+                                      ? Color(0xFFC60B0B)
+                                      : AppColors.blue500,
+                                  width: 1.5.w,
+                                ),
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                              child: TextField(
+                                controller: controllers[i],
+                                focusNode: focusNodes[i],
+                                keyboardType: TextInputType.number,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: hasError
+                                      ? Color(0xFFC60B0B)
+                                      : AppColors.blue500,
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                inputFormatters: [
+                                  FarsiOrEnglishDigitsInputFormatter(),
+                                  LengthLimitingTextInputFormatter(1),
+                                ],
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                ),
+                                onChanged: (value) {
+                                  if (value.length == 1 && i < 3) {
+                                    focusNodes[i + 1].requestFocus();
+                                  }
+                                  if (value.isEmpty && i > 0) {
+                                    focusNodes[i - 1].requestFocus();
+                                  }
+
+                                  ref
+                                      .read(codeControllerProvider.notifier)
+                                      .updateDigit(i, value);
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 17.h),
+                      hasError
+                          ? Text(
+                              auth.message ?? "کدی که وارد کردی اشتباهه!",
+                              style: TextStyle(
+                                color: Color(0xFFC60B0B),
+                                fontSize: 12.sp,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            )
+                          : Text(
+                              codeVM.timerText,
+                              style: TextStyle(
+                                color: AppColors.blue900,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                      SizedBox(height: 17.h),
+                      GestureDetector(
+                        onTap: () {
+                          final phone = auth.phoneNumber;
+                          if (phone != null && phone.isNotEmpty) {
+                            authNotifier.requestOtp(phone);
+                            Logger().d(
+                              "debug the send code is : ${auth.codeSent}",
+                            );
+                          } else {
+                            logger.d("Phone number is missing!");
+                          }
+                          ref.read(codeControllerProvider.notifier).resetCode();
+                          for (var controller in controllers) {
+                            controller.clear();
+                          }
+                          ref
+                              .read(codeControllerProvider.notifier)
+                              .startTimer();
+                          focusNodes[0].requestFocus();
+                        },
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 134.w),
+                          child: Row(
+                            children: [
+                              SvgPicture.asset(
+                                AppIcons.rotateLeft,
+                                height: 24.h,
+                                width: 24.w,
+                              ),
+                              SizedBox(width: 5.w),
+                              Text(
+                                "ارسال مجدد کد",
+                                style: TextStyle(
+                                  color: Color(0xFF3D89F6),
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 2.h),
+                      Image.asset(
+                        AppImages.phoneCodePageImage,
+                        width: 276.w,
+                        height: 276.w,
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 2.h),
-                  Image.asset(
-                    AppImages.phoneCodePageImage,
-                    width: 276.w,
-                    height: 276.w,
-                  ),
-                  SizedBox(height: 13.h),
-                  DotIndicator(
-                    currentPage: widget.currentPage,
-                    count: widget.count,
-                  ),
-                  SizedBox(height: 24.h),
-                  OnboardingButton(
-                    currentPage: widget.currentPage,
-                    onPressed: () {
-                      final codeVM = ref.read(codeControllerProvider);
-                      if (codeVM.isComplete &&
-                          codeVM.isTimerActive &&
-                          auth.status != AuthStatus.loading &&
-                          auth.status != AuthStatus.confirmed) {
-                        final phone = auth.phoneNumber;
-                        if (phone != null && phone.isNotEmpty) {
-                          authNotifier.confirmOtp(phone, codeVM.code);
-                          codeVM.cancelTimer();
-                          codeVM.resetCode();
-                        } else {
-                          logger.d("Phone number is missing!");
-                        }
-                      }
-                    },
-                    enabled:
-                        codeVM.isComplete &&
-                        codeVM.isTimerActive &&
-                        auth.status != AuthStatus.loading,
-                  ),
-                ],
+                ),
               ),
             ),
           ),
         ),
-      ),
+        Positioned(
+          bottom: 74.h,
+          right: 43.w,
+          child: Column(
+            children: [
+              DotIndicator(
+                currentPage: widget.currentPage,
+                count: widget.count,
+              ),
+              SizedBox(height: 24.h),
+              OnboardingButton(
+                currentPage: widget.currentPage,
+                onPressed: () {
+                  final codeVM = ref.read(codeControllerProvider);
+                  if (codeVM.isComplete &&
+                      codeVM.isTimerActive &&
+                      auth.status != AuthStatus.loading &&
+                      auth.status != AuthStatus.confirmed) {
+                    final phone = auth.phoneNumber;
+                    if (phone != null && phone.isNotEmpty) {
+                      authNotifier.confirmOtp(phone, codeVM.code);
+                      codeVM.cancelTimer();
+                      codeVM.resetCode();
+                    } else {
+                      logger.d("Phone number is missing!");
+                    }
+                  }
+                },
+                enabled:
+                    codeVM.isComplete &&
+                    codeVM.isTimerActive &&
+                    auth.status != AuthStatus.loading,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
