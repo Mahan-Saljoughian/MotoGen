@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
 import 'package:motogen/core/constants/app_colors.dart';
-import 'package:motogen/core/services/token_expire.dart';
+
 import 'package:motogen/features/car_info/viewmodels/car_use_case_api.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/car_services/base/view/service_screen.dart';
@@ -59,10 +59,6 @@ class _MyAppState extends ConsumerState<MyApp> {
     if (accessToken == null || accessToken.isEmpty) {
       _isLoggedIn = false;
       logger.i("debug No access token, go to login");
-    } else if (isTokenExpired(accessToken)) {
-      _isLoggedIn = false;
-      logger.w("debug Access token expired, go to login");
-      await storage.delete(key: 'accessToken');
     } else {
       _isLoggedIn = true;
       try {

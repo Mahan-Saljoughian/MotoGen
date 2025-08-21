@@ -45,7 +45,7 @@ extension OilDraftSetters on WidgetRef {
   }
 
   void setRawCost(String input) {
-    setCostField(oillDraftProvider, input, min: 1500, max: 10000000);
+    setCostField(oillDraftProvider, input, min: 1, max: 1000000000);
   }
 
   void setRawNotes(String input) {

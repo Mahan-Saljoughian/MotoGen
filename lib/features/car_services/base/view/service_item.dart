@@ -10,6 +10,8 @@ import 'package:motogen/features/car_services/base/data/providers.dart';
 import 'package:motogen/features/car_services/base/model/service_model.dart';
 import 'package:motogen/features/car_services/oil/model/oil_state_item.dart';
 import 'package:motogen/features/car_services/oil/view/oil_form_screen.dart';
+import 'package:motogen/features/car_services/purchases/model/purhcase_state_item.dart';
+import 'package:motogen/features/car_services/purchases/view/purchase_form_screen.dart';
 import 'package:motogen/features/car_services/refuel/model/refuel_state_item.dart';
 import 'package:motogen/features/car_services/refuel/view/refuel_form_screen.dart';
 import 'package:motogen/features/car_services/repair/model/repair_state_item.dart';
@@ -44,6 +46,9 @@ class ServiceItem extends ConsumerWidget {
         case ServiceTitle.oil:
           return OilFormScreen(initialItem: serviceItem as OilStateItem);
         case ServiceTitle.purchases:
+          return PurchaseFromScreen(
+            initialItem: serviceItem as PurhcaseStateItem,
+          );
         case ServiceTitle.repair:
           return RepairFromScreen(initialItem: serviceItem as RepairStateItem);
       }

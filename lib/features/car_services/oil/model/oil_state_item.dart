@@ -18,10 +18,8 @@ class OilStateItem
         LocationSetters<OilStateItem>,
         ServiceModel {
   final String? oilId;
-
   @override
   final DateTime? date;
-
   final PickerItem? oilType;
   final String? oilBrandAndModel;
   @override
@@ -65,6 +63,12 @@ class OilStateItem
 
   @override
   String get id => oilId!;
+  @override
+  int get costMin => 1;
+  @override
+  int get costMax => 1000000000;
+  @override
+  String? get serviceNotes => notes;
   @override
   List<String> getTitleByIndex() => [
     "تاریخ:",
@@ -111,8 +115,7 @@ class OilStateItem
     return values;
   }
 
-  @override
-  String? get serviceNotes => notes;
+
 
   @override
   OilStateItem copyWith({

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:motogen/features/car_services/base/model/service_model.dart';
 import 'package:motogen/features/car_services/oil/viewmodel/oil_list_notifier.dart';
+import 'package:motogen/features/car_services/purchases/viewmodel/purchase_list_notifier.dart';
 
 import 'package:motogen/features/car_services/refuel/viewmodel/refuel_list_notifier.dart';
 
@@ -36,7 +37,7 @@ getServiceListProvider(ServiceTitle serviceTitle) {
             String
           >;
     case ServiceTitle.purchases:
-      return refuelListProvider
+      return purchaseListProvider
           as AsyncNotifierProviderFamily<
             FamilyAsyncNotifier<List<ServiceModel>, String>,
             List<ServiceModel>,
@@ -44,8 +45,6 @@ getServiceListProvider(ServiceTitle serviceTitle) {
           >;
   }
 }
-
-
 
 final serviceMoreEnabledProvider = StateProvider.family<bool, String>(
   (ref, itemId) => false,

@@ -16,7 +16,7 @@ extension RefuelValidation on OilStateItem {
   bool get isoilBrandAndModelValid => oilBrandAndModelError == null;
 }
 
-// Local provider for refuel button logic
+// Local provider for oil button logic
 final isOilInfoButtonEnabled = Provider.family<bool, bool>((ref, isEdit) {
   final oilState = ref.watch(oillDraftProvider);
   final baseCheck =

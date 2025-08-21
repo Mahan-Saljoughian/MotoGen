@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/features/car_services/oil/view/oil_form_screen.dart';
+import 'package:motogen/features/car_services/purchases/view/purchase_form_screen.dart';
 import 'package:motogen/features/car_services/refuel/view/refuel_form_screen.dart';
 import 'package:motogen/features/car_services/repair/view/repair_from_screen.dart';
 import 'package:motogen/features/home_screen/widget/service_navigator.dart';
@@ -24,7 +25,10 @@ class AddButton extends StatelessWidget {
         MaterialPageRoute(builder: (_) => OilFormScreen()),
       ),
 
-      () {},
+      () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => PurchaseFromScreen()),
+      ),
       () => Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => RepairFromScreen()),

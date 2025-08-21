@@ -26,7 +26,7 @@ extension RepairDraftSetters on WidgetRef {
   }
 
   void setRawCost(String input) {
-    setCostField(repairDraftProvider, input, min: 1);
+    setCostField(repairDraftProvider, input, min: 1, max: 1000000000);
   }
 
   void setRawNotes(String input) {

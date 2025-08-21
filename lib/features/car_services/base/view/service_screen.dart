@@ -13,7 +13,6 @@ import 'package:motogen/features/car_services/base/widgets/add_button.dart';
 import 'package:motogen/features/car_services/base/widgets/help_to_add_text_box.dart';
 import 'package:motogen/features/car_services/oil/data/oil_repository.dart';
 import 'package:motogen/features/car_services/oil/view/oil_tab_button.dart';
-
 import 'package:motogen/features/home_screen/widget/service_navigator.dart';
 
 class ServiceScreen extends ConsumerWidget {
@@ -118,6 +117,23 @@ class ServiceScreen extends ConsumerWidget {
                                               .read(oilTypeTabProvider.notifier)
                                               .state =
                                           OilTypeTab.gearbox,
+                                  /* onTap: () async {
+                                    final secureStorage =
+                                        const FlutterSecureStorage();
+                                    await secureStorage.write(
+                                      key: "accessToken",
+                                      value: "totally_invalid_token",
+                                    );
+                                    final refreshToken = await secureStorage
+                                        .read(key: "refreshToken");
+                                    debugPrint(
+                                      "debug the refersh token is $refreshToken",
+                                    );
+                                    ref
+                                            .read(oilTypeTabProvider.notifier)
+                                            .state =
+                                        OilTypeTab.gearbox;
+                                  }, */
                                 ),
                                 OilTabButton(
                                   label: "ترمز",
@@ -161,6 +177,14 @@ class ServiceScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
+                if (serviceItems.isEmpty)
+                  Positioned(
+                    bottom: 165.h,
+                    right: 105.w,
+                    child: HelpToAddTextBox(
+                      helpText: "برای اضافه کردن $title جدید روی این دکمه بزن.",
+                    ),
+                  ),
                 Positioned(
                   bottom: 90.h,
                   right: 43.w,
@@ -209,33 +233,23 @@ class ServiceScreen extends ConsumerWidget {
       },
     ];
 
-    return Stack(
-      alignment: Alignment.bottomCenter,
+    return Column(
       children: [
-        Column(
-          children: [
-            Image.asset(
-              imageBasedIndex[index]['icon'] as String,
-              width: imageBasedIndex[index]['width'] as double,
-              height: imageBasedIndex[index]['height'] as double,
-            ),
-            SizedBox(height: 19.h),
-            Text(
-              "هنوز $titleی رو ثبت نکردی!",
-              style: TextStyle(
-                color: AppColors.blue600,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            SizedBox(height: 160.h),
-          ],
+        Image.asset(
+          imageBasedIndex[index]['icon'] as String,
+          width: imageBasedIndex[index]['width'] as double,
+          height: imageBasedIndex[index]['height'] as double,
         ),
-        Positioned(
-          child: HelpToAddTextBox(
-            helpText: "برای اضافه کردن $title جدید روی این دکمه بزن.",
+        SizedBox(height: 19.h),
+        Text(
+          "هنوز $titleی رو ثبت نکردی!",
+          style: TextStyle(
+            color: AppColors.blue600,
+            fontSize: 16.sp,
+            fontWeight: FontWeight.w700,
           ),
         ),
+        SizedBox(height: 160.h),
       ],
     );
   }

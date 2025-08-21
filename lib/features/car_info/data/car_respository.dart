@@ -1,7 +1,6 @@
 import 'package:logger/web.dart';
 import 'package:motogen/core/services/api_service.dart';
 
-import 'package:motogen/core/storage/token_flutter_secure_storage.dart';
 import 'package:motogen/features/car_info/models/car_form_state_item.dart';
 
 class CarRespository {
@@ -12,13 +11,11 @@ class CarRespository {
     CarFormStateItem carState,
     Map<String, dynamic> userInfo,
   ) async {
-    final accessToken = await getAccessToken();
-
+  
     final data = carState.toApiJson(userInfo: userInfo);
     final response = await _api.post(
       "users/me/complete-profile",
       data,
-      headers: {'Authorization': 'Bearer $accessToken'},
     );
 
     if (response['success'] != true) {
@@ -30,10 +27,9 @@ class CarRespository {
 
   Future<List<Map<String, dynamic>>> getAllCars() async {
     try {
-      final accessToken = await getAccessToken();
+     
       final response = await _api.get(
-        "users/me/cars",
-        headers: {'Authorization': 'Bearer $accessToken'},
+        "users/me/cars"
       );
       if (response['success'] != true) {
         throw Exception(response['message'] ?? 'Failed to get car info');
@@ -47,10 +43,9 @@ class CarRespository {
 
   Future<Map<String, dynamic>> getCarInfoById(String carId) async {
     try {
-      final accessToken = await getAccessToken();
+    
       final response = await _api.get(
-        "users/me/cars/$carId",
-        headers: {'Authorization': 'Bearer $accessToken'},
+        "users/me/cars/$carId"
       );
       if (response['success'] != true) {
         throw Exception(
@@ -69,11 +64,10 @@ class CarRespository {
     Map<String, dynamic> data,
   ) async {
     try {
-      final accessToken = await getAccessToken();
+     
       final response = await _api.patch(
         "users/me/cars/$carId",
-        data,
-        headers: {'Authorization': 'Bearer $accessToken'},
+        data
       );
       if (response['success'] != true) {
         throw Exception(
@@ -153,13 +147,12 @@ class CarRespository {
 
   Future<Map<String, dynamic>> postCarInfo(CarFormStateItem carState) async {
     try {
-      final accessToken = await getAccessToken();
+     
 
       final data = carState.toApiJson();
       final response = await _api.post(
         "users/me/cars",
-        data,
-        headers: {'Authorization': 'Bearer $accessToken'},
+        data
       );
       if (response['success'] != true) {
         throw Exception(response['message'] ?? 'Failed to post user profile');
@@ -174,10 +167,9 @@ class CarRespository {
 
   Future<Map<String, dynamic>> deleteCarInfoById(String carId) async {
     try {
-      final accessToken = await getAccessToken();
+ 
       final response = await _api.delete(
-        "users/me/cars/$carId",
-        headers: {'Authorization': 'Bearer $accessToken'},
+        "users/me/cars/$carId"
       );
       if (response['success'] != true) {
         throw Exception(

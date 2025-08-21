@@ -1,6 +1,6 @@
 import 'package:logger/logger.dart';
 import 'package:motogen/core/services/api_service.dart';
-import 'package:motogen/core/storage/token_flutter_secure_storage.dart';
+
 
 abstract class BaseServiceRepository<T> {
   final ApiService _api = ApiService();
@@ -17,15 +17,13 @@ abstract class BaseServiceRepository<T> {
     String? oilType,
   ) async {
     try {
-      final accessToken = await getAccessToken();
+    
       final queryParams = [
         if (oilType != null) 'oilType=$oilType',
         if (sortType != null) 'order=$sortType',
       ].join('&');
       final response = await _api.get(
-        "users/me/$carId/$endpoint${queryParams.isNotEmpty ? '?$queryParams' : ''}",
-        /* cars/ */
-        headers: {'Authorization': 'Bearer $accessToken'},
+        "users/me/cars/$carId/$endpoint${queryParams.isNotEmpty ? '?$queryParams' : ''}",
       );
       if (response['success'] != true) {
         throw Exception(
@@ -44,11 +42,10 @@ abstract class BaseServiceRepository<T> {
 
   Future<Map<String, dynamic>> postItem(T item, String carId) async {
     try {
-      final accessToken = await getAccessToken();
+  
       final response = await _api.post(
-        "users/me/$carId/$endpoint",
-        toApiJson(item),
-        headers: {'Authorization': 'Bearer $accessToken'},
+        "users/me/cars/$carId/$endpoint",
+        toApiJson(item)
       );
       logger.d("debug Repair post response: $response");
       if (response['success'] != true) {
@@ -68,10 +65,10 @@ abstract class BaseServiceRepository<T> {
     String itemId,
   ) async {
     try {
-      final accessToken = await getAccessToken();
+    
       final response = await _api.delete(
-        "users/me/$carId/$endpoint/$itemId",
-        headers: {'Authorization': 'Bearer $accessToken'},
+        "users/me/cars/$carId/$endpoint/$itemId",
+       
       );
       if (response['success'] != true) {
         throw Exception(
@@ -92,11 +89,10 @@ abstract class BaseServiceRepository<T> {
     String itemId,
   ) async {
     try {
-      final accessToken = await getAccessToken();
+  
       final response = await _api.patch(
-        "users/me/$carId/$endpoint/$itemId",
-        changes,
-        headers: {'Authorization': 'Bearer $accessToken'},
+        "users/me/cars/$carId/$endpoint/$itemId",
+        changes
       );
       if (response['success'] != true) {
         throw Exception(

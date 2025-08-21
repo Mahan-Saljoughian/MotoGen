@@ -2,7 +2,7 @@
 
 import 'package:logger/web.dart';
 import 'package:motogen/core/services/api_service.dart';
-import 'package:motogen/core/storage/token_flutter_secure_storage.dart';
+
 
 
 class UserRespository {
@@ -10,10 +10,9 @@ class UserRespository {
   var logger = Logger();
   Future<Map<String, dynamic>> getUserProfile() async {
     try {
-      final accessToken = await getAccessToken();
+    
       final response = await _api.get(
-        "users/me",
-        headers: {'Authorization': 'Bearer $accessToken'},
+        "users/me"
       );
       if (response['success'] != true) {
         throw Exception(response['message'] ?? 'Failed to get user profile');
@@ -30,11 +29,10 @@ class UserRespository {
     Map<String, String> body,
   ) async {
     try {
-      final accessToken = await getAccessToken();
+ 
       final response = await _api.patch(
         "users/me",
-        body,
-        headers: {'Authorization': 'Bearer $accessToken'},
+        body
       );
       if (response['success'] != true) {
         throw Exception(response['message'] ?? 'Failed to patch user profile');

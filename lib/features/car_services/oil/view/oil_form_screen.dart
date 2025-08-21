@@ -14,7 +14,7 @@ import 'package:motogen/features/car_services/oil/viewmodel/oil_use_case_api.dar
 import 'package:motogen/features/car_services/oil/viewmodel/oil_validation.dart';
 
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
-import 'package:motogen/widgets/confirm_bottom_sheet.dart';
+import 'package:motogen/features/bottom_sheet/widgets/confirm_bottom_sheet.dart';
 
 class OilFormScreen extends ConsumerStatefulWidget {
   final OilStateItem? initialItem;

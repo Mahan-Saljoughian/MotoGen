@@ -4,7 +4,6 @@ import 'package:motogen/features/car_services/base/model/service_model.dart';
 import 'package:motogen/features/car_services/base/viewmodel/shared_draft_setters.dart';
 import 'package:motogen/features/car_services/base/viewmodel/shared_draft_validation.dart';
 
-
 class RefuelStateItem
     with DateValidationForService, CostValidation, NotesValidation
     implements
@@ -42,7 +41,12 @@ class RefuelStateItem
 
   @override
   String get id => refuelId!;
-
+  @override
+  int get costMin => 1500;
+  @override
+  int get costMax => 10000000;
+  @override
+  String? get serviceNotes => notes;
   @override
   List<String> getTitleByIndex() => [
     "تاریخ:",
@@ -61,9 +65,6 @@ class RefuelStateItem
   List<String> getTitleByIndexForMoreItems() => [];
   @override
   List<String> getValueByIndexForMoreItems() => [];
-
-  @override
-  String? get serviceNotes => notes;
 
   @override
   RefuelStateItem copyWith({

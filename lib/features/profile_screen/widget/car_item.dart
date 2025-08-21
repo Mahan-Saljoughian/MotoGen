@@ -11,7 +11,7 @@ import 'package:motogen/features/car_info/viewmodels/car_use_case_api.dart';
 
 import 'dart:math' as math;
 
-import 'package:motogen/widgets/confirm_bottom_sheet.dart';
+import 'package:motogen/features/bottom_sheet/widgets/confirm_bottom_sheet.dart';
 
 class CarItem extends ConsumerWidget {
   final int index;

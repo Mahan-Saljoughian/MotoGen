@@ -9,7 +9,7 @@ final api = ApiService();
 final carBrandsProvider = FutureProvider.autoDispose<List<PickerItem>>((
   ref,
 ) async {
-  final result = await api.get('cars/brands');
+  final result = await api.get('cars/brands', skipAuth: true);
   final List data = result['data'];
   Logger().i("API response: $result");
   return data
@@ -22,7 +22,10 @@ final carBrandsProvider = FutureProvider.autoDispose<List<PickerItem>>((
 // Models depend on brand selection
 final carModelsProvider = FutureProvider.autoDispose
     .family<List<PickerItem>, String>((ref, brandId) async {
-      final result = await api.get('cars/brands/$brandId/models');
+      final result = await api.get(
+        'cars/brands/$brandId/models',
+        skipAuth: true,
+      );
       final List data = result['data'];
       Logger().i("API response: $result");
       return data
@@ -37,7 +40,7 @@ final carTrimsApiProvider = FutureProvider.autoDispose
     .family<Map<String, dynamic>, String>((ref, modelId) async {
       final api = ApiService();
       // Only calls API when modelId changes, or when explicitly refreshed.
-      return await api.get('cars/models/$modelId/trims');
+      return await api.get('cars/models/$modelId/trims', skipAuth: true);
     });
 
 // Types (trims) depend on model selection
@@ -105,7 +108,7 @@ final yearMadeProvider = Provider.autoDispose
     });
 
 final colorProvider = FutureProvider.autoDispose<List<PickerItem>>((ref) async {
-  final result = await api.get('colors');
+  final result = await api.get('colors', skipAuth: true);
   final List data = result['data'];
   return data
       .map(

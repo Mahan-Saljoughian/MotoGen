@@ -13,7 +13,7 @@ import 'package:motogen/features/car_services/refuel/viewmodel/refuel_use_case_a
 import 'package:motogen/features/car_services/refuel/viewmodel/refuel_validation.dart';
 import 'package:motogen/features/bottom_sheet/widgets/build_form_fields.dart';
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
-import 'package:motogen/widgets/confirm_bottom_sheet.dart';
+import 'package:motogen/features/bottom_sheet/widgets/confirm_bottom_sheet.dart';
 
 class RefuelFormScreen extends ConsumerStatefulWidget {
   final RefuelStateItem? initialItem;

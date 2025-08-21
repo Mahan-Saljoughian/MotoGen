@@ -1,4 +1,5 @@
 import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
+import 'package:motogen/core/services/format_functions.dart';
 
 // ---------- Validation mixins ----------
 
@@ -15,6 +16,9 @@ mixin CostValidation {
   String? get rawCostInput;
   int? get cost;
 
+  int get costMin;
+  int get costMax;
+
   String? get costError {
     if (rawCostInput == null || rawCostInput!.trim().isEmpty) {
       return 'الزامی';
@@ -24,8 +28,8 @@ mixin CostValidation {
           rawCostInput!,
         );
     final parsed = int.tryParse(normalized);
-    if (parsed == null || parsed < 1500 || parsed > 10000000) {
-      return 'هزینه باید بین 1,500 تا 10,000,000 باشد';
+    if (parsed == null || parsed < costMin || parsed > costMax) {
+      return 'هزینه باید بین ${formatNumberByThreeDigit(costMin)} تا ${formatNumberByThreeDigit(costMax)} باشد';
     }
     return null;
   }

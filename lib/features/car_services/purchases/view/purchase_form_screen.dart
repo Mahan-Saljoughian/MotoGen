@@ -6,27 +6,26 @@ import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/bottom_sheet/widgets/build_form_fields.dart';
-import 'package:motogen/features/car_services/repair/config/repair_info_list.dart';
-import 'package:motogen/features/car_services/repair/model/repair_state_item.dart';
-import 'package:motogen/features/car_services/repair/viewmodel/repair_draft_setters.dart';
-import 'package:motogen/features/car_services/repair/viewmodel/repair_list_notifier.dart';
-import 'package:motogen/features/car_services/repair/viewmodel/repair_use_case_api.dart';
-import 'package:motogen/features/car_services/repair/viewmodel/repair_validation.dart';
+import 'package:motogen/features/car_services/purchases/config/purchase_info_list.dart';
+import 'package:motogen/features/car_services/purchases/model/purhcase_state_item.dart';
+import 'package:motogen/features/car_services/purchases/viewmodel/purchase_draft_setters.dart';
+import 'package:motogen/features/car_services/purchases/viewmodel/purchase_list_notifier.dart';
+import 'package:motogen/features/car_services/purchases/viewmodel/purchase_use_case_api.dart';
+import 'package:motogen/features/car_services/purchases/viewmodel/purchase_validation.dart';
 
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
 import 'package:motogen/features/bottom_sheet/widgets/confirm_bottom_sheet.dart';
 
-class RepairFromScreen extends ConsumerStatefulWidget {
-  final RepairStateItem? initialItem;
-  const RepairFromScreen({super.key, this.initialItem});
+class PurchaseFromScreen extends ConsumerStatefulWidget {
+  final PurhcaseStateItem? initialItem;
+  const PurchaseFromScreen({super.key, this.initialItem});
 
   @override
-  ConsumerState<RepairFromScreen> createState() => _RepairFormScreenState();
+  ConsumerState<PurchaseFromScreen> createState() => _PurchaseFormScreenState();
 }
 
-class _RepairFormScreenState extends ConsumerState<RepairFromScreen> {
+class _PurchaseFormScreenState extends ConsumerState<PurchaseFromScreen> {
   final partController = TextEditingController();
-  final kilometerController = TextEditingController();
   final locationController = TextEditingController();
   final costController = TextEditingController();
   final notesController = TextEditingController();
@@ -37,20 +36,18 @@ class _RepairFormScreenState extends ConsumerState<RepairFromScreen> {
 
     if (widget.initialItem != null) {
       Future.microtask(() {
-        ref.read(repairDraftProvider.notifier).state = widget.initialItem!
+        ref.read(purchaseDraftProvider.notifier).state = widget.initialItem!
             .copyWith(
               isDateInteractedOnce: true,
-              isRepairActionInteractedOnce: true,
+              isPurchaseCategoryInteractedOnce: true,
             );
 
         partController.text = widget.initialItem!.part!;
-        kilometerController.text = widget.initialItem!.kilometer!.toString();
         locationController.text = widget.initialItem!.location!;
         costController.text = widget.initialItem!.cost!.toString();
         notesController.text = widget.initialItem!.notes ?? '';
 
         ref.setRawPart(partController.text);
-        ref.setRawKilometer(kilometerController.text);
         ref.setRawLocation(locationController.text);
         ref.setRawCost(costController.text);
         ref.setRawNotes(notesController.text);
@@ -61,7 +58,6 @@ class _RepairFormScreenState extends ConsumerState<RepairFromScreen> {
   @override
   void dispose() {
     partController.dispose();
-    kilometerController.dispose();
     locationController.dispose();
     costController.dispose();
     notesController.dispose();
@@ -71,15 +67,14 @@ class _RepairFormScreenState extends ConsumerState<RepairFromScreen> {
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.initialItem != null;
-    final draft = ref.watch(repairDraftProvider);
+    final draft = ref.watch(purchaseDraftProvider);
     final carId = ref.read(carStateNotifierProvider).currentCarId;
 
     debugPrint(
-      'debug repair DRAFT: id=${draft.repairId}, '
+      'debug purchase DRAFT: id=${draft.purchaseId}, '
       'date=${draft.date}, '
       'part=${draft.part}'
-      'repairAction=${draft.repairAction}, '
-      'kilometer=${draft.kilometer}'
+      'purchaseAction=${draft.purchaseCategory}, '
       'location=${draft.location}'
       'cost=${draft.cost}'
       'note=${draft.notes}',
@@ -98,7 +93,7 @@ class _RepairFormScreenState extends ConsumerState<RepairFromScreen> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          ref.invalidate(repairDraftProvider);
+                          ref.invalidate(purchaseDraftProvider);
                           Navigator.of(context).pop();
                         },
                         child: SvgPicture.asset(
@@ -109,7 +104,7 @@ class _RepairFormScreenState extends ConsumerState<RepairFromScreen> {
                       ),
                       SizedBox(width: 100.w),
                       Text(
-                        "ثبت تعمیرات جدید",
+                        "ثبت خرید جدید",
                         style: TextStyle(
                           color: AppColors.blue500,
                           fontSize: 16.sp,
@@ -140,17 +135,19 @@ class _RepairFormScreenState extends ConsumerState<RepairFromScreen> {
                                     onConfirm: () async {
                                       await ref
                                           .read(
-                                            repairListProvider(carId!).notifier,
+                                            purchaseListProvider(
+                                              carId!,
+                                            ).notifier,
                                           )
-                                          .deleteSelectedRepairItemById(
+                                          .deleteSelectedPurchaseItemById(
                                             carId,
-                                            draft.repairId!,
+                                            draft.purchaseId!,
                                           );
 
                                       ref
-                                          .read(repairDraftProvider.notifier)
-                                          .state = RepairStateItem(
-                                        repairId: "repair_temp_id",
+                                          .read(purchaseDraftProvider.notifier)
+                                          .state = PurhcaseStateItem(
+                                        purchaseId: "purchase_temp_id",
                                       );
                                     },
                                   );
@@ -167,17 +164,18 @@ class _RepairFormScreenState extends ConsumerState<RepairFromScreen> {
                               ),
                             ),
                           ),
-                        BuildFormFields<RepairStateItem>(
-                          provider: repairDraftProvider,
-                          fieldsBuilder: (state, ref) => buildRepairInfoFields(
-                            state,
-                            ref,
-                            partController,
-                            kilometerController,
-                            locationController,
-                            costController,
-                            notesController,
-                          ),
+                        BuildFormFields<PurhcaseStateItem>(
+                          provider: purchaseDraftProvider,
+                          fieldsBuilder: (state, ref) =>
+                              buildPurchasesInfoFields(
+                                state,
+                                ref,
+                                partController,
+
+                                locationController,
+                                costController,
+                                notesController,
+                              ),
                         ),
                       ],
                     ),
@@ -190,7 +188,7 @@ class _RepairFormScreenState extends ConsumerState<RepairFromScreen> {
             bottom: 70.h,
             right: 43.w,
             child: OnboardingButton(
-              enabled: ref.watch(isRepairInfoButtonEnabled),
+              enabled: ref.watch(isPurchaseInfoButtonEnabled),
               text: "ثبت",
               onPressed: () async {
                 try {
@@ -199,28 +197,28 @@ class _RepairFormScreenState extends ConsumerState<RepairFromScreen> {
                       context: context,
                       onConfirm: () async {
                         await ref
-                            .read(repairListProvider(carId!).notifier)
-                            .updateRepairFromDraft(
+                            .read(purchaseListProvider(carId!).notifier)
+                            .updatePurchaseFromDraft(
                               draft,
                               widget.initialItem!,
                               carId,
                             );
-                        // refreshes the repair list
-                        ref.invalidate(repairListProvider(carId));
+                        // refreshes the purchase list
+                        ref.invalidate(purchaseListProvider(carId));
                         // Reset draft
-                        ref.read(repairDraftProvider.notifier).state =
-                            RepairStateItem(repairId: "repair_temp_id");
+                        ref.read(purchaseDraftProvider.notifier).state =
+                            PurhcaseStateItem(purchaseId: "purchase_temp_id");
                       },
                     );
                   } else {
                     await ref
-                        .read(repairListProvider(carId!).notifier)
-                        .addRepairFromDraft(draft, carId);
-                    // refreshes the repair list
-                    ref.invalidate(repairListProvider(carId));
+                        .read(purchaseListProvider(carId!).notifier)
+                        .addPurchaseFromDraft(draft, carId);
+                    // refreshes the purchase list
+                    ref.invalidate(purchaseListProvider(carId));
                     // Reset draft
-                    ref.read(repairDraftProvider.notifier).state =
-                        RepairStateItem(repairId: "repair_temp_id");
+                    ref.read(purchaseDraftProvider.notifier).state =
+                        PurhcaseStateItem(purchaseId: "purchase_temp_id");
                   }
 
                   if (!isEdit) {
@@ -234,8 +232,8 @@ class _RepairFormScreenState extends ConsumerState<RepairFromScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: isEdit
-                            ? Text('خطا در ویرایش تعمیرات ')
-                            : Text('خطا در ثبت تعمیرات جدید'),
+                            ? Text('خطا در ویرایش خرید ')
+                            : Text('خطا در ثبت خرید جدید'),
                       ),
                     );
                   }

@@ -4,32 +4,27 @@ import 'package:motogen/features/car_services/base/model/service_model.dart';
 import 'package:motogen/features/car_services/base/viewmodel/shared_draft_setters.dart';
 import 'package:motogen/features/car_services/base/viewmodel/shared_draft_validation.dart';
 
-class RepairStateItem
+class PurhcaseStateItem
     with
         DateValidationForService,
         CostValidation,
         NotesValidation,
-        KilometerValidation,
         LocationValidation,
         PartValidation
     implements
-        CostSetters<RepairStateItem>,
-        NotesSetters<RepairStateItem>,
-        KilometerSetters<RepairStateItem>,
-        LocationSetters<RepairStateItem>,
-        PartSetters<RepairStateItem>,
+        CostSetters<PurhcaseStateItem>,
+        NotesSetters<PurhcaseStateItem>,
+        LocationSetters<PurhcaseStateItem>,
+        PartSetters<PurhcaseStateItem>,
         ServiceModel {
-  final String? repairId;
+  final String? purchaseId;
 
   @override
   final DateTime? date;
   @override
   final String? part;
-  final PickerItem? repairAction;
-  @override
-  final int? kilometer;
-  @override
-  final String? rawKilometerInput;
+  final PickerItem? purchaseCategory;
+
   @override
   final String? location;
   @override
@@ -40,25 +35,24 @@ class RepairStateItem
   final String? notes;
   @override
   final bool isDateInteractedOnce;
-  final bool isRepairActionInteractedOnce;
+  final bool isPurchaseCategoryInteractedOnce;
 
-  RepairStateItem({
-    this.repairId,
+  PurhcaseStateItem({
+    this.purchaseId,
     this.date,
     this.part,
-    this.repairAction,
-    this.kilometer,
-    this.rawKilometerInput,
+    this.purchaseCategory,
+
     this.location,
     this.cost,
     this.rawCostInput,
     this.notes,
     this.isDateInteractedOnce = false,
-    this.isRepairActionInteractedOnce = false,
+    this.isPurchaseCategoryInteractedOnce = false,
   });
 
   @override
-  String get id => repairId!;
+  String get id => purchaseId!;
   @override
   int get costMin => 1;
   @override
@@ -66,74 +60,66 @@ class RepairStateItem
   @override
   String? get serviceNotes => notes;
   @override
-  List<String> getTitleByIndex() => ["تاریخ:", "قطعه:", "اقدامات:", "هزینه:"];
+  List<String> getTitleByIndex() => ["تاریخ:", "قطعه:", "دسته‌بندی:", "هزینه:"];
   @override
   List<String> getValueByIndex() => [
     formatJalaliDate(date!),
     "$part لیتر",
-    repairAction?.title ?? "",
+    purchaseCategory?.title ?? "",
     "${formatNumberByThreeDigit(cost!)} تومان",
   ];
   @override
-  List<String> getTitleByIndexForMoreItems() => ["کیلومتر:", "موقعیت:"];
+  List<String> getTitleByIndexForMoreItems() => ["موقعیت:"];
   @override
-  List<String> getValueByIndexForMoreItems() => [
-    formatNumberByThreeDigit(kilometer!),
-    location!,
-  ];
+  List<String> getValueByIndexForMoreItems() => [location!];
 
   @override
-  RepairStateItem copyWith({
+  PurhcaseStateItem copyWith({
     String? part,
-    int? kilometer,
-    String? rawKilometerInput,
     int? cost,
     String? rawCostInput,
     String? location,
     String? notes,
-    String? repairId,
+    String? purchaseId,
     DateTime? date,
-    PickerItem? repairAction,
+    PickerItem? purchaseCategory,
     bool? isDateInteractedOnce,
-    bool? isRepairActionInteractedOnce,
+    bool? isPurchaseCategoryInteractedOnce,
   }) {
-    return RepairStateItem(
-      repairId: repairId ?? this.repairId,
+    return PurhcaseStateItem(
+      purchaseId: purchaseId ?? this.purchaseId,
       date: date ?? this.date,
       part: part ?? this.part,
-      repairAction: repairAction ?? this.repairAction,
-      kilometer: kilometer ?? this.kilometer,
-      rawKilometerInput: rawKilometerInput ?? this.rawKilometerInput,
+      purchaseCategory: purchaseCategory ?? this.purchaseCategory,
       location: location ?? this.location,
       cost: cost ?? this.cost,
       rawCostInput: rawCostInput ?? this.rawCostInput,
       notes: notes ?? this.notes,
       isDateInteractedOnce: isDateInteractedOnce ?? this.isDateInteractedOnce,
-      isRepairActionInteractedOnce:
-          isRepairActionInteractedOnce ?? this.isRepairActionInteractedOnce,
+      isPurchaseCategoryInteractedOnce:
+          isPurchaseCategoryInteractedOnce ??
+          this.isPurchaseCategoryInteractedOnce,
     );
   }
 
   Map<String, dynamic> toJson() => {
-    'repairId': repairId,
+    'refuelId': purchaseId,
     'date': date?.toIso8601String(),
     'part': part,
-    'repairAction': repairAction?.toJson(),
-    'kilometer': kilometer,
+    'purchaseCategory': purchaseCategory?.toJson(),
     'location': location,
     'cost': cost,
     'notes': notes,
   };
 
-  factory RepairStateItem.fromJson(Map<String, dynamic> json) =>
-      RepairStateItem(
-        repairId: json['repairId'],
+  factory PurhcaseStateItem.fromJson(Map<String, dynamic> json) =>
+      PurhcaseStateItem(
+        purchaseId: json['purchaseId'],
         date: json['date'] != null ? DateTime.parse(json['date']) : null,
         part: json['part'],
-        repairAction: json['repairAction'] != null
-            ? PickerItem.fromJson(json['repairAction'])
+        purchaseCategory: json['purchaseCategory'] != null
+            ? PickerItem.fromJson(json['purchaseCategory'])
             : null,
-        kilometer: json['kilometer'],
         location: json['location'],
         cost: json['cost'],
         notes: json['notes'],
@@ -143,8 +129,7 @@ class RepairStateItem
     final data = <String, dynamic>{
       'date': date?.toIso8601String(),
       'part': part,
-      'repairAction': repairAction?.id,
-      'kilometer': kilometer,
+      'purchaseCategory': purchaseCategory?.id,
       'location': location,
       'cost': cost,
       if (notes != null && notes!.trim().isNotEmpty) 'notes': notes,
@@ -152,31 +137,33 @@ class RepairStateItem
     return data;
   }
 
-  factory RepairStateItem.fromApiJson(
+  factory PurhcaseStateItem.fromApiJson(
     Map<String, dynamic> json,
-    List<PickerItem> repairActions,
+    List<PickerItem> purchaseCategories,
   ) {
-    return RepairStateItem(
-      repairId: json['id'] as String,
+    return PurhcaseStateItem(
+      purchaseId: json['id'] as String,
       date: json['date'] != null
           ? DateTime.parse(json['date'] as String)
           : null,
       part: json['part'],
 
-      repairAction: repairActions.firstWhere(
-        (repairAction) => repairAction.id == (json['repairAction'] ?? ''),
+      purchaseCategory: purchaseCategories.firstWhere(
+        (purchaseCategory) =>
+            purchaseCategory.id == (json['purchaseCategory'] ?? ''),
         orElse: () => PickerItem(
-          id: json['repairAction'] ?? '',
-          title: json['repairAction'] ?? '',
+          id: json['purchaseCategory'] ?? '',
+          title: json['purchaseCategory'] ?? '',
         ),
       ),
-      kilometer: json['kilometer'],
       location: json['location'],
       cost: json['cost'],
       notes: json['notes'],
     );
   }
 
-  String? get repairActionError =>
-      isRepairActionInteractedOnce && repairAction == null ? 'الزامی!' : null;
+  String? get purchaseCategoryError =>
+      isPurchaseCategoryInteractedOnce && purchaseCategory == null
+      ? 'الزامی!'
+      : null;
 }
