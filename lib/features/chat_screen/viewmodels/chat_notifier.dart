@@ -1,11 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:motogen/features/chat_screen/data/chat_repository.dart';
 import 'package:motogen/features/chat_screen/model/chat_message.dart';
 import 'package:motogen/features/chat_screen/model/chat_state.dart';
 
+class ChatNotifier extends AsyncNotifier<ChatState> {
+  ChatState? get currentState => state.value;
 
-class ChatNotifier extends Notifier<ChatState> {
   @override
-  ChatState build() => ChatState(messages: []);
+  Future<ChatState> build() async {
+    // Just delegate to the use case extension
+    return await loadInitialSession();
+  }
 
   final List<String> _suggestionQuestions = [
     "زمان تعویض روغن ماشین من کیه؟",
@@ -15,40 +20,124 @@ class ChatNotifier extends Notifier<ChatState> {
 
   List<String> get suggestionQuestions => _suggestionQuestions;
 
-  void sendUserMessage(String question) {
-    state = state.copyWith(
-      messages: [
-        ...state.messages,
-        ChatMessage(text: question, sender: MessageSender.user),
-      ],
-      isLoading: true,
+  ChatRepository get _chatRepository => ChatRepository();
+
+  /// Called from build() to preload first session if exists
+  Future<ChatState> loadInitialSession() async {
+    // Empty starting state
+    var initial = ChatState(messages: [], sessions: [], activeSessionId: null);
+
+    final sessions = await _chatRepository.getAllSessions();
+    if (sessions.isEmpty) {
+      // Nothing to load → return empty
+      return initial;
+    }
+
+    // Take first session for now
+    final first = sessions.first;
+    final firstSession = ChatSession(
+      id: first['id'],
+      title: first['title'] ?? 'Chat',
     );
 
-    Future.delayed(Duration(seconds: 2), () {
-      _addAIMessage(_aiReply(question));
-    });
-  }
+    // Load messages for first session
+    final msgsData = await _chatRepository.getSessionMessages(firstSession.id);
+    final msgs = msgsData
+        .map(
+          (m) => ChatMessage(
+            content: m['content'] ?? '',
+            sender: m['sender'] == "USER"
+                ? MessageSender.user
+                : MessageSender.ai,
+          ),
+        )
+        .toList();
 
-  void _addAIMessage(String reply) {
-    state = state.copyWith(
-      messages: [
-        ...state.messages,
-        ChatMessage(text: reply, sender: MessageSender.ai),
-      ],
-      isLoading: false,
+    return initial.copyWith(
+      sessions: [firstSession],
+      activeSessionId: firstSession.id,
+      messages: msgs,
     );
   }
 
-  String _aiReply(String question) {
-    // Replace with actual API
-    if (question.contains('روغن')) return 'هر ۵۰۰۰ کیلومتر روغن رو عوض کن!';
-    if (question.contains('سرویس')) return 'سرویس کامل شامل روغن، فیلتر و ترمز!';
-    return 'پاسخ ثبت شد!';
+  Future<void> sendUserMessage(String text) async {
+    final current = state.value;
+
+    if (currentState == null) return;
+
+    // No sessions loaded yet → try to load
+    if (current!.sessions.isEmpty) {
+      final loaded = await loadInitialSession();
+      if (loaded.sessions.isEmpty) {
+        await _startNewSession(text);
+        return;
+      } else {
+        state = AsyncValue.data(loaded);
+      }
+    }
+
+    // Always send to active session after ensuring we have one
+    await _sendToActiveSession(text);
   }
 
-  void clearAll() => state = state.copyWith(messages: []);
+  Future<void> _startNewSession(String firstMessage) async {
+    state = AsyncValue.data(state.value!.copyWith(isLoading: true));
+
+    final data = await _chatRepository.createSession(firstMessage);
+
+    final newSession = ChatSession(
+      id: data['chatSessionId'],
+      title: data['chatSessionTitle'] ?? 'New Chat',
+
+      messages: [
+        ChatMessage(content: firstMessage, sender: MessageSender.user),
+        ChatMessage(
+          content: data['aiResponse'] ?? '',
+          sender: MessageSender.ai,
+        ),
+      ],
+    );
+
+    state = AsyncValue.data(
+      state.value!.copyWith(
+        sessions: [newSession],
+        activeSessionId: newSession.id,
+        messages: newSession.messages,
+        isLoading: false,
+      ),
+    );
+  }
+
+  Future<void> _sendToActiveSession(String text) async {
+    final st = state.value!;
+    final sessionId = st.activeSessionId!;
+    state = AsyncValue.data(
+      st.copyWith(
+        messages: [
+          ...st.messages,
+          ChatMessage(content: text, sender: MessageSender.user),
+        ],
+        isLoading: true,
+      ),
+    );
+
+    final data = await _chatRepository.sendMessage(sessionId, text);
+    state = AsyncValue.data(
+      state.value!.copyWith(
+        messages:
+            List.of(state.value!.messages) // ensures a new list ref
+              ..add(
+                ChatMessage(
+                  content: data['aiResponse'] ?? '',
+                  sender: MessageSender.ai,
+                ),
+              ),
+        isLoading: false,
+      ),
+    );
+  }
 }
 
-final chatNotifierProvider = NotifierProvider<ChatNotifier, ChatState>(
+final chatNotifierProvider = AsyncNotifierProvider<ChatNotifier, ChatState>(
   () => ChatNotifier(),
 );

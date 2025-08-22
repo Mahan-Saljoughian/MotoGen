@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
+import 'package:motogen/core/services/fade_route.dart';
 import 'package:motogen/features/car_services/oil/view/oil_form_screen.dart';
 import 'package:motogen/features/car_services/purchases/view/purchase_form_screen.dart';
 import 'package:motogen/features/car_services/refuel/view/refuel_form_screen.dart';
@@ -16,23 +17,10 @@ class AddButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final onTapFunction = [
-      () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => RefuelFormScreen()),
-      ),
-      () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => OilFormScreen()),
-      ),
-
-      () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => PurchaseFromScreen()),
-      ),
-      () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => RepairFromScreen()),
-      ),
+      () => Navigator.push(context, FadeRoute(page: RefuelFormScreen())),
+      () => Navigator.push(context, FadeRoute(page: OilFormScreen())),
+      () => Navigator.push(context, FadeRoute(page: PurchaseFromScreen())),
+      () => Navigator.push(context, FadeRoute(page: RepairFromScreen())),
     ];
     return GestureDetector(
       onTap: onTapFunction[serviceTitle.index],

@@ -24,7 +24,7 @@ class AuthNotifier extends Notifier<AuthState> {
       final response = await _repository.requestOtp(phone);
       state = state.copyWith(
         status: AuthStatus.codeSent,
-        message: response['message'] as String?,
+        //message: response['message'] as String?,
         codeSent: response['data'],
         phoneNumber: phone,
       );
@@ -46,7 +46,7 @@ class AuthNotifier extends Notifier<AuthState> {
 
       state = state.copyWith(
         status: AuthStatus.confirmed,
-        message: response['message'] as String?,
+        //message: response['message'] as String?,
         accessToken: data['accessToken'] as String?,
         refreshToken: data['refreshToken'] as String?,
         isProfileCompleted: isProfileCompleted,

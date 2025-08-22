@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
+import 'package:motogen/core/services/fade_route.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/car_services/base/data/providers.dart';
 import 'package:motogen/features/car_services/base/model/service_model.dart';
@@ -215,15 +216,13 @@ class ServiceItem extends ConsumerWidget {
                       ),
                     ),
                   GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              getServiceFormScreen(serviceItem, serviceTitle),
-                        ),
-                      );
-                    },
+                    onTap: () => Navigator.push(
+                      context,
+                      FadeRoute(
+                        page: getServiceFormScreen(serviceItem, serviceTitle),
+                      ),
+                    ),
+
                     child: Container(
                       width: 84.w,
                       height: 21.h,

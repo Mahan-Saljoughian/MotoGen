@@ -11,6 +11,8 @@ class ApiService {
   //'http://10.0.2.2:3000'; // Use 10.0.2.2 for Android emulator
   //'http://192.168.219.6:3000';
 
+  bool isDebugMode = false;
+
   Future<String> _getAccessToken() async {
     final token = await _secureStorage.read(key: 'accessToken');
     if (token == null || token.isEmpty) {
@@ -70,7 +72,7 @@ class ApiService {
         response = await requestFunc(token);
       }
     } catch (e) {
-      throw Exception('API request failed: $e');
+      throw Exception(isDebugMode ? 'API request failed: $e' : "خطای شبکه");
     }
 
     final body = json.decode(response.body);

@@ -5,10 +5,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
 import 'package:motogen/core/constants/app_colors.dart';
+import 'package:motogen/core/services/fade_route.dart';
 
 import 'package:motogen/features/car_info/viewmodels/car_use_case_api.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/car_services/base/view/service_screen.dart';
+import 'package:motogen/features/chat_screen/viewmodels/chat_notifier.dart';
 import 'package:motogen/features/chat_screen/views/chat_screen.dart';
 
 import 'package:motogen/features/home_screen/view/home_screen.dart';
@@ -64,6 +66,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       try {
         await ref.getUserProfile();
         await ref.read(carStateNotifierProvider.notifier).fetchAllCars();
+       // await ref.read(chatNotifierProvider.notifier).loadInitialSession();
         logger.i("debug Fetched cars at startup with saved token");
       } catch (e) {
         logger.e("debug Car fetch failed: $e");
@@ -96,22 +99,40 @@ class _MyAppState extends ConsumerState<MyApp> {
         GlobalCupertinoLocalizations.delegate,
       ],
       debugShowCheckedModeBanner: false,
-      routes: {
-        '/onboardingIndicator': (context) => const OnboardingIndicator(),
-        '/mainApp': (context) => const MainScaffold(),
-        '/home': (context) => const HomeScreen(),
-        '/chat': (context) => const ChatScreen(),
-        '/profile': (context) => const ProfileScreen(),
-        '/refuel': (context) =>
-            const ServiceScreen(serviceTitle: ServiceTitle.refuel),
-        '/onboardingPage2': (context) => const OnboardingPage2(),
-        '/oil': (context) =>
-            const ServiceScreen(serviceTitle: ServiceTitle.oil),
-        '/purchases': (context) =>
-            const ServiceScreen(serviceTitle: ServiceTitle.purchases),
-        '/repair': (context) =>
-            const ServiceScreen(serviceTitle: ServiceTitle.repair),
-      },
+       onGenerateRoute: (settings) {
+    switch (settings.name) {
+      case '/onboardingIndicator':
+        return FadeRoute(page: const OnboardingIndicator());
+      case '/mainApp':
+        return FadeRoute(page: const MainScaffold());
+      case '/home':
+        return FadeRoute(page: const HomeScreen());
+      case '/chat':
+        return FadeRoute(page: const ChatScreen());
+      case '/profile':
+        return FadeRoute(page: const ProfileScreen());
+      case '/refuel':
+        return FadeRoute(
+          page: const ServiceScreen(serviceTitle: ServiceTitle.refuel),
+        );
+      case '/onboardingPage2':
+        return FadeRoute(page: const OnboardingPage2());
+      case '/oil':
+        return FadeRoute(
+          page: const ServiceScreen(serviceTitle: ServiceTitle.oil),
+        );
+      case '/purchases':
+        return FadeRoute(
+          page: const ServiceScreen(serviceTitle: ServiceTitle.purchases),
+        );
+      case '/repair':
+        return FadeRoute(
+          page: const ServiceScreen(serviceTitle: ServiceTitle.repair),
+        );
+      default:
+        return null;
+    }
+  },
       title: 'MotoGen',
       home: _isLoggedIn ? MainScaffold() : OnboardingIndicator(),
     );

@@ -33,10 +33,10 @@ class ServiceNavigator extends StatelessWidget {
         : Color(0xFF14213D).withAlpha(102);
 
     final onTapFunction = [
-      () => Navigator.pushReplacementNamed(context, '/refuel'),
-      () => Navigator.pushReplacementNamed(context, '/oil'),
-      () => Navigator.pushReplacementNamed(context, '/purchases'),
-      () => Navigator.pushReplacementNamed(context, '/repair'),
+      () => Navigator.pushNamed(context, '/refuel'),
+      () => Navigator.pushNamed(context, '/oil'),
+      () => Navigator.pushNamed(context, '/purchases'),
+      () => Navigator.pushNamed(context, '/repair'),
     ];
     return GestureDetector(
       onTap: onTapFunction[index],

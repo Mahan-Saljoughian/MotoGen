@@ -23,77 +23,70 @@ class PersonalInfoScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final personalInfoViewModel = ref.watch(personalInfoProvider);
-    return Stack(
-      children: [
-        Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 20.h),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        SizedBox(width: 20.w),
+    return Scaffold(
+      resizeToAvoidBottomInset:
+          false, // keep button in place when keyboard opens
+      body: SafeArea(
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 20.h),
+            child: Center(
+              child: Column(
+                children: [
+                  // Title row
+                  Row(
+                    children: [
+                      SizedBox(width: 20.w),
+                      SizedBox(width: 110.w),
+                      Text(
+                        "مشخصات فردی",
+                        style: TextStyle(
+                          color: AppColors.blue500,
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
 
-                        SizedBox(width: 110.w),
-                        Text(
-                          "مشخصات فردی",
-                          style: TextStyle(
-                            color: AppColors.blue500,
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w700,
-                          ),
+                  SizedBox(height: 120.h),
+
+                  // Form fields
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 40.w),
+                    child: Column(
+                      children: [
+                        FieldText(
+                          controller: personalInfoViewModel.nameController,
+                          isValid: personalInfoViewModel.isNameValid,
+                          labelText: "نام",
+                          hintText: "علی",
+                          error: personalInfoViewModel.errorName,
+                        ),
+                        FieldText(
+                          controller: personalInfoViewModel.lastNameController,
+                          isValid: personalInfoViewModel.isLastNameValid,
+                          labelText: "نام خانوادگی",
+                          hintText: "علیزاده",
+                          error: personalInfoViewModel.errorLastName,
                         ),
                       ],
                     ),
+                  ),
 
-                    SizedBox(height: 120.h),
+                  // Bottom section
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.48.h),
 
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 40.w),
-                      child: Column(
-                        children: [
-                          FieldText(
-                            controller: personalInfoViewModel.nameController,
-                            isValid: personalInfoViewModel.isNameValid,
-                            labelText: "نام",
-                            hintText: "علی",
-
-                            error: personalInfoViewModel.errorName,
-                          ),
-
-                          FieldText(
-                            controller:
-                                personalInfoViewModel.lastNameController,
-                            isValid: personalInfoViewModel.isLastNameValid,
-                            labelText: "نام خانوادگی",
-                            hintText: "علیزاده",
-
-                            error: personalInfoViewModel.errorLastName,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  DotIndicator(currentPage: currentPage, count: count),
+                  SizedBox(height: 24.h),
+                  OnboardingButton(currentPage: currentPage, onPressed: onNext),
+                ],
               ),
             ),
           ),
         ),
-        Positioned(
-          bottom: 74.h,
-          right: 43.w,
-          child: Column(
-            children: [
-              DotIndicator(currentPage: currentPage, count: count),
-              SizedBox(height: 24.h),
-              OnboardingButton(currentPage: currentPage, onPressed: onNext),
-            ],
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

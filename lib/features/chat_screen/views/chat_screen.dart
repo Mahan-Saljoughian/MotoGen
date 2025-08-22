@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/features/chat_screen/model/chat_message.dart';
+import 'package:motogen/features/chat_screen/model/chat_state.dart';
 import 'package:motogen/features/chat_screen/viewmodels/chat_controller.dart';
 import 'package:motogen/features/chat_screen/viewmodels/chat_notifier.dart';
 import 'package:motogen/features/chat_screen/widgets/ai_loading_animation.dart';
@@ -17,8 +18,18 @@ class ChatScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final chatState = ref.watch(chatNotifierProvider);
+    final chatStateAsync = ref.watch(chatNotifierProvider);
+    final chatNotifier = ref.read(chatNotifierProvider.notifier);
     final controller = ref.watch(chatControllerProvider);
+    final chatState = chatStateAsync.maybeWhen(
+      data: (s) => s,
+      orElse: () =>
+          ChatState(messages: [], isLoading: false, errorMessage: null),
+    );
+
+    print(
+      "UI rebuild — messages length: ${chatState.messages.length}, isLoading: ${chatState.isLoading}",
+    );
 
     return Scaffold(
       backgroundColor: AppColors.blue50,
@@ -35,8 +46,11 @@ class ChatScreen extends ConsumerWidget {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-
-              if (chatState.messages.isEmpty) ...[
+              if (chatStateAsync.isLoading && chatState.messages.isEmpty) ...[
+                const Spacer(),
+                CircularProgressIndicator(), // simple placeholder while initial load
+                const Spacer(),
+              ] else if (chatState.messages.isEmpty) ...[
                 Spacer(),
                 Text(
                   "سوالات پیشنهادی",
@@ -47,25 +61,19 @@ class ChatScreen extends ConsumerWidget {
                   ),
                 ),
                 SizedBox(height: 8.h),
-                for (String question
-                    in ref
-                        .read(chatNotifierProvider.notifier)
-                        .suggestionQuestions)
+                for (String question in chatNotifier.suggestionQuestions)
                   SuggestionQuestion(
                     prompt: question,
                     onPressed: () {
                       /*  ref.read(chatControllerProvider).textController.text =
                           question; */
-                      ref
-                          .read(chatNotifierProvider.notifier)
-                          .sendUserMessage(question);
+                      chatNotifier.sendUserMessage(question);
                     },
                   ),
 
                 SizedBox(height: 9.h),
-              ],
-
-              if (chatState.messages.isNotEmpty)
+              ] else ...[
+                // Show messages list
                 Expanded(
                   child: ListView.builder(
                     controller: controller.scrollController,
@@ -74,6 +82,7 @@ class ChatScreen extends ConsumerWidget {
                         chatState.messages.length +
                         (chatState.isLoading ? 1 : 0),
                     itemBuilder: (context, index) {
+                      // If notifier state reports isLoading and index 0 => show AI loader
                       if (chatState.isLoading && index == 0) {
                         return Padding(
                           padding: EdgeInsets.only(left: 23.w, bottom: 18.h),
@@ -83,17 +92,19 @@ class ChatScreen extends ConsumerWidget {
                           ),
                         );
                       } else {
+                        // Map builder index to message index (reverse)
                         final messageIndex = chatState.isLoading
                             ? chatState.messages.length - index
                             : chatState.messages.length - 1 - index;
                         final message = chatState.messages[messageIndex];
                         return message.sender == MessageSender.user
-                            ? UserMessageBubble(textMessage: message.text)
-                            : AiMessageBubble(aiMessage: message.text);
+                            ? UserMessageBubble(textMessage: message.content)
+                            : AiMessageBubble(aiMessage: message.content);
                       }
                     },
                   ),
                 ),
+              ],
 
               PromptInput(
                 controller: controller.textController,
@@ -111,6 +122,14 @@ class ChatScreen extends ConsumerWidget {
                   });
                 },
               ),
+              if (chatState.errorMessage != null)
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8.h),
+                  child: Text(
+                    chatState.errorMessage!,
+                    style: TextStyle(color: Colors.red, fontSize: 12.sp),
+                  ),
+                ),
             ],
           ),
         ),

@@ -62,10 +62,10 @@ class OnboardingPage1 extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.only(right: 280.w),
                   child: GestureDetector(
-                    onTap: () {
-                     Navigator.pushReplacementNamed(context, '/onboardingPage2');
+                    onTap: () =>
+                     Navigator.pushNamed(context, '/onboardingPage2'),
 
-                    },
+                    
 
                     child: Container(
                       width: 48,

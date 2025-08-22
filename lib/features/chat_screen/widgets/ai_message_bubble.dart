@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AiMessageBubble extends StatelessWidget {
   final String aiMessage;
@@ -32,15 +34,45 @@ class AiMessageBubble extends StatelessWidget {
                     color: AppColors.blue400,
                     borderRadius: BorderRadius.circular(15.r),
                   ),
-                  child: Text(
-                    aiMessage,
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      color: Color(0xFFF7FBF1),
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 0.3,
-                      height: 2.h,
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: MarkdownBody(
+                      data: aiMessage,
+                      styleSheet:
+                          MarkdownStyleSheet.fromTheme(
+                            Theme.of(context),
+                          ).copyWith(
+                            p: TextStyle(
+                              color: const Color(0xFFF7FBF1),
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 0.3,
+                              height: 1.5,
+                            ),
+                            blockquoteDecoration: BoxDecoration(
+                              color: Colors.transparent, // no background
+                            ),
+                            blockquotePadding: EdgeInsets.symmetric(
+                              horizontal: 8.w,
+                              vertical: 4.h,
+                            ),
+                            blockquote: TextStyle(
+                              color: const Color(0xFFF7FBF1),
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                      selectable: true,
+                      onTapLink: (text, href, title) async {
+                        if (href != null) {
+                          final uri = Uri.parse(href);
+                          if (!await launchUrl(
+                            uri,
+                            mode: LaunchMode.externalApplication,
+                          )) {
+                            throw 'Could not launch $uri';
+                          }
+                        }
+                      },
                     ),
                   ),
                 ),

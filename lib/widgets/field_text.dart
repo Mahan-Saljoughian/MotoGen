@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
+import 'package:motogen/core/services/format_functions.dart';
 
 class FieldText extends StatefulWidget {
   final TextEditingController? controller;
@@ -11,11 +12,11 @@ class FieldText extends StatefulWidget {
   final String labelText;
   final String hintText;
   final String? error;
+  final bool isPhone;
   final bool isNumberOnly;
   final bool isBackError;
   final bool isShowNeededIcon;
   final bool isTomanCost;
-
   final bool isNotes;
   final void Function(String)? onChanged;
 
@@ -28,8 +29,8 @@ class FieldText extends StatefulWidget {
     this.onChanged,
     this.error,
     this.isBackError = false,
+    this.isPhone = false,
     this.isNumberOnly = false,
-
     this.isShowNeededIcon = true,
     this.isTomanCost = false,
     this.isNotes = false,
@@ -87,7 +88,48 @@ class _FieldTextState extends State<FieldText> {
                     ? [FarsiOrEnglishDigitsInputFormatter()]
                     : null,
                 controller: _ctrl,
-                onChanged: widget.onChanged,
+                onChanged: (value) {
+                  if (widget.isNumberOnly && !widget.isPhone) {
+                    // Remove existing commas
+                    String digits = value.replaceAll(',', '');
+
+                    // Handle empty value
+                    if (digits.isEmpty) {
+                      _ctrl.clear();
+                      widget.onChanged?.call('');
+                      return;
+                    }
+
+                    // Parse and format
+                    final number = int.tryParse(digits);
+                    if (number != null) {
+                      final formatted = formatNumberByThreeDigit(number);
+
+                      // Only update if text changed to avoid loop
+                      if (formatted != value) {
+                        // Update controller with new formatted value
+                        _ctrl.value = TextEditingValue(
+                          text: formatted,
+                          selection: TextSelection.collapsed(
+                            offset: formatted.length,
+                          ),
+                        );
+                      }
+
+                      // Send raw digits to callback if needed
+                      widget.onChanged?.call(digits);
+                    }
+                  } else {
+                    widget.onChanged?.call(value);
+                  }
+
+                  // Track first interaction
+                  if (!isInteractedOnce) {
+                    setState(() {
+                      isInteractedOnce = true;
+                    });
+                  }
+                },
                 onSubmitted: (_) {
                   if (!isInteractedOnce) {
                     setState(() {
@@ -102,7 +144,7 @@ class _FieldTextState extends State<FieldText> {
                     color: widget.isValid || isInteractedOnce == false
                         ? AppColors.blue500
                         : Color(0xFFC60B0B),
-                    fontSize: 14,
+                    fontSize: 14.sp,
                     fontWeight: FontWeight.w500,
                   ),
                   floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -180,7 +222,7 @@ class _FieldTextState extends State<FieldText> {
                 widget.error ?? "",
                 style: TextStyle(
                   color: Color(0xFFC60B0B),
-                  fontSize: 12,
+                  fontSize: 11.sp,
                   fontWeight: FontWeight.w700,
                 ),
               ),

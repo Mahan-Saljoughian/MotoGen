@@ -124,7 +124,7 @@ PickerFieldConfig<RepairStateItem> repairActionConfig =
 final repairActionProvider = Provider<List<PickerItem>>(
   (ref) => [
     PickerItem(id: 'REPAIR', title: 'تعمیر'),
-    PickerItem(id: 'REPLACE ', title: 'َتعویض'),
+    PickerItem(id: 'REPLACE', title: 'َتعویض'),
   ],
 );
 

@@ -28,71 +28,59 @@ class CarInfoScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Stack(
-      children: [
-        Scaffold(
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 20.h),
-                child: Center(
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          SizedBox(width: 20.w),
-                          GestureDetector(
-                            onTap: onBack,
-                            child: SvgPicture.asset(
-                              AppIcons.arrowRight,
-                              width: 24.w,
-                              height: 24.h,
-                            ),
-                          ),
-
-                          SizedBox(width: 100.w),
-
-                          Text(
-                            "مشخصات خودرو",
-                            style: TextStyle(
-                              color: AppColors.blue500,
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 20.h),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    SizedBox(width: 20.w),
+                    GestureDetector(
+                      onTap: onBack,
+                      child: SvgPicture.asset(
+                        AppIcons.arrowRight,
+                        width: 24.w,
+                        height: 24.h,
                       ),
+                    ),
 
-                      SizedBox(height: 120.h),
+                    SizedBox(width: 100.w),
 
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 40.w),
-                        child: BuildFormFields<CarFormStateItem>(
-                          provider: carStateNotifierProvider.select(
-                            (carState) => carState.currentCar!,
-                          ),
-                          fieldsBuilder: (state, ref) => carInfoField,
-                        ),
+                    Text(
+                      "مشخصات خودرو",
+                      style: TextStyle(
+                        color: AppColors.blue500,
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: 120.h),
+
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 40.w),
+                  child: BuildFormFields<CarFormStateItem>(
+                    provider: carStateNotifierProvider.select(
+                      (carState) => carState.currentCar!,
+                    ),
+                    fieldsBuilder: (state, ref) => carInfoField,
                   ),
                 ),
-              ),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.20.h),
+
+                DotIndicator(currentPage: currentPage, count: count),
+                SizedBox(height: 24.h),
+                OnboardingButton(currentPage: currentPage, onPressed: onNext),
+              ],
             ),
           ),
         ),
-        Positioned(
-          bottom: 74.h,
-          right: 43.w,
-          child: Column(
-            children: [
-              DotIndicator(currentPage: currentPage, count: count),
-              SizedBox(height: 24.h),
-              OnboardingButton(currentPage: currentPage, onPressed: onNext),
-            ],
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

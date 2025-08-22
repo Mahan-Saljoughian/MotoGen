@@ -20,6 +20,11 @@ class DateInputViewModel extends ChangeNotifier {
   String get month => _month;
   String get year => _year;
 
+  final Jalali  now =Jalali.now();
+  String get dayHint => now.day.toString();
+  String get monthHint =>  now.month.toString();
+  String get yearHint =>  now.year.toString();
+
   bool isDayInteractedOnce = false;
   bool isMonthInteractedOnce = false;
   bool isYearInteractedOnce = false;

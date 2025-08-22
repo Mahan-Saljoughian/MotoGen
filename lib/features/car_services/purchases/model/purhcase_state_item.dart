@@ -64,7 +64,7 @@ class PurhcaseStateItem
   @override
   List<String> getValueByIndex() => [
     formatJalaliDate(date!),
-    "$part لیتر",
+    "$part",
     purchaseCategory?.title ?? "",
     "${formatNumberByThreeDigit(cost!)} تومان",
   ];

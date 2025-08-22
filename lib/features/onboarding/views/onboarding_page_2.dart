@@ -63,9 +63,9 @@ class OnboardingPage2 extends StatelessWidget {
           bottom: 74.h,
           right: 43.w,
           child: GestureDetector(
-            onTap: () {
-              Navigator.pushReplacementNamed(context, '/onboardingIndicator');
-            },
+            onTap: () =>
+              Navigator.pushNamed(context, '/onboardingIndicator'),
+            
             child: Container(
               width: 330.w,
               height: 48.w,

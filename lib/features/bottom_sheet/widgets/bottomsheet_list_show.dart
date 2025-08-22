@@ -116,45 +116,47 @@ class _BottomSheetContent extends ConsumerWidget {
                   ),
                   SizedBox(height: 29.h),
 
-                  // Search field
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 33.w),
-                    child: TextField(
-                      onChanged: (val) => searchVM.query = val,
-                      decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.r),
-                          borderSide: BorderSide(
-                            color: AppColors.white700,
-                            width: 1,
+                  if (items.length >= 5) ...[
+                    // Search field
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 33.w),
+                      child: TextField(
+                        onChanged: (val) => searchVM.query = val,
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15.r),
+                            borderSide: BorderSide(
+                              color: AppColors.white700,
+                              width: 1,
+                            ),
                           ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.r),
-                          borderSide: BorderSide(
-                            color: AppColors.white700,
-                            width: 1,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15.r),
+                            borderSide: BorderSide(
+                              color: AppColors.white700,
+                              width: 1,
+                            ),
                           ),
+                          hintText: "جستجو...",
+                          hintStyle: TextStyle(
+                            color: AppColors.black300,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          suffixIcon: Padding(
+                            padding: EdgeInsets.only(left: 18.w),
+                            child: SvgPicture.asset(AppIcons.searchStatus),
+                          ),
+                          suffixIconConstraints: BoxConstraints(
+                            minHeight: 24.h,
+                            minWidth: 24.w,
+                          ),
+                          contentPadding: EdgeInsets.only(right: 26.w),
                         ),
-                        hintText: "جستجو...",
-                        hintStyle: TextStyle(
-                          color: AppColors.black300,
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        suffixIcon: Padding(
-                          padding: EdgeInsets.only(left: 18.w),
-                          child: SvgPicture.asset(AppIcons.searchStatus),
-                        ),
-                        suffixIconConstraints: BoxConstraints(
-                          minHeight: 24.h,
-                          minWidth: 24.w,
-                        ),
-                        contentPadding: EdgeInsets.only(right: 26.w),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 16.h),
+                    SizedBox(height: 16.h),
+                  ],
 
                   // List
                   Flexible(
@@ -280,45 +282,47 @@ class _BottomSheetMultiContent extends ConsumerWidget {
                   ),
                   SizedBox(height: 29.h),
 
-                  // Search
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 33.w),
-                    child: TextField(
-                      onChanged: (val) => searchVM.query = val,
-                      decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.r),
-                          borderSide: BorderSide(
-                            color: AppColors.white700,
-                            width: 1,
+                  if (items.length >= 5) ...[
+                    // Search field
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 33.w),
+                      child: TextField(
+                        onChanged: (val) => searchVM.query = val,
+                        decoration: InputDecoration(
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15.r),
+                            borderSide: BorderSide(
+                              color: AppColors.white700,
+                              width: 1,
+                            ),
                           ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15.r),
-                          borderSide: BorderSide(
-                            color: AppColors.white700,
-                            width: 1,
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15.r),
+                            borderSide: BorderSide(
+                              color: AppColors.white700,
+                              width: 1,
+                            ),
                           ),
+                          hintText: "جستجو...",
+                          hintStyle: TextStyle(
+                            color: AppColors.black300,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          suffixIcon: Padding(
+                            padding: EdgeInsets.only(left: 18.w),
+                            child: SvgPicture.asset(AppIcons.searchStatus),
+                          ),
+                          suffixIconConstraints: BoxConstraints(
+                            minHeight: 24.h,
+                            minWidth: 24.w,
+                          ),
+                          contentPadding: EdgeInsets.only(right: 26.w),
                         ),
-                        hintText: "جستجو...",
-                        hintStyle: TextStyle(
-                          color: AppColors.black300,
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        suffixIcon: Padding(
-                          padding: EdgeInsets.only(left: 18.w),
-                          child: SvgPicture.asset(AppIcons.searchStatus),
-                        ),
-                        suffixIconConstraints: BoxConstraints(
-                          minHeight: 24.h,
-                          minWidth: 24.w,
-                        ),
-                        contentPadding: EdgeInsets.only(right: 26.w),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 16.h),
+                    SizedBox(height: 16.h),
+                  ],
 
                   // List
                   Flexible(

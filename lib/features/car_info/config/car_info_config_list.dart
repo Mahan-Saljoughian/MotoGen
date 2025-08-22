@@ -49,7 +49,7 @@ List<CarInfoFieldConfig<CarFormStateItem>> buildCarInfoSecondPageFields(
       textConfig: FieldTextConfig(
         controller: carNotifier.kilometeDrivenController,
         isValid: carState.isKilometerValid,
-        hintText: "انتخاب کنید ...",
+        hintText: "41,000",
         labelText: "کیلومتر",
         error: carState.kilometerError,
         isNumberOnly: true,

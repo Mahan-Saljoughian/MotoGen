@@ -6,7 +6,6 @@ class NavBarPainter extends CustomPainter {
   final double x;
   final bool isRTL;
   final bool debugSegments; // Toggle this to show/hide segment colors
-
   NavBarPainter(this.x, this.isRTL, {this.debugSegments = false});
 
   // Height values
@@ -24,14 +23,33 @@ class NavBarPainter extends CustomPainter {
     // Cup width & depth
     final double cupWidth = 140.w;
     final double cupDepth = 34.h;
-
     double xPainted = x;
     if (isRTL) {
       xPainted = size.width - (x + cupWidth);
     }
-
     final double cupStartX = xPainted;
     final double cupEndX = xPainted + cupWidth;
+
+    // Parameters for the flat bottom in the dip
+    final double flatFraction =
+        0.1; // Fraction of cupWidth for the straight bottom (adjust as needed, e.g., 0.2 for ~28w flat)
+    final double halfFlat = flatFraction / 2;
+    final double ratio =
+        1.8; // Curve control ratio from original design (large/small part)
+
+    // Left dip fractions
+    final double leftShoulderEndFrac = 0.3;
+    final double leftDipEndFrac = 0.5 - halfFlat;
+    final double deltaLeft = leftDipEndFrac - leftShoulderEndFrac;
+    final double smallPartLeft = deltaLeft / (1 + ratio);
+    final double leftControlFrac = leftShoulderEndFrac + smallPartLeft;
+
+    // Right dip fractions
+    final double rightShoulderStartFrac = 1 - 0.3; // 0.7, symmetric
+    final double rightDipStartFrac = 0.5 + halfFlat;
+    final double deltaRight = rightShoulderStartFrac - rightDipStartFrac;
+    final double largePartRight = (ratio / (1 + ratio)) * deltaRight;
+    final double rightControlFrac = rightDipStartFrac + largePartRight;
 
     // ---- MAIN SHAPE PATH ----
     final path = Path();
@@ -43,37 +61,37 @@ class NavBarPainter extends CustomPainter {
     }
     // Cup left shoulder
     path.quadraticBezierTo(
-      cupStartX + 0.27.w * cupWidth,
+      cupStartX + 0.275.w * cupWidth,
       start,
-      cupStartX + 0.3.w * cupWidth,
+      cupStartX + leftShoulderEndFrac * cupWidth,
       start + 17.h,
     );
-    // Cup left dip curve
+    // Cup left dip curve (adjusted for flat bottom)
     path.quadraticBezierTo(
-      cupStartX + 0.35.w * cupWidth,
+      cupStartX + leftControlFrac * cupWidth,
       start + cupDepth,
-      cupStartX + 0.5.w * cupWidth,
+      cupStartX + leftDipEndFrac * cupWidth,
       start + cupDepth,
     );
-    // Cup right dip curve
+    // Straight flat bottom at min dip
+    path.lineTo(cupStartX + rightDipStartFrac * cupWidth, start + cupDepth);
+    // Cup right dip curve (adjusted for flat bottom)
     path.quadraticBezierTo(
-      cupEndX - 0.35.w * cupWidth,
+      cupStartX + rightControlFrac * cupWidth,
       start + cupDepth,
-      cupEndX - 0.3.w * cupWidth,
+      cupStartX + rightShoulderStartFrac * cupWidth,
       start + 17.h,
     );
     // Cup right shoulder
     path.quadraticBezierTo(
-      cupEndX - 0.27.w * cupWidth,
+      cupEndX - 0.275.w * cupWidth,
       start,
       cupEndX - 0.15.w * cupWidth,
       start,
     );
-
     if (cupEndX < rightEdge) {
       path.lineTo(rightEdge, start);
     }
-
     // Top-right arc
     path.quadraticBezierTo(size.width, start, size.width, start + 40.h);
     // Right vertical
@@ -101,7 +119,6 @@ class NavBarPainter extends CustomPainter {
           ..strokeWidth = 5
           ..style = PaintingStyle.stroke,
       );
-
       // 2. Line to cup
       if (cupStartX > leftEdge) {
         Path seg2 = Path()
@@ -115,15 +132,14 @@ class NavBarPainter extends CustomPainter {
             ..style = PaintingStyle.stroke,
         );
       }
-
       // 3. Cup left shoulder
       Path seg3 = Path()
-        ..moveTo(cupStartX + 0.3.w * cupWidth, start + 17.h)
+        ..moveTo(cupStartX + 0.15.w * cupWidth, start)
         ..quadraticBezierTo(
-          cupStartX + 0.27.w * cupWidth,
+          cupStartX + 0.275.w * cupWidth,
           start,
-          cupStartX + 0.15.w * cupWidth,
-          start,
+          cupStartX + leftShoulderEndFrac * cupWidth,
+          start + 17.h,
         );
       canvas.drawPath(
         seg3,
@@ -132,14 +148,13 @@ class NavBarPainter extends CustomPainter {
           ..strokeWidth = 5
           ..style = PaintingStyle.stroke,
       );
-
-      // 4. Cup left dip
+      // 4. Cup left dip (adjusted)
       Path seg4 = Path()
-        ..moveTo(cupStartX + 0.3.w * cupWidth, start + 17.h)
+        ..moveTo(cupStartX + leftShoulderEndFrac * cupWidth, start + 17.h)
         ..quadraticBezierTo(
-          cupStartX + 0.35.w * cupWidth,
+          cupStartX + leftControlFrac * cupWidth,
           start + cupDepth,
-          cupStartX + 0.5.w * cupWidth,
+          cupStartX + leftDipEndFrac * cupWidth,
           start + cupDepth,
         );
       canvas.drawPath(
@@ -149,14 +164,24 @@ class NavBarPainter extends CustomPainter {
           ..strokeWidth = 5
           ..style = PaintingStyle.stroke,
       );
-
-      // 5. Cup right dip
+      // 4.5. Straight flat bottom (new segment)
+      Path seg45 = Path()
+        ..moveTo(cupStartX + leftDipEndFrac * cupWidth, start + cupDepth)
+        ..lineTo(cupStartX + rightDipStartFrac * cupWidth, start + cupDepth);
+      canvas.drawPath(
+        seg45,
+        Paint()
+          ..color = Colors.yellow
+          ..strokeWidth = 5
+          ..style = PaintingStyle.stroke,
+      );
+      // 5. Cup right dip (adjusted)
       Path seg5 = Path()
-        ..moveTo(cupStartX + 0.5.w * cupWidth, start + cupDepth)
+        ..moveTo(cupStartX + rightDipStartFrac * cupWidth, start + cupDepth)
         ..quadraticBezierTo(
-          cupEndX - 0.35.w * cupWidth,
+          cupStartX + rightControlFrac * cupWidth,
           start + cupDepth,
-          cupEndX - 0.3.w * cupWidth,
+          cupStartX + rightShoulderStartFrac * cupWidth,
           start + 17.h,
         );
       canvas.drawPath(
@@ -166,12 +191,11 @@ class NavBarPainter extends CustomPainter {
           ..strokeWidth = 5
           ..style = PaintingStyle.stroke,
       );
-
       // 6. Cup right shoulder
       Path seg6 = Path()
-        ..moveTo(cupEndX - 0.3.w * cupWidth, start + 17.h)
+        ..moveTo(cupStartX + rightShoulderStartFrac * cupWidth, start + 17.h)
         ..quadraticBezierTo(
-          cupEndX - 0.27.w * cupWidth,
+          cupEndX - 0.275.w * cupWidth,
           start,
           cupEndX - 0.15.w * cupWidth,
           start,
@@ -183,7 +207,6 @@ class NavBarPainter extends CustomPainter {
           ..strokeWidth = 5
           ..style = PaintingStyle.stroke,
       );
-
       // 7. Line to rightEdge
       Path seg7 = Path()
         ..moveTo(cupEndX - 0.15.w * cupWidth, start)
@@ -195,7 +218,6 @@ class NavBarPainter extends CustomPainter {
           ..strokeWidth = 5
           ..style = PaintingStyle.stroke,
       );
-
       // 8. Top-right arc
       Path seg8 = Path()
         ..moveTo(rightEdge, start)
@@ -207,7 +229,6 @@ class NavBarPainter extends CustomPainter {
           ..strokeWidth = 5
           ..style = PaintingStyle.stroke,
       );
-
       // 9. Right vertical
       Path seg9 = Path()
         ..moveTo(size.width, start + 40.h)
@@ -219,7 +240,6 @@ class NavBarPainter extends CustomPainter {
           ..strokeWidth = 5
           ..style = PaintingStyle.stroke,
       );
-
       // 10. Bottom-right arc
       Path seg10 = Path()
         ..moveTo(size.width, end - 40.h)
@@ -231,7 +251,6 @@ class NavBarPainter extends CustomPainter {
           ..strokeWidth = 5
           ..style = PaintingStyle.stroke,
       );
-
       // 11. Bottom line
       Path seg11 = Path()
         ..moveTo(rightEdge, end)
@@ -243,7 +262,6 @@ class NavBarPainter extends CustomPainter {
           ..strokeWidth = 5
           ..style = PaintingStyle.stroke,
       );
-
       // 12. Bottom-left arc
       Path seg12 = Path()
         ..moveTo(leftEdge, end)
@@ -255,7 +273,6 @@ class NavBarPainter extends CustomPainter {
           ..strokeWidth = 5
           ..style = PaintingStyle.stroke,
       );
-
       // 13. Left vertical up
       Path seg13 = Path()
         ..moveTo(0.0, end - 40.h)

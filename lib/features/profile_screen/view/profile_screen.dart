@@ -169,7 +169,7 @@ class ProfileScreen extends ConsumerWidget {
                   vertical: 13.5.h,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.blue100,
+                  border: Border.all(color: AppColors.blue400, width: 2.w),
                   borderRadius: BorderRadius.circular(50),
                 ),
                 child: SvgPicture.asset(

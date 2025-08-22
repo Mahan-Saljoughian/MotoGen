@@ -70,7 +70,7 @@ class RepairStateItem
   @override
   List<String> getValueByIndex() => [
     formatJalaliDate(date!),
-    "$part لیتر",
+    "$part",
     repairAction?.title ?? "",
     "${formatNumberByThreeDigit(cost!)} تومان",
   ];

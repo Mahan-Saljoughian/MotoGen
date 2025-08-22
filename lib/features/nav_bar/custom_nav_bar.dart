@@ -155,7 +155,11 @@ class _NavBarState extends State<CustomNavBar> {
         animation: controller,
         builder: (context, child) {
           return CustomPaint(
-            painter: NavBarPainter(animation.value, isRTL),
+            painter: NavBarPainter(
+              animation.value,
+              isRTL,
+              debugSegments: false,
+            ),
             size: Size(screenWidth - (2 * horizontalMargin), 80.0.h),
             child: SizedBox(
               height: 120.0.h,
@@ -171,69 +175,74 @@ class _NavBarState extends State<CustomNavBar> {
                     String label = labels[index];
                     final isSelected = widget.selected == index;
 
-                    return GestureDetector(
-                      onTap: () {
-                        debugPrint(
-                          'debug Tapped index $index, visual slot: ${getVisualIndex(index)}',
-                        );
-                        if (widget.selected != index) {
-                          widget.onTap(index);
-                        }
-                      },
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 375),
-                        curve: Curves.easeOut,
-                        width:
-                            (screenWidth -
-                                (2 * horizontalMargin) -
-                                (2 * horizontalPadding)) /
-                            noOfIcons,
-                        padding: EdgeInsets.only(top: 0.h, bottom: 9.39.h),
-                        alignment: Alignment.bottomCenter,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            AnimatedPadding(
-                              duration: const Duration(milliseconds: 375),
-                              curve: Curves.easeOutCubic,
-                              padding: EdgeInsets.only(
-                                bottom: isSelected ? 31.h : 6.h,
-                              ),
-                              child: AnimatedSwitcher(
+                    return Expanded(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {
+                          debugPrint(
+                            'debug Tapped index $index, visual slot: ${getVisualIndex(index)}',
+                          );
+                          if (widget.selected != index) {
+                            widget.onTap(index);
+                          }
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 375),
+                          curve: Curves.easeOut,
+                          width:
+                              (screenWidth -
+                                  (2 * horizontalMargin) -
+                                  (2 * horizontalPadding)) /
+                              noOfIcons,
+                          padding: EdgeInsets.only(top: 0.h, bottom: 9.39.h),
+                          alignment: Alignment.bottomCenter,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              AnimatedPadding(
                                 duration: const Duration(milliseconds: 375),
-                                child: SvgPicture.asset(
-                                  isSelected ? selectedIcon : icon,
-                                  key: ValueKey(
-                                    isSelected ? 'yellow$index' : 'gray$index',
+                                curve: Curves.easeOutCubic,
+                                padding: EdgeInsets.only(
+                                  bottom: isSelected ? 31.h : 6.h,
+                                ),
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 375),
+                                  child: SvgPicture.asset(
+                                    isSelected ? selectedIcon : icon,
+                                    key: ValueKey(
+                                      isSelected
+                                          ? 'yellow$index'
+                                          : 'gray$index',
+                                    ),
+                                    width: 24.0.w,
+                                    height: 24.w,
                                   ),
-                                  width: 24.0.w,
-                                  height: 24.w,
                                 ),
                               ),
-                            ),
-                            SizedBox(height: 6.h),
-                            AnimatedPadding(
-                              duration: const Duration(milliseconds: 300),
-                              padding: EdgeInsets.only(
-                                bottom: isSelected ? 2.81.h : 0.0.h,
-                              ),
-                              child: AnimatedDefaultTextStyle(
+                              SizedBox(height: 6.h),
+                              AnimatedPadding(
                                 duration: const Duration(milliseconds: 300),
-                                style: TextStyle(
-                                  fontFamily: "IRANSansXFaNum",
-                                  fontSize: isSelected ? 11.71.sp : 9.76.sp,
-                                  fontWeight: isSelected
-                                      ? FontWeight.w600
-                                      : FontWeight.w500,
-                                  color: isSelected
-                                      ? AppColors.orange600
-                                      : AppColors.blue300,
+                                padding: EdgeInsets.only(
+                                  bottom: isSelected ? 2.81.h : 0.0.h,
                                 ),
-                                child: Text(label),
+                                child: AnimatedDefaultTextStyle(
+                                  duration: const Duration(milliseconds: 300),
+                                  style: TextStyle(
+                                    fontFamily: "IRANSansXFaNum",
+                                    fontSize: isSelected ? 11.71.sp : 9.76.sp,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w600
+                                        : FontWeight.w500,
+                                    color: isSelected
+                                        ? AppColors.orange600
+                                        : AppColors.blue300,
+                                  ),
+                                  child: Text(label),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     );

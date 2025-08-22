@@ -61,7 +61,7 @@ extension RepairUseCaseApi on RepairListNotifier {
     }
     if (draft.part != original.part) changes['part'] = draft.part;
     if (draft.repairAction?.id != original.repairAction?.id) {
-      changes['paymentMethod'] = draft.repairAction?.id;
+      changes['repairAction'] = draft.repairAction?.id;
     }
 
     if (draft.kilometer != original.kilometer) {

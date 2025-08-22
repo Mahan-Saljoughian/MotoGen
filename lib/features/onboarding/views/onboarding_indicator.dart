@@ -89,9 +89,9 @@ class _OnboardingIndicatorState extends ConsumerState<OnboardingIndicator> {
                 CarNicknameScreen(
                   currentPage: _currentPage,
                   count: count,
-                  onNext: () {
-                    Navigator.pushReplacementNamed(context, '/mainApp');
-                  },
+                  onNext: () =>
+                    Navigator.pushReplacementNamed(context, '/mainApp'),
+                
                   onBack: _prevPage,
                 ),
               ],

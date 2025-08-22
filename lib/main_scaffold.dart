@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:motogen/core/constants/app_colors.dart';
+import 'package:motogen/features/nav_bar/My_nav_bar.dart';
+import 'package:motogen/features/nav_bar/custom_nav_bar_curved.dart';
+
 import 'package:motogen/features/chat_screen/views/chat_screen.dart';
 import 'package:motogen/features/home_screen/view/home_screen.dart';
 import 'package:motogen/features/nav_bar/custom_nav_bar.dart';
@@ -45,6 +48,17 @@ class _MainScaffoldState extends State<MainScaffold>
         onTap: (i) => setState(() => selected = i),
         vsync: this,
       ),
+      /* bottomNavigationBar: MyNavBar(
+        selected: selected,
+        onTap: (i) => setState(() => selected = i),
+        vsync: this,
+      ), */
+      /* bottomNavigationBar: CustomNavBarCurved(
+        selected: selected,
+        onTap: (i) => setState(() => selected = i),
+        vsync: this,
+      ), */
+      
     );
   }
 }

@@ -38,180 +38,308 @@ class ServiceScreen extends ConsumerWidget {
 
     return serviceItemsAsync.when(
       data: (serviceItems) {
-        final anyMoreItemsOpen = ref.watch(
-          serviceAnyMoreOpenProvider(serviceItems),
+        return _buildDataUI(
+          context,
+          ref,
+          serviceItems,
+          title,
+          selectedTab,
+          topSpacing(serviceTitle),
+          isLoading: false,
         );
+      },
+      loading: () {
+        final previousItems = serviceItemsAsync.value ?? [];
+        if (previousItems.isNotEmpty) {
+          return _buildDataUI(
+            context,
+            ref,
+            previousItems,
+            title,
+            selectedTab,
+            topSpacing(serviceTitle),
+            isLoading: true,
+          );
+        } else {
+          return _buildLoadingUI(context, ref, title, selectedTab);
+        }
+      },
+      error: (err, stack) {
+        debugPrint('❌ Error in loading $title list: $err');
+        debugPrint('📍 Stacktrace:\n$stack');
+        return _buildErrorUI(context, ref, title, selectedTab);
+      },
+    );
+  }
 
+  Widget _buildDataUI(
+    BuildContext context,
+    WidgetRef ref,
+    List<ServiceModel> items,
+    String title,
+    OilTypeTab selectedTab,
+    double topSpacingValue, {
+    required bool isLoading,
+  }) {
+    final anyMoreItemsOpen = ref.watch(serviceAnyMoreOpenProvider(items));
+
+    Widget wrapWithSwipe(Widget child) {
+      if (serviceTitle == ServiceTitle.oil && !isLoading) {
         return GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: anyMoreItemsOpen
-              ? () {
-                  for (final r in serviceItems) {
-                    ref.read(serviceMoreEnabledProvider(r.id).notifier).state =
-                        false;
-                  }
-                }
-              : null,
-          child: Scaffold(
-            body: Stack(
-              children: [
-                SafeArea(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 20.w,
-                      vertical: 20.h,
-                    ),
-                    child: Column(
-                      children: [
-                        // Top bar
-                        Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.pushReplacementNamed(
-                                  context,
-                                  "/mainApp",
-                                );
-                                ref.invalidate(serviceSortProvider);
-                                ref.invalidate(serviceMoreEnabledProvider);
-                              },
-                              child: SvgPicture.asset(
-                                AppIcons.arrowRight,
-                                width: 24.w,
-                                height: 24.h,
-                              ),
-                            ),
-                            SizedBox(width: 135.w),
-                            Text(
-                              title,
-                              style: TextStyle(
-                                color: AppColors.blue500,
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
+          onHorizontalDragEnd: (details) {
+            if (details.primaryVelocity == null) return;
+            final tabs = [
+              OilTypeTab.engine,
+              OilTypeTab.gearbox,
+              OilTypeTab.brake,
+              OilTypeTab.steering,
+            ];
+            final currentIndex = tabs.indexOf(selectedTab);
+            int newIndex;
+            if (details.primaryVelocity! > 0) {
+              // Swipe right
+              newIndex = (currentIndex + 1) % tabs.length;
+            } else {
+              // Swipe left
+              newIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+            }
+            ref.read(oilTypeTabProvider.notifier).state = tabs[newIndex];
+          },
+          child: child,
+        );
+      }
+      return child;
+    }
+
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: anyMoreItemsOpen
+          ? () {
+              for (final r in items) {
+                ref.read(serviceMoreEnabledProvider(r.id).notifier).state =
+                    false;
+              }
+            }
+          : null,
+      child: Scaffold(
+        body: Stack(
+          children: [
+            SafeArea(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+                child: Column(
+                  children: [
+                    _buildHeader(context, ref, title, selectedTab, isLoading),
+                    // Empty state with swipe
+                    if (items.isEmpty)
+                      wrapWithSwipe(
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: topSpacingValue,
+                            bottom: 7.h,
+                          ),
+                          child: _buildEmptyStateUI(),
                         ),
-
-                        if (serviceTitle == ServiceTitle.oil)
+                      )
+                    else
+                      Expanded(
+                        child: wrapWithSwipe(
                           Padding(
-                            padding: EdgeInsets.only(top: 25.h),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-
-                              children: [
-                                OilTabButton(
-                                  label: "موتور",
-                                  isSelected: selectedTab == OilTypeTab.engine,
-                                  onTap: () =>
-                                      ref
-                                              .read(oilTypeTabProvider.notifier)
-                                              .state =
-                                          OilTypeTab.engine,
-                                ),
-                                OilTabButton(
-                                  label: "گیربکس",
-                                  isSelected: selectedTab == OilTypeTab.gearbox,
-                                  onTap: () =>
-                                      ref
-                                              .read(oilTypeTabProvider.notifier)
-                                              .state =
-                                          OilTypeTab.gearbox,
-                                  /* onTap: () async {
-                                    final secureStorage =
-                                        const FlutterSecureStorage();
-                                    await secureStorage.write(
-                                      key: "accessToken",
-                                      value: "totally_invalid_token",
-                                    );
-                                    final refreshToken = await secureStorage
-                                        .read(key: "refreshToken");
-                                    debugPrint(
-                                      "debug the refersh token is $refreshToken",
-                                    );
-                                    ref
-                                            .read(oilTypeTabProvider.notifier)
-                                            .state =
-                                        OilTypeTab.gearbox;
-                                  }, */
-                                ),
-                                OilTabButton(
-                                  label: "ترمز",
-                                  isSelected: selectedTab == OilTypeTab.brake,
-                                  onTap: () =>
-                                      ref
-                                              .read(oilTypeTabProvider.notifier)
-                                              .state =
-                                          OilTypeTab.brake,
-                                ),
-                                OilTabButton(
-                                  label: "فرمان",
-                                  isSelected:
-                                      selectedTab == OilTypeTab.steering,
-                                  onTap: () =>
-                                      ref
-                                              .read(oilTypeTabProvider.notifier)
-                                              .state =
-                                          OilTypeTab.steering,
-                                ),
-                              ],
-                            ),
+                            padding: EdgeInsets.only(top: 40.h),
+                            child: _buildFilledStateUI(ref, items, isLoading),
                           ),
-
-                        if (serviceItems.isEmpty)
-                          Padding(
-                            padding: EdgeInsets.only(
-                              top: topSpacing(serviceTitle),
-                              bottom: 7.h,
-                            ),
-                            child: _buildEmptyStateUI(),
-                          )
-                        else
-                          Expanded(
-                            child: Padding(
-                              padding: EdgeInsets.only(top: 40.h),
-                              child: _buildFilledStateUI(ref, serviceItems),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
+                        ),
+                      ),
+                  ],
                 ),
-                if (serviceItems.isEmpty)
-                  Positioned(
-                    bottom: 165.h,
-                    right: 105.w,
-                    child: HelpToAddTextBox(
-                      helpText: "برای اضافه کردن $title جدید روی این دکمه بزن.",
+              ),
+            ),
+            if (items.isEmpty)
+              Positioned(
+                bottom: 165.h,
+                right: 105.w,
+                child: HelpToAddTextBox(
+                  helpText: "برای اضافه کردن $title جدید روی این دکمه بزن.",
+                ),
+              ),
+            Positioned(
+              bottom: 90.h,
+              right: 43.w,
+              child: AddButton(serviceTitle: serviceTitle),
+            ),
+            if (isLoading)
+              Positioned(
+                bottom: 20.h,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: CircularProgressIndicator(color: AppColors.blue500),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingUI(
+    BuildContext context,
+    WidgetRef ref,
+    String title,
+    OilTypeTab selectedTab,
+  ) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+              child: Column(
+                children: [
+                  _buildHeader(context, ref, title, selectedTab, true),
+                  const Expanded(
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.blue500,
+                      ),
                     ),
                   ),
-                Positioned(
-                  bottom: 90.h,
-                  right: 43.w,
-                  child: AddButton(serviceTitle: serviceTitle),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorUI(
+    BuildContext context,
+    WidgetRef ref,
+    String title,
+    OilTypeTab selectedTab,
+  ) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+              child: Column(
+                children: [
+                  _buildHeader(context, ref, title, selectedTab, false),
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        'خطا در بارگذاری $titleها',
+                        style: TextStyle(color: Colors.red, fontSize: 14.sp),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(
+    BuildContext context,
+    WidgetRef ref,
+    String title,
+    OilTypeTab selectedTab,
+    bool isLoading,
+  ) {
+    return Column(
+      children: [
+        // Top bar
+        Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+                ref.invalidate(serviceSortProvider);
+                ref.invalidate(serviceMoreEnabledProvider);
+              },
+              child: SvgPicture.asset(
+                AppIcons.arrowRight,
+                width: 24.w,
+                height: 24.h,
+              ),
+            ),
+            SizedBox(width: 135.w),
+            Text(
+              title,
+              style: TextStyle(
+                color: AppColors.blue500,
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+
+        if (serviceTitle == ServiceTitle.oil)
+          Padding(
+            padding: EdgeInsets.only(top: 25.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                OilTabButton(
+                  label: "موتور",
+                  isSelected: selectedTab == OilTypeTab.engine,
+                  onTap: isLoading
+                      ? () {}
+                      : () => ref.read(oilTypeTabProvider.notifier).state =
+                            OilTypeTab.engine,
+                ),
+                OilTabButton(
+                  label: "گیربکس",
+                  isSelected: selectedTab == OilTypeTab.gearbox,
+                  onTap: isLoading
+                      ? () {}
+                      : () => ref.read(oilTypeTabProvider.notifier).state =
+                            OilTypeTab.gearbox,
+                  /* onTap: () async {
+                    final secureStorage =
+                        const FlutterSecureStorage();
+                    await secureStorage.write(
+                      key: "accessToken",
+                      value: "totally_invalid_token",
+                    );
+                    final refreshToken = await secureStorage
+                        .read(key: "refreshToken");
+                    debugPrint(
+                      "debug the refersh token is $refreshToken",
+                    );
+                    ref
+                            .read(oilTypeTabProvider.notifier)
+                            .state =
+                        OilTypeTab.gearbox;
+                  }, */
+                ),
+                OilTabButton(
+                  label: "ترمز",
+                  isSelected: selectedTab == OilTypeTab.brake,
+                  onTap: isLoading
+                      ? () {}
+                      : () => ref.read(oilTypeTabProvider.notifier).state =
+                            OilTypeTab.brake,
+                ),
+                OilTabButton(
+                  label: "فرمان",
+                  isSelected: selectedTab == OilTypeTab.steering,
+                  onTap: isLoading
+                      ? () {}
+                      : () => ref.read(oilTypeTabProvider.notifier).state =
+                            OilTypeTab.steering,
                 ),
               ],
             ),
           ),
-        );
-      },
-      loading: () => Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(color: AppColors.blue500),
-        ),
-      ),
-      error: (err, stack) {
-        debugPrint('❌ Error in loading $title list: $err');
-        debugPrint('📍 Stacktrace:\n$stack');
-        return Scaffold(
-          body: Center(
-            child: Text(
-              'خطا در بارگذاری $titleها',
-              style: TextStyle(color: Colors.red, fontSize: 14.sp),
-            ),
-          ),
-        );
-      },
+      ],
     );
   }
 
@@ -254,7 +382,11 @@ class ServiceScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFilledStateUI(WidgetRef ref, List<ServiceModel> serviceItems) {
+  Widget _buildFilledStateUI(
+    WidgetRef ref,
+    List<ServiceModel> serviceItems,
+    bool isLoading,
+  ) {
     final currentSort = ref.watch(serviceSortProvider);
     final newestSortColor = currentSort == ServiceSortType.newest
         ? Color(0xFFC60B0B)
@@ -278,8 +410,10 @@ class ServiceScreen extends ConsumerWidget {
             ),
             SizedBox(width: 14.w),
             GestureDetector(
-              onTap: () => ref.read(serviceSortProvider.notifier).state =
-                  ServiceSortType.newest,
+              onTap: isLoading
+                  ? () {}
+                  : () => ref.read(serviceSortProvider.notifier).state =
+                        ServiceSortType.newest,
               child: Text(
                 "جدیدترین",
                 style: TextStyle(
@@ -291,8 +425,10 @@ class ServiceScreen extends ConsumerWidget {
             ),
             SizedBox(width: 15.w),
             GestureDetector(
-              onTap: () => ref.read(serviceSortProvider.notifier).state =
-                  ServiceSortType.oldest,
+              onTap: isLoading
+                  ? () {}
+                  : () => ref.read(serviceSortProvider.notifier).state =
+                        ServiceSortType.oldest,
               child: Text(
                 "قدیمی‌ترین",
                 style: TextStyle(
