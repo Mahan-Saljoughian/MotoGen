@@ -39,7 +39,7 @@ List<CarInfoFieldConfig<OilStateItem>> buildOilInfoFields(
         isValid: draft.isoilBrandAndModelValid,
         hintText: "مدل فلان برند فلان",
         labelText: "برند و مدل",
-        error: draft.oilBrandAndModel,
+        error: draft.oilBrandAndModelError,
         onChanged: ref.setRawOilBrandAndModel,
       ),
     ),
@@ -180,7 +180,7 @@ final filtersChangedProvider = Provider<List<PickerItem>>(
     PickerItem(id: 'oilFilterChanged', title: 'فیلتر روغن'),
     PickerItem(id: 'airFilterChanged', title: 'فیلتر هوا'),
     PickerItem(id: 'cabinFilterChanged', title: 'فیلتر کابین'),
-    PickerItem(id: 'fuelFilterChanged', title: 'فیلتر کابین'),
+    PickerItem(id: 'fuelFilterChanged', title: 'فیلتر سوخت'),
   ],
 );
 

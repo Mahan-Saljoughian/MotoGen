@@ -5,10 +5,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
+import 'package:motogen/features/chat_screen/viewmodels/chat_notifier.dart';
 import 'package:motogen/features/profile_screen/widget/car_item.dart';
 import 'package:motogen/features/profile_screen/widget/more_bottom_sheet.dart';
 import 'package:motogen/features/user_info/viewmodels/personal_info_controller_view_model.dart';
 import 'package:motogen/features/user_info/viewmodels/phone_number_controller_view_model.dart';
+import 'package:motogen/widgets/add_car_card.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -18,6 +20,7 @@ class ProfileScreen extends ConsumerWidget {
     final carFormState = ref.watch(carStateNotifierProvider);
     final personalInfoController = ref.watch(personalInfoProvider);
     final phoneNumberController = ref.watch(phoneNumberControllerProvider);
+
     return Scaffold(
       backgroundColor: AppColors.blue50,
 
@@ -134,7 +137,7 @@ class ProfileScreen extends ConsumerWidget {
             SizedBox(height: 21.h),
 
             if (!carFormState.hasCars) ...[
-              Text("no cars available"),
+              AddCarCard(),
             ] else ...[
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -159,36 +162,17 @@ class ProfileScreen extends ConsumerWidget {
               ),
             ],
             SizedBox(height: 20.h),
-            GestureDetector(
-              onTap: () {},
-              child: Container(
-                width: 45,
-                height: 45,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 13.5.w,
-                  vertical: 13.5.h,
-                ),
-                decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.blue400, width: 2.w),
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: SvgPicture.asset(
-                  AppIcons.add,
-                  width: 18.w,
-                  height: 18.h,
+            if (carFormState.hasCars) ...[
+              SvgPicture.asset(AppIcons.addCircle, width: 54.w, height: 54.h),
+              Text(
+                "افزودن خودرو",
+                style: TextStyle(
+                  color: AppColors.blue300,
+                  fontSize: 10.sp,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-            ),
-            SizedBox(height: 5.h),
-            Text(
-              "افزودن خودرو",
-              style: TextStyle(
-                color: AppColors.blue300,
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0,
-              ),
-            ),
+            ],
           ],
         ),
       ),

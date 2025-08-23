@@ -17,10 +17,11 @@ class HelpToAddTextBox extends StatelessWidget {
           height: 58.h,
           padding: EdgeInsets.only(
             left: 7.w,
-            top: 5.h,
+            top: 3.h,
             right: 15.w,
-            bottom: 4.w,
+            bottom: 5.h,
           ),
+          alignment: Alignment.center,
           decoration: BoxDecoration(
             color: AppColors.blue500,
             borderRadius: BorderRadius.circular(15.r),

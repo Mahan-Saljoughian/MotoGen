@@ -28,6 +28,7 @@ class AppIcons {
       "assets/icons/nav_bar/profile_selected.svg";
 
   static const String add = "assets/icons/add.svg";
+  static const String addCircle = "assets/icons/add_circle.svg";
   static const String car = "assets/icons/car.svg";
   static const String crown = "assets/icons/crown.svg";
   static const String edit = "assets/icons/edit.svg";

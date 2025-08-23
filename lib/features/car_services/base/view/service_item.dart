@@ -99,7 +99,7 @@ class ServiceItem extends ConsumerWidget {
                         color: AppColors.blue500,
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w700,
-                        letterSpacing: 0,
+                      
                       ),
                     ),
 
@@ -109,7 +109,7 @@ class ServiceItem extends ConsumerWidget {
                         color: AppColors.blue500,
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w700,
-                        letterSpacing: 0,
+                      
                       ),
                     ),
                   ],
@@ -128,7 +128,7 @@ class ServiceItem extends ConsumerWidget {
                           color: AppColors.blue500,
                           fontSize: 12.sp,
                           fontWeight: FontWeight.w700,
-                          letterSpacing: 0,
+                     
                         ),
                       ),
 
@@ -138,7 +138,7 @@ class ServiceItem extends ConsumerWidget {
                           color: AppColors.blue500,
                           fontSize: 12.sp,
                           fontWeight: FontWeight.w700,
-                          letterSpacing: 0,
+                  
                         ),
                       ),
                     ],
@@ -154,7 +154,7 @@ class ServiceItem extends ConsumerWidget {
                     color: AppColors.blue500,
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w700,
-                    letterSpacing: 0,
+                    
                   ),
                 ),
                 SizedBox(height: 5.h),
@@ -164,7 +164,7 @@ class ServiceItem extends ConsumerWidget {
                     color: AppColors.blue500,
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w700,
-                    letterSpacing: 0,
+                 
                   ),
                 ),
               ],
@@ -200,7 +200,7 @@ class ServiceItem extends ConsumerWidget {
                               color: Color(0xFF4A79D8),
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w700,
-                              letterSpacing: 0,
+                   
                             ),
                           ),
                           SvgPicture.asset(
@@ -245,7 +245,7 @@ class ServiceItem extends ConsumerWidget {
                               color: AppColors.blue50,
                               fontSize: 8.sp,
                               fontWeight: FontWeight.w500,
-                              letterSpacing: 0,
+                        
                             ),
                           ),
                         ],

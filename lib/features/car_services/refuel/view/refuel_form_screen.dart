@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:logger/logger.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
@@ -215,9 +216,10 @@ class _RefuelFormScreenState extends ConsumerState<RefuelFormScreen> {
                       Navigator.of(context).pop();
                     }
                   }
-                } catch (e) {
+                } catch (e, st) {
                   // handle error (snackbar, dialog, etc.)
                   if (context.mounted) {
+                    Logger().e("debug the errros is $e , $st");
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: isEdit

@@ -9,7 +9,7 @@ import 'package:motogen/features/home_screen/widget/time_left_circle.dart';
 import 'package:motogen/features/profile_screen/widget/car_item.dart';
 import 'package:motogen/features/user_info/viewmodels/personal_info_controller_view_model.dart';
 import 'package:motogen/features/user_info/viewmodels/phone_number_controller_view_model.dart';
-
+import 'package:motogen/widgets/add_car_card.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -49,7 +49,10 @@ class HomeScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   if (!carFormState.hasCars) ...[
-                    Text("no cars available"),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 47.w),
+                      child: AddCarCard(),
+                    ),
                   ] else ...[
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -99,7 +102,7 @@ class HomeScreen extends ConsumerWidget {
                               height: 0,
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w700,
-                              letterSpacing: 0,
+                           
                             ),
                           ),
                           SizedBox(height: 23.h),
@@ -131,7 +134,7 @@ class HomeScreen extends ConsumerWidget {
                               height: 0,
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w700,
-                              letterSpacing: 0,
+                          
                             ),
                           ),
                           SizedBox(height: 23.h),
@@ -163,7 +166,7 @@ class HomeScreen extends ConsumerWidget {
                               height: 1.8,
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w700,
-                              letterSpacing: 0,
+                          
                             ),
                           ),
                           SizedBox(height: 12.h),

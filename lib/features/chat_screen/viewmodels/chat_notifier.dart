@@ -64,7 +64,15 @@ class ChatNotifier extends AsyncNotifier<ChatState> {
     final current = state.value;
 
     if (currentState == null) return;
-
+    state = AsyncValue.data(
+      currentState!.copyWith(
+        messages: [
+          ...currentState!.messages,
+          ChatMessage(content: text, sender: MessageSender.user),
+        ],
+        isLoading: true,
+      ),
+    );
     // No sessions loaded yet → try to load
     if (current!.sessions.isEmpty) {
       final loaded = await loadInitialSession();
@@ -111,15 +119,7 @@ class ChatNotifier extends AsyncNotifier<ChatState> {
   Future<void> _sendToActiveSession(String text) async {
     final st = state.value!;
     final sessionId = st.activeSessionId!;
-    state = AsyncValue.data(
-      st.copyWith(
-        messages: [
-          ...st.messages,
-          ChatMessage(content: text, sender: MessageSender.user),
-        ],
-        isLoading: true,
-      ),
-    );
+    state = AsyncValue.data(st.copyWith(isLoading: true));
 
     final data = await _chatRepository.sendMessage(sessionId, text);
     state = AsyncValue.data(

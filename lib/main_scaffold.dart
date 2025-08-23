@@ -19,12 +19,12 @@ class _MainScaffoldState extends State<MainScaffold>
     with TickerProviderStateMixin {
   int selected = 0;
 
-  // Example pages for IndexedStack!
-  final pages = [
-    HomeScreen(),
-    Center(child: Text('Notifier')),
-    ChatScreen(),
-    ProfileScreen(),
+  Widget? chatScreen;
+  List<Widget> get pages => [
+    const HomeScreen(),
+    const Center(child: Text('Notifier')),
+    chatScreen ?? const SizedBox(), // placeholder
+    const ProfileScreen(),
   ];
 
   @override
@@ -45,9 +45,18 @@ class _MainScaffoldState extends State<MainScaffold>
       ),
       bottomNavigationBar: CustomNavBar(
         selected: selected,
-        onTap: (i) => setState(() => selected = i),
+        onTap: (i) {
+          setState(() {
+            selected = i;
+            if (i == 2 && chatScreen == null) {
+              chatScreen = ChatScreen();
+            }
+            
+          });
+        },
         vsync: this,
       ),
+
       /* bottomNavigationBar: MyNavBar(
         selected: selected,
         onTap: (i) => setState(() => selected = i),
@@ -58,7 +67,6 @@ class _MainScaffoldState extends State<MainScaffold>
         onTap: (i) => setState(() => selected = i),
         vsync: this,
       ), */
-      
     );
   }
 }

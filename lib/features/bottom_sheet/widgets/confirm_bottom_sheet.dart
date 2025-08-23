@@ -54,7 +54,7 @@ class ConfirmBottomSheet extends ConsumerWidget {
                 color: AppColors.blue600,
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w700,
-                letterSpacing: 0,
+            
               ),
             ),
             Row(
@@ -88,7 +88,7 @@ class ConfirmBottomSheet extends ConsumerWidget {
                           color: AppColors.black50,
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
-                          letterSpacing: 0,
+                     
                         ),
                       ),
                     ),
@@ -116,7 +116,7 @@ class ConfirmBottomSheet extends ConsumerWidget {
                           color: confirmColor,
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
-                          letterSpacing: 0,
+                    
                         ),
                       ),
                     ),

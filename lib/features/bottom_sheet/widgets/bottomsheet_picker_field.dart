@@ -10,6 +10,7 @@ class BottomsheetPickerField extends ConsumerWidget {
   final String? selectedText;
   final VoidCallback onPressed;
   final String? errorText;
+  final bool isMultiSelect;
 
   const BottomsheetPickerField({
     super.key,
@@ -17,6 +18,7 @@ class BottomsheetPickerField extends ConsumerWidget {
     required this.selectedText,
     required this.onPressed,
     this.errorText,
+    this.isMultiSelect = false,
   });
 
   @override
@@ -77,7 +79,10 @@ class BottomsheetPickerField extends ConsumerWidget {
                 minWidth: 24.w,
                 minHeight: 24.w,
               ),
-              contentPadding: EdgeInsets.only(right: 24.w),
+
+              contentPadding: isMultiSelect
+                  ? EdgeInsets.only(right: 24.w, left: 10.w, top: 28.h)
+                  : EdgeInsets.only(right: 24.w, left: 10.w),
             ),
             child: Text(
               displayText,

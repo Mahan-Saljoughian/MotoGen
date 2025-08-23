@@ -125,7 +125,7 @@ final fuelTypesProvider = Provider.autoDispose<List<PickerItem>>(
     PickerItem(id: 'GASOLINE', title: 'بنزین'),
     PickerItem(id: 'GAS', title: 'گاز'),
     PickerItem(id: 'DIESEL', title: 'گازوییل'),
-    PickerItem(id: ' GASOLINE_GAS', title: 'بنزین-گاز'),
+    PickerItem(id: 'GASOLINE_GAS', title: 'بنزین-گاز'),
   ],
 );
 

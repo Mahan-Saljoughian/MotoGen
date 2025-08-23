@@ -91,171 +91,168 @@ class _OilFormScreenState extends ConsumerState<OilFormScreen> {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Stack(
-        children: [
-          SafeArea(
-            child: Padding(
-              padding: EdgeInsets.only(top: 20.h, right: 20.w),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          ref.invalidate(oillDraftProvider);
-                          Navigator.of(context).pop();
-                        },
-                        child: SvgPicture.asset(
-                          AppIcons.arrowRight,
-                          width: 24.w,
-                          height: 24.h,
-                        ),
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.only(right: 20.w),
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 20.h),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        ref.invalidate(oillDraftProvider);
+                        Navigator.of(context).pop();
+                      },
+                      child: SvgPicture.asset(
+                        AppIcons.arrowRight,
+                        width: 24.w,
+                        height: 24.h,
                       ),
-                      SizedBox(width: 100.w),
-                      Text(
-                        "ثبت روغن جدید",
-                        style: TextStyle(
-                          color: AppColors.blue500,
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w700,
-                        ),
+                    ),
+                    SizedBox(width: 100.w),
+                    Text(
+                      "ثبت روغن جدید",
+                      style: TextStyle(
+                        color: AppColors.blue500,
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w700,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
+                ),
+              ),
 
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                          right: 24.w,
-                          left: 38.w,
-                          top: isEdit ? 20.h : 46.h,
-                        ),
-                        child: Column(
-                          children: [
-                            if (isEdit)
-                              Padding(
-                                padding: EdgeInsets.only(bottom: 26.h),
-                                child: Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: GestureDetector(
-                                    onTap: () async {
-                                      await showConfirmBottomSheet(
-                                        context: context,
-                                        isDelete: true,
-                                        onConfirm: () async {
-                                          await ref
-                                              .read(
-                                                oilListProvider(
-                                                  carId!,
-                                                ).notifier,
-                                              )
-                                              .deleteSelectedOilItemById(
-                                                carId,
-                                                draft.oilId!,
-                                              );
+              Expanded(
+                child: SingleChildScrollView(
+                  physics:
+                      const AlwaysScrollableScrollPhysics(), // force scrollability
 
-                                          ref
-                                              .read(oillDraftProvider.notifier)
-                                              .state = OilStateItem(
-                                            oilId: "oil_temp_id",
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      right: 24.w,
+                      left: 38.w,
+                      top: isEdit ? 20.h : 46.h,
+                    ),
+                    child: Column(
+                      children: [
+                        if (isEdit)
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 26.h),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: GestureDetector(
+                                onTap: () async {
+                                  await showConfirmBottomSheet(
+                                    context: context,
+                                    isDelete: true,
+                                    onConfirm: () async {
+                                      await ref
+                                          .read(
+                                            oilListProvider(carId!).notifier,
+                                          )
+                                          .deleteSelectedOilItemById(
+                                            carId,
+                                            draft.oilId!,
                                           );
-                                        },
+
+                                      ref
+                                          .read(oillDraftProvider.notifier)
+                                          .state = OilStateItem(
+                                        oilId: "oil_temp_id",
                                       );
                                     },
-                                    child: SvgPicture.asset(
-                                      AppIcons.trash,
-                                      width: 24.w,
-                                      height: 24.h,
-                                      colorFilter: ColorFilter.mode(
-                                        Color(0xFFC60B0B),
-                                        BlendMode.srcIn,
-                                      ),
-                                    ),
+                                  );
+                                },
+                                child: SvgPicture.asset(
+                                  AppIcons.trash,
+                                  width: 24.w,
+                                  height: 24.h,
+                                  colorFilter: ColorFilter.mode(
+                                    Color(0xFFC60B0B),
+                                    BlendMode.srcIn,
                                   ),
                                 ),
                               ),
-                            BuildFormFields<OilStateItem>(
-                              provider: oillDraftProvider,
-                              fieldsBuilder: (state, ref) => buildOilInfoFields(
-                                state,
-                                ref,
-                                oilBrandAndModelController,
-                                kilometerController,
-                                locationController,
-                                costController,
-                                notesController,
-                                isEdit,
-                              ),
                             ),
-                          ],
+                          ),
+                        BuildFormFields<OilStateItem>(
+                          provider: oillDraftProvider,
+                          fieldsBuilder: (state, ref) => buildOilInfoFields(
+                            state,
+                            ref,
+                            oilBrandAndModelController,
+                            kilometerController,
+                            locationController,
+                            costController,
+                            notesController,
+                            isEdit,
+                          ),
                         ),
-                      ),
+                        SizedBox(height: 30.h),
+                        OnboardingButton(
+                          enabled: ref.watch(isOilInfoButtonEnabled(isEdit)),
+                          text: "ثبت",
+                          onPressed: () async {
+                            try {
+                              if (isEdit) {
+                                await showConfirmBottomSheet(
+                                  context: context,
+                                  onConfirm: () async {
+                                    await ref
+                                        .read(oilListProvider(carId!).notifier)
+                                        .updateOilFromDraft(
+                                          draft,
+                                          widget.initialItem!,
+                                          carId,
+                                        );
+                                    // refreshes the repair list
+                                    ref.invalidate(oilListProvider(carId));
+                                    // Reset draft
+                                    ref.read(oillDraftProvider.notifier).state =
+                                        OilStateItem(oilId: "oil_temp_id");
+                                  },
+                                );
+                              } else {
+                                await ref
+                                    .read(oilListProvider(carId!).notifier)
+                                    .addOilFromDraft(draft, carId);
+                                // refreshes the repair list
+                                ref.invalidate(oilListProvider(carId));
+                                // Reset draft
+                                ref.read(oillDraftProvider.notifier).state =
+                                    OilStateItem(oilId: "oil_temp_id");
+                              }
+
+                              if (!isEdit) {
+                                if (context.mounted) {
+                                  Navigator.of(context).pop();
+                                }
+                              }
+                            } catch (e) {
+                              // handle error (snackbar, dialog, etc.)
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: isEdit
+                                        ? Text('خطا در ویرایش روغن ')
+                                        : Text('خطا در ثبت روغن جدید'),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                        ),
+                        SizedBox(height: 55.h),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
-          Positioned(
-            bottom: 70.h,
-            right: 43.w,
-            child: OnboardingButton(
-              enabled: ref.watch(isOilInfoButtonEnabled(isEdit)),
-              text: "ثبت",
-              onPressed: () async {
-                try {
-                  if (isEdit) {
-                    await showConfirmBottomSheet(
-                      context: context,
-                      onConfirm: () async {
-                        await ref
-                            .read(oilListProvider(carId!).notifier)
-                            .updateOilFromDraft(
-                              draft,
-                              widget.initialItem!,
-                              carId,
-                            );
-                        // refreshes the repair list
-                        ref.invalidate(oilListProvider(carId));
-                        // Reset draft
-                        ref.read(oillDraftProvider.notifier).state =
-                            OilStateItem(oilId: "oil_temp_id");
-                      },
-                    );
-                  } else {
-                    await ref
-                        .read(oilListProvider(carId!).notifier)
-                        .addOilFromDraft(draft, carId);
-                    // refreshes the repair list
-                    ref.invalidate(oilListProvider(carId));
-                    // Reset draft
-                    ref.read(oillDraftProvider.notifier).state = OilStateItem(
-                      oilId: "oil_temp_id",
-                    );
-                  }
-
-                  if (!isEdit) {
-                    if (context.mounted) {
-                      Navigator.of(context).pop();
-                    }
-                  }
-                } catch (e) {
-                  // handle error (snackbar, dialog, etc.)
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: isEdit
-                            ? Text('خطا در ویرایش روغن ')
-                            : Text('خطا در ثبت روغن جدید'),
-                      ),
-                    );
-                  }
-                }
-              },
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

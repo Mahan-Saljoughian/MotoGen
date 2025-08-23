@@ -42,6 +42,7 @@ class BuildFormFields<T> extends ConsumerWidget {
             }
 
             return BottomsheetPickerField(
+              isMultiSelect: fieldPickerConfig.isMultiSelect,
               labelText: fieldConfig.pickerConfig!.labelText,
               selectedText: selectedText,
               onPressed: () {
@@ -63,7 +64,6 @@ class BuildFormFields<T> extends ConsumerWidget {
               isValid: fieldConfig.textConfig!.isValid,
               error: fieldConfig.textConfig!.error,
               isNumberOnly: fieldConfig.textConfig!.isNumberOnly,
-
               isTomanCost: fieldConfig.textConfig!.isTomanCost,
               isNotes: fieldConfig.textConfig!.isNotes,
               onChanged: fieldConfig.textConfig!.onChanged,

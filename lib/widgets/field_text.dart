@@ -83,7 +83,8 @@ class _FieldTextState extends State<FieldText> {
                     ? TextInputType.number
                     : TextInputType.text,
                 maxLines: widget.isNotes ? null : 1,
-
+                expands: _ctrl.text.isEmpty ? widget.isNotes : false,
+                textAlignVertical: TextAlignVertical.top,
                 inputFormatters: widget.isNumberOnly
                     ? [FarsiOrEnglishDigitsInputFormatter()]
                     : null,
@@ -92,7 +93,10 @@ class _FieldTextState extends State<FieldText> {
                   if (widget.isNumberOnly && !widget.isPhone) {
                     // Remove existing commas
                     String digits = value.replaceAll(',', '');
-
+                    digits =
+                        FarsiOrEnglishDigitsInputFormatter.normalizePersianDigits(
+                          digits,
+                        );
                     // Handle empty value
                     if (digits.isEmpty) {
                       _ctrl.clear();
