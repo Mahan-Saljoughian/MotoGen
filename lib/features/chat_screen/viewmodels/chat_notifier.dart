@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:motogen/features/chat_screen/data/chat_repository.dart';
 import 'package:motogen/features/chat_screen/model/chat_message.dart';
@@ -91,29 +92,78 @@ class ChatNotifier extends AsyncNotifier<ChatState> {
   Future<void> _startNewSession(String firstMessage) async {
     state = AsyncValue.data(state.value!.copyWith(isLoading: true));
 
-    final data = await _chatRepository.createSession(firstMessage);
+    try {
+      final response = await _chatRepository.createSession(firstMessage);
 
-    final newSession = ChatSession(
-      id: data['chatSessionId'],
-      title: data['chatSessionTitle'] ?? 'New Chat',
-
-      messages: [
-        ChatMessage(content: firstMessage, sender: MessageSender.user),
-        ChatMessage(
-          content: data['aiResponse'] ?? '',
+      if (response['success'] != true) {
+        final aiError = ChatMessage(
+          content: response['message'] ?? 'خطا در شروع گفتگو',
           sender: MessageSender.ai,
-        ),
-      ],
-    );
+        );
+        final newSession = ChatSession(
+          id: 'temp-error-${DateTime.now().millisecondsSinceEpoch}',
+          title: 'New Chat (Error)',
+          messages: [
+            ChatMessage(content: firstMessage, sender: MessageSender.user),
+            aiError,
+          ],
+        );
 
-    state = AsyncValue.data(
-      state.value!.copyWith(
-        sessions: [newSession],
-        activeSessionId: newSession.id,
-        messages: newSession.messages,
-        isLoading: false,
-      ),
-    );
+        state = AsyncValue.data(
+          state.value!.copyWith(
+            sessions: [newSession],
+            activeSessionId: newSession.id,
+            messages: newSession.messages,
+          ),
+        );
+        return; // exit early, finally will still run
+      }
+      final data = response['data'];
+      final newSession = ChatSession(
+        id: data['chatSessionId'],
+        title: data['chatSessionTitle'] ?? 'New Chat',
+        messages: [
+          ChatMessage(content: firstMessage, sender: MessageSender.user),
+          ChatMessage(
+            content: data['aiResponse'] ?? '',
+            sender: MessageSender.ai,
+          ),
+        ],
+      );
+
+      state = AsyncValue.data(
+        state.value!.copyWith(
+          sessions: [newSession],
+          activeSessionId: newSession.id,
+          messages: newSession.messages,
+        ),
+      );
+    } catch (e, stTrace) {
+      debugPrint("debug startNewSession error: $e , $stTrace");
+
+      final aiError = ChatMessage(
+        content: 'خطای شبکه',
+        sender: MessageSender.ai,
+      );
+      final newSession = ChatSession(
+        id: 'temp-error-${DateTime.now().millisecondsSinceEpoch}',
+        title: 'New Chat (Error)',
+        messages: [
+          ChatMessage(content: firstMessage, sender: MessageSender.user),
+          aiError,
+        ],
+      );
+
+      state = AsyncValue.data(
+        state.value!.copyWith(
+          sessions: [newSession],
+          activeSessionId: newSession.id,
+          messages: newSession.messages,
+        ),
+      );
+    } finally {
+      state = AsyncValue.data(state.value!.copyWith(isLoading: false));
+    }
   }
 
   Future<void> _sendToActiveSession(String text) async {
@@ -121,20 +171,33 @@ class ChatNotifier extends AsyncNotifier<ChatState> {
     final sessionId = st.activeSessionId!;
     state = AsyncValue.data(st.copyWith(isLoading: true));
 
-    final data = await _chatRepository.sendMessage(sessionId, text);
-    state = AsyncValue.data(
-      state.value!.copyWith(
-        messages:
-            List.of(state.value!.messages) // ensures a new list ref
-              ..add(
-                ChatMessage(
-                  content: data['aiResponse'] ?? '',
-                  sender: MessageSender.ai,
-                ),
-              ),
-        isLoading: false,
-      ),
-    );
+    try {
+      final response = await _chatRepository.sendMessage(sessionId, text);
+
+      String reply;
+      if (response['success'] != true) {
+        reply = response['message'] ?? 'خطا در ارسال پیام';
+      } else {
+        reply = response['data']['aiResponse'] ?? '';
+      }
+
+      state = AsyncValue.data(
+        state.value!.copyWith(
+          messages: List.of(state.value!.messages)
+            ..add(ChatMessage(content: reply, sender: MessageSender.ai)),
+        ),
+      );
+    } catch (e, st) {
+      debugPrint("debug the error is $e , $st");
+      state = AsyncValue.data(
+        state.value!.copyWith(
+          messages: List.of(state.value!.messages)
+            ..add(ChatMessage(content: 'خطای شبکه', sender: MessageSender.ai)),
+        ),
+      );
+    } finally {
+      state = AsyncValue.data(state.value!.copyWith(isLoading: false));
+    }
   }
 }
 

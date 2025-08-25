@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/web.dart';
+import 'package:motogen/core/global_error_handling/main.dart';
 import 'package:motogen/core/services/refresh_token_expired_exception.dart';
 
 class ApiService {
@@ -72,7 +73,11 @@ class ApiService {
         response = await requestFunc(token);
       }
     } catch (e) {
-      throw Exception(isDebugMode ? 'API request failed: $e' : "خطای شبکه");
+      _logger.e('API request failed: $e');
+      return {
+        "success": false,
+        "message": isDebugMode ? 'API request failed: $e' : "خطای شبکه",
+      };
     }
 
     final body = json.decode(response.body);
@@ -80,9 +85,8 @@ class ApiService {
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return body;
     } else {
-      throw Exception(
-        body['message'] ?? 'Request failed: ${response.statusCode}',
-      );
+      _logger.e(body['message'] ?? 'Request failed: ${response.statusCode}');
+      return <String, dynamic>{...body, "success": false};
     }
   }
 
