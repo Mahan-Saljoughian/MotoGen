@@ -30,14 +30,21 @@ class TimeLeftCircle extends StatelessWidget {
       return Color(0xFFDEF9E5);
     }
 
+    Color getInnerShadowBackGroundColor() {
+      if (percent <= 0.2) return Color(0xFF8B0E0E).withAlpha(35);
+      if (percent <= 0.4) return Color(0xFFB3740C).withAlpha(50);
+      return Color(0xFF0D3417).withAlpha(35);
+    }
+
     final slideColor = getSlideColor();
     final backGroundColor = getBackGroundColor();
+    final innerShadowBackGroundColor = getInnerShadowBackGroundColor();
     return InnerShadow(
       shadows: [
         BoxShadow(
-          blurRadius: 5,
+          blurRadius: 6,
           offset: Offset(0, 0),
-          color: Colors.black.withAlpha(50),
+          color: Colors.black.withAlpha(45),
         ),
       ],
       child: Container(
@@ -45,32 +52,41 @@ class TimeLeftCircle extends StatelessWidget {
         height: 100.h,
 
         decoration: BoxDecoration(
-          color: Colors.white.withAlpha(153),
+          color: Color(0xFFF1F3F5),
           borderRadius: BorderRadius.circular(15.r),
         ),
-        child: CircularPercentIndicator(
-          radius: 34.r,
-          lineWidth: 8.w,
-          percent: percent,
-          center: Text(
-            "$daysLeft\nروز",
-            style: TextStyle(
-              color: slideColor,
-              fontSize: 13.sp,
-              fontWeight: FontWeight.w700,
+        child: InnerShadow(
+          shadows: [
+            BoxShadow(
+              blurRadius: 4,
+              offset: Offset(0, 0),
+              color: innerShadowBackGroundColor,
             ),
-          ),
-          progressColor: slideColor,
-          backgroundColor: backGroundColor,
-          circularStrokeCap: CircularStrokeCap.round,
-          footer: Padding(
-            padding: EdgeInsets.only(top: 5.h),
-            child: Text(
-              serviceTitle,
+          ],
+          child: CircularPercentIndicator(
+            radius: 34.r,
+            lineWidth: 8.w,
+            percent: percent,
+            center: Text(
+              "$daysLeft\nروز",
               style: TextStyle(
-                color: AppColors.blue500,
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w600,
+                color: slideColor,
+                fontSize: 13.sp,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            progressColor: slideColor,
+            backgroundColor: backGroundColor,
+            circularStrokeCap: CircularStrokeCap.round,
+            footer: Padding(
+              padding: EdgeInsets.only(top: 5.h),
+              child: Text(
+                serviceTitle,
+                style: TextStyle(
+                  color: AppColors.blue500,
+                  fontSize: 10.sp,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ),

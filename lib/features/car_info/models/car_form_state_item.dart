@@ -1,24 +1,28 @@
-import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
 import 'package:motogen/features/bottom_sheet/config/picker_item.dart';
+import 'package:motogen/features/car_services/base/viewmodel/shared_draft_setters.dart';
+import 'package:motogen/features/car_services/base/viewmodel/shared_draft_validation.dart';
 import 'package:motogen/features/car_services/refuel/model/refuel_state_item.dart';
 import 'package:motogen/features/car_services/repair/model/repair_state_item.dart';
 
-//dart run build_runner build --delete-conflicting-outputs
-
-class CarFormStateItem {
+class CarFormStateItem
+    with KilometerValidation
+    implements KilometerSetters<CarFormStateItem> {
   final String? carId;
   final PickerItem? brand;
   final PickerItem? type;
   final PickerItem? model;
   final int? yearMade;
   final PickerItem? color;
-  final int? kilometerDriven;
+  @override
+  final int? kilometer;
+  @override
+  final String? rawKilometerInput;
   final PickerItem? fuelType;
   final DateTime? bodyInsuranceExpiry;
   final DateTime? nextTechnicalCheck;
   final String? nickName;
   final DateTime? thirdPartyInsuranceExpiry;
-  final String? rawKilometersInput;
+
   final List<RefuelStateItem> refuels;
   final List<RepairStateItem> repairs;
   final bool isBrandInteractedOnce;
@@ -38,12 +42,12 @@ class CarFormStateItem {
     this.type,
     this.yearMade,
     this.color,
-    this.kilometerDriven,
+    this.kilometer,
+    this.rawKilometerInput,
     this.fuelType,
     this.bodyInsuranceExpiry,
     this.thirdPartyInsuranceExpiry,
     this.nextTechnicalCheck,
-    this.rawKilometersInput,
     this.nickName,
     this.refuels = const [],
     this.repairs = const [],
@@ -57,19 +61,19 @@ class CarFormStateItem {
     this.isNextTechnicalCheckInteractedOnce = false,
     this.isThirdPartyInsuranceExpiryInteractedOnce = false,
   });
-
+  @override
   CarFormStateItem copyWith({
+    int? kilometer,
+    String? rawKilometerInput,
     String? carId,
     PickerItem? brand,
     PickerItem? model,
     PickerItem? type,
     int? yearMade,
     PickerItem? color,
-    int? kilometerDriven,
     PickerItem? fuelType,
     DateTime? bodyInsuranceExpiry,
     DateTime? nextTechnicalCheck,
-    String? rawKilometersInput,
     DateTime? thirdPartyInsuranceExpiry,
     String? nickName,
     List<RefuelStateItem>? refuels,
@@ -91,16 +95,17 @@ class CarFormStateItem {
       type: type ?? this.type,
       yearMade: yearMade ?? this.yearMade,
       color: color ?? this.color,
-      kilometerDriven: kilometerDriven ?? this.kilometerDriven,
+      kilometer: kilometer ?? this.kilometer,
+      rawKilometerInput: rawKilometerInput ?? this.rawKilometerInput,
       fuelType: fuelType ?? this.fuelType,
       bodyInsuranceExpiry: bodyInsuranceExpiry ?? this.bodyInsuranceExpiry,
       nextTechnicalCheck: nextTechnicalCheck ?? this.nextTechnicalCheck,
-      rawKilometersInput: rawKilometersInput ?? this.rawKilometersInput,
+
       thirdPartyInsuranceExpiry:
           thirdPartyInsuranceExpiry ?? this.thirdPartyInsuranceExpiry,
       nickName: nickName ?? this.nickName,
       refuels: refuels ?? this.refuels,
-         repairs: repairs ?? this.repairs,
+      repairs: repairs ?? this.repairs,
       isBrandInteractedOnce:
           isBrandInteractedOnce ?? this.isBrandInteractedOnce,
       isModelInteractedOnce:
@@ -131,7 +136,7 @@ class CarFormStateItem {
     "type": type?.toJson(),
     "yearMade": yearMade,
     "color": color?.toJson(),
-    "kilometerDriven": kilometerDriven,
+    "kilometer": kilometer,
     "fuelType": fuelType?.toJson(),
     "bodyInsuranceExpiry": bodyInsuranceExpiry?.toIso8601String(),
     "nextTechnicalCheck": nextTechnicalCheck?.toIso8601String(),
@@ -150,7 +155,7 @@ class CarFormStateItem {
     type: json['type'] != null ? PickerItem.fromJson(json['type']) : null,
     yearMade: json['yearMade'],
     color: json['color'] != null ? PickerItem.fromJson(json['color']) : null,
-    kilometerDriven: json['kilometerDriven'],
+    kilometer: json['kilometer'],
     fuelType: json['fuelType'] != null
         ? PickerItem.fromJson(json['fuelType'])
         : null,
@@ -169,81 +174,36 @@ class CarFormStateItem {
             ?.map((e) => RefuelStateItem.fromJson(e as Map<String, dynamic>))
             .toList() ??
         const [],
-        repairs:
+    repairs:
         (json['repairs'] as List<dynamic>?)
             ?.map((e) => RepairStateItem.fromJson(e as Map<String, dynamic>))
             .toList() ??
         const [],
   );
 
- Map<String, dynamic> toApiJson({Map<String, dynamic>? userInfo}) {
+Map<String, dynamic> toApiJson({Map<String, dynamic>? userInfo}) {
+  final carInfo = {
+    'productYear': yearMade,
+    'color': color?.id,
+    'kilometer': kilometer,
+    'fuel': fuelType?.id,
+    'thirdPartyInsuranceExpiry': thirdPartyInsuranceExpiry?.toIso8601String(),
+    if (bodyInsuranceExpiry != null)
+      'bodyInsuranceExpiry': bodyInsuranceExpiry?.toIso8601String(),
+    'nextTechnicalInspectionDate': nextTechnicalCheck?.toIso8601String(),
+    'carTrimId': type?.id,
+    if (nickName != null && nickName!.trim().isNotEmpty)
+      'nickName': nickName,
+  };
+
+  if (userInfo != null) {
     return {
-      if (userInfo != null) 'userInformation': userInfo,
-      'carInformation': {
-        'productYear': yearMade,
-        'color': color?.id,
-        'kilometer': kilometerDriven,
-        'fuel': fuelType?.id,
-        'thirdPartyInsuranceExpiry': thirdPartyInsuranceExpiry?.toIso8601String(),
-        if (bodyInsuranceExpiry != null)
-          'bodyInsuranceExpiry': bodyInsuranceExpiry?.toIso8601String(),
-        'nextTechnicalInspectionDate': nextTechnicalCheck?.toIso8601String(),
-        'carTrimId': type?.id,
-        if (nickName != null && nickName!.trim().isNotEmpty) 'nickName': nickName,
-      },
+      'userInformation': userInfo,
+      'carInformation': carInfo,
     };
+  } else {
+    return carInfo;
   }
-  
-  String? get kilometerError {
-    final text = rawKilometersInput;
-    if (text == null || text.trim().isEmpty) {
-      return 'الزامی!';
-    }
-    final normalized =
-        FarsiOrEnglishDigitsInputFormatter.normalizePersianDigits(text);
-    final parsed = int.tryParse(normalized);
-    if (parsed == null || parsed < 0 || parsed > 10000000) {
-      return 'کیلومتر باید بین 0 تا 10,000,000 باشد';
-    }
-    return null;
-  }
+}
 
-  bool get isKilometerValid => kilometerError == null;
-
-  String? get brandError =>
-      isBrandInteractedOnce && brand == null ? 'الزامی!' : null;
-
-  String? get modelError =>
-      isModelInteractedOnce &&
-          (model == null || model == PickerItem.noValueString)
-      ? 'الزامی!'
-      : null;
-
-  String? get typeError =>
-      isTypeInteractedOnce && (type == null || type == PickerItem.noValueString)
-      ? 'الزامی!'
-      : null;
-
-  String? get yearMadeError =>
-      isYearMadeInteractedOnce &&
-          (yearMade == null || yearMade == PickerItem.yearNoValue)
-      ? 'الزامی!'
-      : null;
-
-  String? get fuelTypeError =>
-      isFuelTypeInteractedOnce && fuelType == null ? 'الزامی!' : null;
-
-  String? get thirdPartyInsuranceExpiryError =>
-      isThirdPartyInsuranceExpiryInteractedOnce &&
-          thirdPartyInsuranceExpiry == null
-      ? 'الزامی!'
-      : null;
-
-  String? get nextTechnicalCheckError =>
-      isNextTechnicalCheckInteractedOnce && nextTechnicalCheck == null
-      ? 'الزامی!'
-      : null;
-
-  String? get colorError =>
-      isColorInteractedOnce && color == null ? 'الزامی!' : null;
 }

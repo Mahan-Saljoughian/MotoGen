@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/chat_screen/model/chat_message.dart';
@@ -14,6 +13,7 @@ import 'package:motogen/features/chat_screen/widgets/prompt_input.dart';
 import 'package:motogen/features/chat_screen/widgets/suggestion_question.dart';
 import 'package:motogen/features/chat_screen/widgets/user_message_bubble.dart';
 import 'package:motogen/widgets/add_car_card.dart';
+import 'package:motogen/widgets/my_app_bar.dart';
 
 class ChatScreen extends ConsumerWidget {
   const ChatScreen({super.key});
@@ -30,7 +30,7 @@ class ChatScreen extends ConsumerWidget {
           ChatState(messages: [], isLoading: false, errorMessage: null),
     );
 
-    print(
+    debugPrint(
       "UI rebuild — messages length: ${chatState.messages.length}, isLoading: ${chatState.isLoading}",
     );
 
@@ -38,21 +38,11 @@ class ChatScreen extends ConsumerWidget {
       backgroundColor: AppColors.blue50,
       body: Column(
         children: [
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 20.h),
-            alignment: Alignment.center,
-            child: Text(
-              "چت‌بات",
-              style: TextStyle(
-                color: AppColors.blue500,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
+          MyAppBar(titleText: "چت‌بات"),
+
           if (!carFormState.hasCars) ...[
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 47.w, vertical: 20.h),
+              padding: EdgeInsets.symmetric(horizontal: 27.w),
               child: AddCarCard(),
             ),
           ] else ...[

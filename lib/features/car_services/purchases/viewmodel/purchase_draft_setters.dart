@@ -9,10 +9,7 @@ final purchaseDraftProvider = StateProvider<PurhcaseStateItem>(
 );
 
 extension PurchaseDraftSetters on WidgetRef {
-  void updateDraft(PurhcaseStateItem Function(PurhcaseStateItem) updater) {
-    final current = read(purchaseDraftProvider);
-    read(purchaseDraftProvider.notifier).state = updater(current);
-  }
+  
 
   void setRawPart(String input) {
     setPart(purchaseDraftProvider, input);

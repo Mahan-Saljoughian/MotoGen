@@ -3,9 +3,7 @@ import 'package:motogen/features/bottom_sheet/config/picker_field_config.dart';
 import 'package:motogen/features/bottom_sheet/config/picker_item.dart';
 import 'package:motogen/features/car_info/data/car_info_providers.dart';
 import 'package:motogen/features/car_info/models/car_form_state_item.dart';
-import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
-
-
+import 'package:motogen/features/car_info/viewmodels/car_draft_setters.dart';
 
 PickerFieldConfig<CarFormStateItem> brandPickConfig =
     PickerFieldConfig<CarFormStateItem>(
@@ -13,7 +11,7 @@ PickerFieldConfig<CarFormStateItem> brandPickConfig =
       providerBuilder: (state) => carBrandsProvider,
       getter: (state) => state.brand,
       setter: (WidgetRef ref, value) =>
-          ref.read(carStateNotifierProvider.notifier).setBrand(value),
+          ref.setBrand(value),
     );
 
 PickerFieldConfig<CarFormStateItem> modelPickConfig =
@@ -22,7 +20,7 @@ PickerFieldConfig<CarFormStateItem> modelPickConfig =
       providerBuilder: (state) => carModelsProvider(state.brand?.id ?? ''),
       getter: (state) => state.model,
       setter: (WidgetRef ref, value) =>
-          ref.read(carStateNotifierProvider.notifier).setModel(value),
+          ref.setModel(value),
     );
 
 PickerFieldConfig<CarFormStateItem> typePickConfig =
@@ -31,7 +29,7 @@ PickerFieldConfig<CarFormStateItem> typePickConfig =
       providerBuilder: (state) => carTypesProvider(state.model?.id ?? ''),
       getter: (state) => state.type,
       setter: (WidgetRef ref, value) =>
-          ref.read(carStateNotifierProvider.notifier).setType(value),
+          ref.setType(value),
     );
 PickerFieldConfig<CarFormStateItem> yearMadePickConfig =
     PickerFieldConfig<CarFormStateItem>(
@@ -48,7 +46,7 @@ PickerFieldConfig<CarFormStateItem> yearMadePickConfig =
           : null,
       setter: (ref, value) {
         final year = value != null ? int.tryParse(value.id!) : null;
-        ref.read(carStateNotifierProvider.notifier).setYearMade(year);
+        ref.setYearMade(year);
       },
     );
 
@@ -58,7 +56,7 @@ PickerFieldConfig<CarFormStateItem> colorPickConfig =
       providerBuilder: (state) => colorProvider,
       getter: (state) => state.color,
       setter: (WidgetRef ref, value) =>
-          ref.read(carStateNotifierProvider.notifier).setColor(value),
+          ref.setColor(value),
     );
 
 PickerFieldConfig<CarFormStateItem> fuelTypePickConfig =
@@ -67,5 +65,5 @@ PickerFieldConfig<CarFormStateItem> fuelTypePickConfig =
       providerBuilder: fuelTypesAsyncProviderBuilder,
       getter: (state) => state.fuelType,
       setter: (WidgetRef ref, value) =>
-          ref.read(carStateNotifierProvider.notifier).setFuelType(value),
+          ref.setFuelType(value),
     );

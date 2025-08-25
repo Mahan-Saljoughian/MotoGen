@@ -14,6 +14,7 @@ import 'package:motogen/features/user_info/viewmodels/phone_number_controller_vi
 import 'package:motogen/features/onboarding/widgets/dot_indicator.dart';
 import 'package:motogen/widgets/field_text.dart';
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
+import 'package:motogen/widgets/my_app_bar.dart';
 
 class EnterPhoneNumberScreen extends ConsumerWidget {
   final int currentPage;
@@ -51,65 +52,55 @@ class EnterPhoneNumberScreen extends ConsumerWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 20.h),
-            child: Center(
-              child: Column(
-                children: [
-                  Text(
-                    "حساب کاربری",
-                    style: TextStyle(
-                      color: AppColors.blue500,
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
+          child: Center(
+            child: Column(
+              children: [
+                MyAppBar(titleText: "حساب کاربری"),
+
+                SizedBox(height: MediaQuery.of(context).size.height * 0.30.h),
+
+                Text(
+                  "برای ورود یا ایجاد حساب کاربری شماره موبایلت رو وارد کن...",
+                  style: TextStyle(
+                    color: AppColors.blue900,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
                   ),
+                ),
 
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.30.h),
+                SizedBox(height: 36.h),
 
-                  Text(
-                    "برای ورود یا ایجاد حساب کاربری شماره موبایلت رو وارد کن...",
-                    style: TextStyle(
-                      color: AppColors.blue900,
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w700,
-                    ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 40.w),
+                  child: FieldText(
+                    controller: phoneVm.phoneController,
+                    isValid: phoneVm.isValid,
+                    labelText: "شماره موبایل",
+                    hintText: "09123456789",
+                    error: auth.message ?? phoneVm.error,
+                    isPhone: true,
+                    isNumberOnly: true,
+                    isShowNeededIcon: false,
+                    isBackError: auth.status == AuthStatus.error,
                   ),
+                ),
 
-                  SizedBox(height: 36.h),
+                Image.asset(
+                  AppImages.phoneNumberPageImage,
+                  width: 250.w,
+                  height: 250.w,
+                ),
 
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 40.w),
-                    child: FieldText(
-                      controller: phoneVm.phoneController,
-                      isValid: phoneVm.isValid,
-                      labelText: "شماره موبایل",
-                      hintText: "09123456789",
-                      error: auth.message ?? phoneVm.error,
-                      isPhone: true,
-                      isNumberOnly: true,
-                      isShowNeededIcon: false,
-                      isBackError: auth.status == AuthStatus.error,
-                    ),
-                  ),
-
-                  Image.asset(
-                    AppImages.phoneNumberPageImage,
-                    width: 250.w,
-                    height: 250.w,
-                  ),
-
-                  SizedBox(height: 28.h),
-                  DotIndicator(currentPage: currentPage, count: count),
-                  SizedBox(height: 24.h),
-                  OnboardingButton(
-                    currentPage: currentPage,
-                    onPressed: () async {
-                      await authNotifier.requestOtp(phoneNumberString);
-                    },
-                  ),
-                ],
-              ),
+                SizedBox(height: 28.h),
+                DotIndicator(currentPage: currentPage, count: count),
+                SizedBox(height: 24.h),
+                OnboardingButton(
+                  currentPage: currentPage,
+                  onPressed: () async {
+                    await authNotifier.requestOtp(phoneNumberString);
+                  },
+                ),
+              ],
             ),
           ),
         ),

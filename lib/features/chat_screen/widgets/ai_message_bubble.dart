@@ -12,6 +12,21 @@ class AiMessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final aiChatColor = const Color(0xFFF7FBF1);
+    final baseStyle = TextStyle(
+      color: aiChatColor,
+      letterSpacing: 0.3,
+      height: 1.5.h,
+    );
+    TextStyle? heading(TextStyle? original, double size, FontWeight weight) =>
+        original?.copyWith(
+          color: aiChatColor,
+          letterSpacing: 0.3,
+          height: 1.5.h,
+          fontSize: size,
+          fontWeight: weight,
+        );
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Padding(
@@ -23,7 +38,7 @@ class AiMessageBubble extends StatelessWidget {
               clipBehavior: Clip.none,
               children: [
                 Container(
-                  constraints: BoxConstraints(maxWidth: 0.6.sw),
+                  constraints: BoxConstraints(maxWidth: 0.7.sw),
                   padding: EdgeInsets.only(
                     top: 7.h,
                     bottom: 7.h,
@@ -38,29 +53,54 @@ class AiMessageBubble extends StatelessWidget {
                     textDirection: TextDirection.rtl,
                     child: MarkdownBody(
                       data: aiMessage,
-                      styleSheet:
-                          MarkdownStyleSheet.fromTheme(
-                            Theme.of(context),
-                          ).copyWith(
-                            p: TextStyle(
-                              color: const Color(0xFFF7FBF1),
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0.3,
-                              height: 1.5,
-                            ),
-                            blockquoteDecoration: BoxDecoration(
-                              color: Colors.transparent, // no background
-                            ),
-                            blockquotePadding: EdgeInsets.symmetric(
-                              horizontal: 8.w,
-                              vertical: 4.h,
-                            ),
-                            blockquote: TextStyle(
-                              color: const Color(0xFFF7FBF1),
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
+                      styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
+                        p: baseStyle.copyWith(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        h1: heading(
+                          theme.textTheme.headlineLarge,
+                          16.sp,
+                          FontWeight.w800,
+                        ),
+                        h2: heading(
+                          theme.textTheme.headlineMedium,
+                          16.sp,
+                          FontWeight.w800,
+                        ),
+                        h3: heading(
+                          theme.textTheme.headlineSmall,
+                          14.sp,
+                          FontWeight.w700,
+                        ),
+                        h4: heading(
+                          theme.textTheme.titleLarge,
+                          14.sp,
+                          FontWeight.w700,
+                        ),
+                        h5: heading(
+                          theme.textTheme.titleMedium,
+                          12.sp,
+                          FontWeight.w600,
+                        ),
+                        h6: heading(
+                          theme.textTheme.titleSmall,
+                          12.sp,
+                          FontWeight.w600,
+                        ),
+                        listBullet: baseStyle,
+
+                        blockquoteDecoration: BoxDecoration(
+                          color: Colors.transparent, // no background
+                        ),
+                        blockquotePadding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 4.h,
+                        ),
+                        blockquote: baseStyle.copyWith(
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
                       selectable: true,
                       onTapLink: (text, href, title) async {
                         if (href != null) {

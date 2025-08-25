@@ -4,13 +4,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
+import 'package:motogen/core/services/fade_route.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
-import 'package:motogen/features/chat_screen/viewmodels/chat_notifier.dart';
+import 'package:motogen/features/car_info/views/car_form_screen.dart';
 import 'package:motogen/features/profile_screen/widget/car_item.dart';
 import 'package:motogen/features/profile_screen/widget/more_bottom_sheet.dart';
 import 'package:motogen/features/user_info/viewmodels/personal_info_controller_view_model.dart';
 import 'package:motogen/features/user_info/viewmodels/phone_number_controller_view_model.dart';
 import 'package:motogen/widgets/add_car_card.dart';
+import 'package:motogen/widgets/my_app_bar.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -25,41 +27,23 @@ class ProfileScreen extends ConsumerWidget {
       backgroundColor: AppColors.blue50,
 
       body: Padding(
-        padding: EdgeInsets.only(top: 20.h, left: 30.w, right: 30.w),
+        padding: EdgeInsets.symmetric(horizontal: 30.w),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  "پروفایل",
-                  style: TextStyle(
-                    color: AppColors.blue500,
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w700,
+            MyAppBar(
+              titleText: "پروفایل",
+              ontapFunction: () => showModalBottomSheet(
+                context: context,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(40.r),
                   ),
                 ),
-                SizedBox(width: 138.w),
-                GestureDetector(
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(40.r),
-                        ),
-                      ),
-                      builder: (context) => MoreBottomSheet(),
-                    );
-                  },
-                  child: SvgPicture.asset(
-                    AppIcons.more,
-                    width: 23.w,
-                    height: 29.9.h,
-                  ),
-                ),
-              ],
+                builder: (context) => MoreBottomSheet(),
+              ),
+              isMore: true,
             ),
+
             SizedBox(height: 28.h),
 
             Container(
@@ -147,10 +131,6 @@ class ProfileScreen extends ConsumerWidget {
                       CarItem(
                         index: i,
                         carId: carFormState.cars[i].carId ?? "",
-                        nickName: carFormState.cars[i].nickName ?? "",
-                        brandTitle: carFormState.cars[i].brand?.title ?? "",
-                        modelTitle: carFormState.cars[i].model?.title ?? "",
-                        typeTitle: carFormState.cars[i].type?.title ?? "",
                         editMode: true,
                       ),
                       // Middle spacing
@@ -163,13 +143,27 @@ class ProfileScreen extends ConsumerWidget {
             ],
             SizedBox(height: 20.h),
             if (carFormState.hasCars) ...[
-              SvgPicture.asset(AppIcons.addCircle, width: 54.w, height: 54.h),
-              Text(
-                "افزودن خودرو",
-                style: TextStyle(
-                  color: AppColors.blue300,
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.w600,
+              GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  FadeRoute(page: CarFormScreen(mode: CarInfoFormMode.addEdit)),
+                ),
+                child: Column(
+                  children: [
+                    SvgPicture.asset(
+                      AppIcons.addCircle,
+                      width: 54.w,
+                      height: 54.h,
+                    ),
+                    Text(
+                      "افزودن خودرو",
+                      style: TextStyle(
+                        color: AppColors.blue300,
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

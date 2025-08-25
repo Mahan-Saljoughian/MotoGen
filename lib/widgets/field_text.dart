@@ -73,6 +73,7 @@ class _FieldTextState extends State<FieldText> {
           children: [
             SizedBox(
               height: widget.isNotes ? 180.h : null,
+
               child: TextField(
                 style: TextStyle(
                   color: Color(0xFF080E1A),

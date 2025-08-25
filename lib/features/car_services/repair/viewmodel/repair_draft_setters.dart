@@ -8,10 +8,6 @@ final repairDraftProvider = StateProvider<RepairStateItem>(
 );
 
 extension RepairDraftSetters on WidgetRef {
-  void updateDraft(RepairStateItem Function(RepairStateItem) updater) {
-    final current = read(repairDraftProvider);
-    read(repairDraftProvider.notifier).state = updater(current);
-  }
 
   void setRawPart(String input) {
     setPart(repairDraftProvider, input);

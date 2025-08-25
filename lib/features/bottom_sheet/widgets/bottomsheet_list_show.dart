@@ -40,7 +40,7 @@ class BottomsheetListShow {
       config.multiSetter!(ref, result ?? latestSelected);
     } else {
       final PickerItem? selectedItem = config.getter!(state);
-      PickerItem? latestSelectedItem = selectedItem;
+     //PickerItem? latestSelectedItem = selectedItem;
 
       final result = await showModalBottomSheet<PickerItem>(
         context: context,
@@ -54,11 +54,11 @@ class BottomsheetListShow {
           labelText: labelText,
           itemsProvider: config.providerBuilder(state),
           initialSelectedItem: selectedItem,
-          onLatestSelectionChanged: (val) => latestSelectedItem = val,
+          //onLatestSelectionChanged: (val) => latestSelectedItem = val,
         ),
       );
 
-      config.setter!(ref, result ?? latestSelectedItem);
+      if (result != null) config.setter!(ref, result);
     }
   }
 }
@@ -67,11 +67,11 @@ class _BottomSheetContent extends ConsumerWidget {
   final String labelText;
   final ProviderListenable<AsyncValue<List<PickerItem>>> itemsProvider;
   final PickerItem? initialSelectedItem;
-  final ValueChanged<PickerItem?> onLatestSelectionChanged;
+//  final ValueChanged<PickerItem?> onLatestSelectionChanged;
 
   const _BottomSheetContent({
     required this.labelText,
-    required this.onLatestSelectionChanged,
+  //  required this.onLatestSelectionChanged,
     this.initialSelectedItem,
     required this.itemsProvider,
   });
@@ -95,7 +95,7 @@ class _BottomSheetContent extends ConsumerWidget {
             final selectionVM = ref.watch(bottomsheetSelectionProvider);
 
             // Update latest selection
-            onLatestSelectionChanged(selectionVM.selectedItem);
+        //    onLatestSelectionChanged(selectionVM.selectedItem);
 
             return Container(
               width: double.infinity,

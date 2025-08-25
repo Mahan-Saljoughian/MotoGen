@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:motogen/features/car_info/config/car_info_config_list.dart';
-import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
-import 'package:motogen/features/car_info/views/car_info_screen.dart';
+import 'package:motogen/features/car_info/views/car_form_screen.dart';
 import 'package:motogen/features/car_info/views/car_nickname_screen.dart';
-
 import 'package:motogen/features/user_info/views/personal_info_screen.dart';
 import 'package:motogen/features/user_info/views/enter_phone_number_screen.dart';
 import 'package:motogen/features/user_info/views/code_confirm_screen.dart';
@@ -38,14 +35,6 @@ class _OnboardingIndicatorState extends ConsumerState<OnboardingIndicator> {
 
   @override
   Widget build(BuildContext context) {
-    final carState = ref.watch(carStateNotifierProvider);
-    final carNotifier = ref.read(carStateNotifierProvider.notifier);
-    final currentCar = carState.currentCar;
-    final carInfoSecondPageFields = buildCarInfoSecondPageFields(
-      currentCar!,
-      carNotifier,
-    );
-
     return Scaffold(
       body: Column(
         children: [
@@ -72,26 +61,26 @@ class _OnboardingIndicatorState extends ConsumerState<OnboardingIndicator> {
                   onNext: _nextPage,
                   onBack: _prevPage,
                 ),
-                CarInfoScreen(
+                CarFormScreen(
+                  mode: CarInfoFormMode.completeProfile,
                   currentPage: _currentPage,
                   count: count,
-                  onNext: _nextPage,
-                  onBack: _prevPage,
-                  carInfoField: carInfoFirstPageFields,
+                  onCompleteProfileNext: _nextPage,
+                  onCompleteProfileBack: _prevPage,
                 ),
-                CarInfoScreen(
+                CarFormScreen(
+                  mode: CarInfoFormMode.completeProfile,
                   currentPage: _currentPage,
                   count: count,
-                  onNext: _nextPage,
-                  onBack: _prevPage,
-                  carInfoField: carInfoSecondPageFields,
+                  onCompleteProfileNext: _nextPage,
+                  onCompleteProfileBack: _prevPage,
                 ),
                 CarNicknameScreen(
                   currentPage: _currentPage,
                   count: count,
                   onNext: () =>
-                    Navigator.pushReplacementNamed(context, '/mainApp'),
-                
+                      Navigator.pushReplacementNamed(context, '/mainApp'),
+
                   onBack: _prevPage,
                 ),
               ],

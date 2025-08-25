@@ -10,6 +10,7 @@ import 'package:motogen/features/profile_screen/widget/car_item.dart';
 import 'package:motogen/features/user_info/viewmodels/personal_info_controller_view_model.dart';
 import 'package:motogen/features/user_info/viewmodels/phone_number_controller_view_model.dart';
 import 'package:motogen/widgets/add_car_card.dart';
+import 'package:motogen/widgets/my_app_bar.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -31,18 +32,7 @@ class HomeScreen extends ConsumerWidget {
       backgroundColor: AppColors.blue50,
       body: Column(
         children: [
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 20.h),
-            alignment: Alignment.center,
-            child: Text(
-              "خانه",
-              style: TextStyle(
-                color: AppColors.blue500,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
+          MyAppBar(titleText: "خانه"),
 
           Expanded(
             child: SingleChildScrollView(
@@ -50,7 +40,7 @@ class HomeScreen extends ConsumerWidget {
                 children: [
                   if (!carFormState.hasCars) ...[
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 47.w),
+                      padding: EdgeInsets.symmetric(horizontal: 27.w),
                       child: AddCarCard(),
                     ),
                   ] else ...[
@@ -68,12 +58,6 @@ class HomeScreen extends ConsumerWidget {
                             CarItem(
                               index: i,
                               carId: carFormState.cars[i].carId ?? "",
-                              nickName: carFormState.cars[i].nickName ?? "",
-                              brandTitle:
-                                  carFormState.cars[i].brand?.title ?? "",
-                              modelTitle:
-                                  carFormState.cars[i].model?.title ?? "",
-                              typeTitle: carFormState.cars[i].type?.title ?? "",
                               editMode: false,
                             ),
                             // Middle spacing
@@ -102,7 +86,6 @@ class HomeScreen extends ConsumerWidget {
                               height: 0,
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w700,
-                           
                             ),
                           ),
                           SizedBox(height: 23.h),
@@ -134,7 +117,6 @@ class HomeScreen extends ConsumerWidget {
                               height: 0,
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w700,
-                          
                             ),
                           ),
                           SizedBox(height: 23.h),
@@ -166,7 +148,6 @@ class HomeScreen extends ConsumerWidget {
                               height: 1.8,
                               fontSize: 14.sp,
                               fontWeight: FontWeight.w700,
-                          
                             ),
                           ),
                           SizedBox(height: 12.h),

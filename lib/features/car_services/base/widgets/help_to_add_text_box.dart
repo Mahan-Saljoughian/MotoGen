@@ -11,15 +11,17 @@ class HelpToAddTextBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
+      clipBehavior: Clip.none,
       children: [
         Container(
           width: 242.w,
-          height: 58.h,
+          /* height: 58.h, */
+          constraints: BoxConstraints(minHeight: 58.h),
           padding: EdgeInsets.only(
             left: 7.w,
-            top: 3.h,
+            top: 7.h,
             right: 15.w,
-            bottom: 5.h,
+            bottom: 7.h,
           ),
           alignment: Alignment.center,
           decoration: BoxDecoration(

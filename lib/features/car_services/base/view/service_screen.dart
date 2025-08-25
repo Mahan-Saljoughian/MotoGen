@@ -14,6 +14,7 @@ import 'package:motogen/features/car_services/base/widgets/help_to_add_text_box.
 import 'package:motogen/features/car_services/oil/data/oil_repository.dart';
 import 'package:motogen/features/car_services/oil/view/oil_tab_button.dart';
 import 'package:motogen/features/home_screen/widget/service_navigator.dart';
+import 'package:motogen/widgets/my_app_bar.dart';
 
 class ServiceScreen extends ConsumerWidget {
   final ServiceTitle serviceTitle;
@@ -125,33 +126,36 @@ class ServiceScreen extends ConsumerWidget {
         body: Stack(
           children: [
             SafeArea(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-                child: Column(
-                  children: [
-                    _buildHeader(context, ref, title, selectedTab, isLoading),
-                    // Empty state with swipe
-                    if (items.isEmpty)
-                      wrapWithSwipe(
+              child: Column(
+                children: [
+                  _buildHeader(context, ref, title, selectedTab, isLoading),
+                  // Empty state with swipe
+                  if (items.isEmpty)
+                    wrapWithSwipe(
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: topSpacingValue,
+                          bottom: 7.h,
+                          right: 20.w,
+                          left: 20.w,
+                        ),
+                        child: _buildEmptyStateUI(),
+                      ),
+                    )
+                  else
+                    Expanded(
+                      child: wrapWithSwipe(
                         Padding(
                           padding: EdgeInsets.only(
-                            top: topSpacingValue,
-                            bottom: 7.h,
+                            top: 23.h,
+                            right: 20.w,
+                            left: 20.w,
                           ),
-                          child: _buildEmptyStateUI(),
-                        ),
-                      )
-                    else
-                      Expanded(
-                        child: wrapWithSwipe(
-                          Padding(
-                            padding: EdgeInsets.only(top: 40.h),
-                            child: _buildFilledStateUI(ref, items, isLoading),
-                          ),
+                          child: _buildFilledStateUI(ref, items, isLoading),
                         ),
                       ),
-                  ],
-                ),
+                    ),
+                ],
               ),
             ),
             if (items.isEmpty)
@@ -192,20 +196,15 @@ class ServiceScreen extends ConsumerWidget {
       body: Stack(
         children: [
           SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-              child: Column(
-                children: [
-                  _buildHeader(context, ref, title, selectedTab, true),
-                  const Expanded(
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.blue500,
-                      ),
-                    ),
+            child: Column(
+              children: [
+                _buildHeader(context, ref, title, selectedTab, true),
+                const Expanded(
+                  child: Center(
+                    child: CircularProgressIndicator(color: AppColors.blue500),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -223,21 +222,18 @@ class ServiceScreen extends ConsumerWidget {
       body: Stack(
         children: [
           SafeArea(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-              child: Column(
-                children: [
-                  _buildHeader(context, ref, title, selectedTab, false),
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        'خطا در بارگذاری $titleها',
-                        style: TextStyle(color: Colors.red, fontSize: 14.sp),
-                      ),
+            child: Column(
+              children: [
+                _buildHeader(context, ref, title, selectedTab, false),
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      'خطا در بارگذاری $titleها',
+                      style: TextStyle(color: Colors.red, fontSize: 14.sp),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -255,35 +251,19 @@ class ServiceScreen extends ConsumerWidget {
     return Column(
       children: [
         // Top bar
-        Row(
-          children: [
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-                ref.invalidate(serviceSortProvider);
-                ref.invalidate(serviceMoreEnabledProvider);
-              },
-              child: SvgPicture.asset(
-                AppIcons.arrowRight,
-                width: 24.w,
-                height: 24.h,
-              ),
-            ),
-            SizedBox(width: 135.w),
-            Text(
-              title,
-              style: TextStyle(
-                color: AppColors.blue500,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
+        MyAppBar(
+          titleText: title,
+          ontapFunction: () {
+            Navigator.pop(context);
+            ref.invalidate(serviceSortProvider);
+            ref.invalidate(serviceMoreEnabledProvider);
+          },
+          isBack: true,
         ),
 
         if (serviceTitle == ServiceTitle.oil)
           Padding(
-            padding: EdgeInsets.only(top: 25.h),
+            padding: EdgeInsets.only(top: 5.h),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [

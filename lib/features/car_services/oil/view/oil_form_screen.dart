@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/bottom_sheet/widgets/build_form_fields.dart';
@@ -15,6 +14,7 @@ import 'package:motogen/features/car_services/oil/viewmodel/oil_validation.dart'
 
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
 import 'package:motogen/features/bottom_sheet/widgets/confirm_bottom_sheet.dart';
+import 'package:motogen/widgets/my_app_bar.dart';
 
 class OilFormScreen extends ConsumerStatefulWidget {
   final OilStateItem? initialItem;
@@ -92,166 +92,139 @@ class _OilFormScreenState extends ConsumerState<OilFormScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.only(right: 20.w),
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 20.h),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        ref.invalidate(oillDraftProvider);
-                        Navigator.of(context).pop();
-                      },
-                      child: SvgPicture.asset(
-                        AppIcons.arrowRight,
-                        width: 24.w,
-                        height: 24.h,
-                      ),
-                    ),
-                    SizedBox(width: 100.w),
-                    Text(
-                      "ثبت روغن جدید",
-                      style: TextStyle(
-                        color: AppColors.blue500,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+        child: Column(
+          children: [
+            MyAppBar(
+              titleText: isEdit ? "ویرایش روغن" : "ثبت روغن جدید",
+              ontapFunction: () {
+                ref.invalidate(oillDraftProvider);
+                Navigator.of(context).pop();
+              },
+              isBack: true,
+            ),
 
-              Expanded(
-                child: SingleChildScrollView(
-                  physics:
-                      const AlwaysScrollableScrollPhysics(), // force scrollability
+            Expanded(
+              child: SingleChildScrollView(
+                physics:
+                    const AlwaysScrollableScrollPhysics(), // force scrollability
 
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      right: 24.w,
-                      left: 38.w,
-                      top: isEdit ? 20.h : 46.h,
-                    ),
-                    child: Column(
-                      children: [
-                        if (isEdit)
-                          Padding(
-                            padding: EdgeInsets.only(bottom: 26.h),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: GestureDetector(
-                                onTap: () async {
-                                  await showConfirmBottomSheet(
-                                    context: context,
-                                    isDelete: true,
-                                    onConfirm: () async {
-                                      await ref
-                                          .read(
-                                            oilListProvider(carId!).notifier,
-                                          )
-                                          .deleteSelectedOilItemById(
-                                            carId,
-                                            draft.oilId!,
-                                          );
-
-                                      ref
-                                          .read(oillDraftProvider.notifier)
-                                          .state = OilStateItem(
-                                        oilId: "oil_temp_id",
-                                      );
-                                    },
-                                  );
-                                },
-                                child: SvgPicture.asset(
-                                  AppIcons.trash,
-                                  width: 24.w,
-                                  height: 24.h,
-                                  colorFilter: ColorFilter.mode(
-                                    Color(0xFFC60B0B),
-                                    BlendMode.srcIn,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        BuildFormFields<OilStateItem>(
-                          provider: oillDraftProvider,
-                          fieldsBuilder: (state, ref) => buildOilInfoFields(
-                            state,
-                            ref,
-                            oilBrandAndModelController,
-                            kilometerController,
-                            locationController,
-                            costController,
-                            notesController,
-                            isEdit,
-                          ),
-                        ),
-                        SizedBox(height: 30.h),
-                        OnboardingButton(
-                          enabled: ref.watch(isOilInfoButtonEnabled(isEdit)),
-                          text: "ثبت",
-                          onPressed: () async {
-                            try {
-                              if (isEdit) {
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    right: 41.w,
+                    left: 41.w,
+                    top: isEdit ? 0.h : 15.h,
+                  ),
+                  child: Column(
+                    children: [
+                      if (isEdit)
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 26.h),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: GestureDetector(
+                              onTap: () async {
                                 await showConfirmBottomSheet(
                                   context: context,
+                                  isDelete: true,
                                   onConfirm: () async {
                                     await ref
                                         .read(oilListProvider(carId!).notifier)
-                                        .updateOilFromDraft(
-                                          draft,
-                                          widget.initialItem!,
+                                        .deleteSelectedOilItemById(
                                           carId,
+                                          draft.oilId!,
                                         );
-                                    // refreshes the repair list
-                                    ref.invalidate(oilListProvider(carId));
-                                    // Reset draft
+
                                     ref.read(oillDraftProvider.notifier).state =
                                         OilStateItem(oilId: "oil_temp_id");
                                   },
                                 );
-                              } else {
-                                await ref
-                                    .read(oilListProvider(carId!).notifier)
-                                    .addOilFromDraft(draft, carId);
-                                // refreshes the repair list
-                                ref.invalidate(oilListProvider(carId));
-                                // Reset draft
-                                ref.read(oillDraftProvider.notifier).state =
-                                    OilStateItem(oilId: "oil_temp_id");
-                              }
+                              },
+                              child: SvgPicture.asset(
+                                AppIcons.trash,
+                                width: 24.w,
+                                height: 24.h,
+                                colorFilter: ColorFilter.mode(
+                                  Color(0xFFC60B0B),
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      BuildFormFields<OilStateItem>(
+                        provider: oillDraftProvider,
+                        fieldsBuilder: (state, ref) => buildOilInfoFields(
+                          state,
+                          ref,
+                          oilBrandAndModelController,
+                          kilometerController,
+                          locationController,
+                          costController,
+                          notesController,
+                          isEdit,
+                        ),
+                      ),
+                      
+                      OnboardingButton(
+                        enabled: ref.watch(isOilInfoButtonEnabled(isEdit)),
+                        text: "ثبت",
+                        onPressed: () async {
+                          try {
+                            if (isEdit) {
+                              await showConfirmBottomSheet(
+                                context: context,
+                                onConfirm: () async {
+                                  await ref
+                                      .read(oilListProvider(carId!).notifier)
+                                      .updateOilFromDraft(
+                                        draft,
+                                        widget.initialItem!,
+                                        carId,
+                                      );
+                                  // refreshes the repair list
+                                  ref.invalidate(oilListProvider(carId));
+                                  // Reset draft
+                                  ref.read(oillDraftProvider.notifier).state =
+                                      OilStateItem(oilId: "oil_temp_id");
+                                },
+                              );
+                            } else {
+                              await ref
+                                  .read(oilListProvider(carId!).notifier)
+                                  .addOilFromDraft(draft, carId);
+                              // refreshes the repair list
+                              ref.invalidate(oilListProvider(carId));
+                              // Reset draft
+                              ref.read(oillDraftProvider.notifier).state =
+                                  OilStateItem(oilId: "oil_temp_id");
+                            }
 
-                              if (!isEdit) {
-                                if (context.mounted) {
-                                  Navigator.of(context).pop();
-                                }
-                              }
-                            } catch (e) {
-                              // handle error (snackbar, dialog, etc.)
+                            if (!isEdit) {
                               if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: isEdit
-                                        ? Text('خطا در ویرایش روغن ')
-                                        : Text('خطا در ثبت روغن جدید'),
-                                  ),
-                                );
+                                Navigator.of(context).pop();
                               }
                             }
-                          },
-                        ),
-                        SizedBox(height: 55.h),
-                      ],
-                    ),
+                          } catch (e) {
+                            // handle error (snackbar, dialog, etc.)
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: isEdit
+                                      ? Text('خطا در ویرایش روغن ')
+                                      : Text('خطا در ثبت روغن جدید'),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                      ),
+                      SizedBox(height: 55.h),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

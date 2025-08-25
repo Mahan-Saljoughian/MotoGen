@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/bottom_sheet/widgets/build_form_fields.dart';
@@ -15,6 +14,7 @@ import 'package:motogen/features/car_services/purchases/viewmodel/purchase_valid
 
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
 import 'package:motogen/features/bottom_sheet/widgets/confirm_bottom_sheet.dart';
+import 'package:motogen/widgets/my_app_bar.dart';
 
 class PurchaseFromScreen extends ConsumerStatefulWidget {
   final PurhcaseStateItem? initialItem;
@@ -85,103 +85,81 @@ class _PurchaseFormScreenState extends ConsumerState<PurchaseFromScreen> {
       body: Stack(
         children: [
           SafeArea(
-            child: Padding(
-              padding: EdgeInsets.only(top: 20.h, right: 20.w),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          ref.invalidate(purchaseDraftProvider);
-                          Navigator.of(context).pop();
-                        },
-                        child: SvgPicture.asset(
-                          AppIcons.arrowRight,
-                          width: 24.w,
-                          height: 24.h,
-                        ),
-                      ),
-                      SizedBox(width: 100.w),
-                      Text(
-                        "ثبت خرید جدید",
-                        style: TextStyle(
-                          color: AppColors.blue500,
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
+            child: Column(
+              children: [
+                MyAppBar(
+                  titleText: isEdit ? "ویرایش خرید" : "ثبت خرید جدید",
+                  ontapFunction: () {
+                    ref.invalidate(purchaseDraftProvider);
+                    Navigator.of(context).pop();
+                  },
+                  isBack: true,
+                ),
+
+                Padding(
+                  padding: EdgeInsets.only(
+                    right: 41.w,
+                    left: 41.w,
+                    top: isEdit ? 0.h : 26.h,
                   ),
+                  child: Column(
+                    children: [
+                      if (isEdit)
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 26.h),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: GestureDetector(
+                              onTap: () async {
+                                await showConfirmBottomSheet(
+                                  context: context,
+                                  isDelete: true,
+                                  onConfirm: () async {
+                                    await ref
+                                        .read(
+                                          purchaseListProvider(carId!).notifier,
+                                        )
+                                        .deleteSelectedPurchaseItemById(
+                                          carId,
+                                          draft.purchaseId!,
+                                        );
 
-                  Padding(
-                    padding: EdgeInsets.only(
-                      right: 24.w,
-                      left: 38.w,
-                      top: isEdit ? 20.h : 46.h,
-                    ),
-                    child: Column(
-                      children: [
-                        if (isEdit)
-                          Padding(
-                            padding: EdgeInsets.only(bottom: 26.h),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: GestureDetector(
-                                onTap: () async {
-                                  await showConfirmBottomSheet(
-                                    context: context,
-                                    isDelete: true,
-                                    onConfirm: () async {
-                                      await ref
-                                          .read(
-                                            purchaseListProvider(
-                                              carId!,
-                                            ).notifier,
-                                          )
-                                          .deleteSelectedPurchaseItemById(
-                                            carId,
-                                            draft.purchaseId!,
-                                          );
-
-                                      ref
-                                          .read(purchaseDraftProvider.notifier)
-                                          .state = PurhcaseStateItem(
-                                        purchaseId: "purchase_temp_id",
-                                      );
-                                    },
-                                  );
-                                },
-                                child: SvgPicture.asset(
-                                  AppIcons.trash,
-                                  width: 24.w,
-                                  height: 24.h,
-                                  colorFilter: ColorFilter.mode(
-                                    Color(0xFFC60B0B),
-                                    BlendMode.srcIn,
-                                  ),
+                                    ref
+                                        .read(purchaseDraftProvider.notifier)
+                                        .state = PurhcaseStateItem(
+                                      purchaseId: "purchase_temp_id",
+                                    );
+                                  },
+                                );
+                              },
+                              child: SvgPicture.asset(
+                                AppIcons.trash,
+                                width: 24.w,
+                                height: 24.h,
+                                colorFilter: ColorFilter.mode(
+                                  Color(0xFFC60B0B),
+                                  BlendMode.srcIn,
                                 ),
                               ),
                             ),
                           ),
-                        BuildFormFields<PurhcaseStateItem>(
-                          provider: purchaseDraftProvider,
-                          fieldsBuilder: (state, ref) =>
-                              buildPurchasesInfoFields(
-                                state,
-                                ref,
-                                partController,
-
-                                locationController,
-                                costController,
-                                notesController,
-                              ),
                         ),
-                      ],
-                    ),
+                      BuildFormFields<PurhcaseStateItem>(
+                        provider: purchaseDraftProvider,
+                        fieldsBuilder: (state, ref) => buildPurchasesInfoFields(
+                          state,
+                          ref,
+                          partController,
+
+                          locationController,
+                          costController,
+                          notesController,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           Positioned(

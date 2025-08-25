@@ -6,30 +6,24 @@ import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/core/constants/app_images.dart';
+import 'package:motogen/core/services/fade_route.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/car_info/viewmodels/car_use_case_api.dart';
 
 import 'dart:math' as math;
 
 import 'package:motogen/features/bottom_sheet/widgets/confirm_bottom_sheet.dart';
+import 'package:motogen/features/car_info/views/car_form_screen.dart';
 
 class CarItem extends ConsumerWidget {
   final int index;
   final String carId;
-  final String nickName;
-  final String brandTitle;
-  final String modelTitle;
-  final String typeTitle;
   final bool editMode;
 
   const CarItem({
     super.key,
     required this.index,
     required this.carId,
-    required this.nickName,
-    required this.brandTitle,
-    required this.modelTitle,
-    required this.typeTitle,
     this.editMode = true,
   });
 
@@ -54,6 +48,10 @@ class CarItem extends ConsumerWidget {
     final trashIconColor = index % 2 == 0
         ? Color(0xFFE15454)
         : Color(0xFFC60B0B);
+
+    final currentCar = ref
+        .read(carStateNotifierProvider.notifier)
+        .getCarById(carId);
     return GestureDetector(
       onTap: editMode
           ? () {}
@@ -91,7 +89,15 @@ class CarItem extends ConsumerWidget {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             GestureDetector(
-                              onTap: () {},
+                              onTap: () => Navigator.push(
+                                context,
+                                FadeRoute(
+                                  page: CarFormScreen(
+                                    mode: CarInfoFormMode.addEdit,
+                                    initialItem: currentCar,
+                                  ),
+                                ),
+                              ),
                               child: SvgPicture.asset(
                                 AppIcons.edit,
                                 colorFilter: ColorFilter.mode(
@@ -138,7 +144,7 @@ class CarItem extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          nickName,
+                          currentCar.nickName ?? "",
                           style: TextStyle(
                             color: nickNameTextColor,
                             fontSize: 24.sp,
@@ -151,7 +157,7 @@ class CarItem extends ConsumerWidget {
                             maxWidth: 100.w,
                           ), // adjust
                           child: Text(
-                            "$brandTitle $modelTitle $typeTitle",
+                            "${currentCar.brand?.title} ${currentCar.model?.title} ${currentCar.type?.title}",
                             style: TextStyle(
                               color: carNameTextColor,
                               fontSize: 12.sp,

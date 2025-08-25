@@ -1,9 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
 import 'package:motogen/features/car_info/models/car_form_state.dart';
 import 'package:motogen/features/car_info/models/car_form_state_item.dart';
-import 'package:motogen/features/bottom_sheet/config/picker_item.dart';
+
 
 final carStateNotifierProvider =
     NotifierProvider<CarStateNotifier, CarFormState>(() => CarStateNotifier());
@@ -20,10 +19,6 @@ class CarStateNotifier extends Notifier<CarFormState> {
     return const CarFormState();
   }
 
-
-
-
-
   // New: For multi-car, add a new car to the list
   void addNewCar(CarFormStateItem newCarFormStateItem) {
     state = state.copyWith(
@@ -32,15 +27,13 @@ class CarStateNotifier extends Notifier<CarFormState> {
     );
   }
 
-  void updateCarIdFromNull(String newId) {
-    final updatedCars = state.cars.map((car) {
-      if (car.carId == null) {
-        return car.copyWith(carId: newId);
-      }
-      return car;
-    }).toList();
+  void commitDraft(CarFormStateItem draft, String newId) {
+    final committed = draft.copyWith(carId: newId);
+    addNewCar(committed);
+  }
 
-    state = state.copyWith(cars: updatedCars, currentCarId: newId);
+  CarFormStateItem getCarById(String carId) {
+    return state.cars.firstWhere((car) => car.carId == carId);
   }
 
   // New: Switch selected car
@@ -48,6 +41,17 @@ class CarStateNotifier extends Notifier<CarFormState> {
     if (state.cars.any((car) => car.carId == currentCarId)) {
       state = state.copyWith(currentCarId: currentCarId);
     }
+  }
+
+  void updateCarById(
+    String carId,
+    CarFormStateItem Function(CarFormStateItem) updater,
+  ) {
+    final updatedCars = [
+      for (final car in state.cars) car.carId == carId ? updater(car) : car,
+    ];
+
+    setCars(updatedCars);
   }
 
   void setCars(List<CarFormStateItem> cars) {
@@ -64,134 +68,4 @@ class CarStateNotifier extends Notifier<CarFormState> {
 
     state = state.copyWith(cars: cars, currentCarId: newCurrentCarId);
   }
-
-
-  
-
-  void _ensureCarExists() {
-    if (state.cars.isEmpty) {
-      final newCar = CarFormStateItem();
-      state = state.copyWith(cars: [newCar], currentCarId: newCar.carId);
-    } else if (state.currentCarId == null) {
-      state = state.copyWith(currentCarId: state.cars.first.carId);
-    }
-  }
-
-  void _updateCurrentCar(CarFormStateItem Function(CarFormStateItem) updater) {
-    _ensureCarExists();
-    final carId = state.currentCarId ?? state.cars.first.carId;
-    final updatedCars = state.cars.map((car) {
-      if (car.carId == carId) {
-        return updater(car);
-      }
-      return car;
-    }).toList();
-    state = state.copyWith(cars: updatedCars);
-  }
-
-  void ensureCarExists() => _ensureCarExists();
-
-  // ---- Setters for form fields
-
-  void setBrand(PickerItem? brand) {
-    _updateCurrentCar(
-      (car) => car.copyWith(
-        brand: brand,
-        isBrandInteractedOnce: true,
-        model: PickerItem.noValueString,
-        type: PickerItem.noValueString,
-        yearMade: PickerItem.yearNoValue,
-      ),
-    );
-  }
-
-  void setModel(PickerItem? model) {
-    _updateCurrentCar(
-      (car) => car.copyWith(
-        model: model,
-        isModelInteractedOnce: true,
-        type: PickerItem.noValueString,
-        yearMade: PickerItem.yearNoValue,
-      ),
-    );
-  }
-
-  void setType(PickerItem? type) {
-    _updateCurrentCar(
-      (car) => car.copyWith(
-        type: type,
-        isTypeInteractedOnce: true,
-        yearMade: PickerItem.yearNoValue,
-      ),
-    );
-  }
-
-  void setYearMade(int? year) {
-    _updateCurrentCar(
-      (car) => car.copyWith(yearMade: year, isYearMadeInteractedOnce: true),
-    );
-  }
-
-  void setColor(PickerItem? color) {
-    _updateCurrentCar(
-      (car) => car.copyWith(color: color, isColorInteractedOnce: true),
-    );
-  }
-
-  void setKilometerDriven(int? km) {
-    _updateCurrentCar((car) => car.copyWith(kilometerDriven: km));
-  }
-
-  void setFuelType(PickerItem? fuel) {
-    _updateCurrentCar(
-      (car) => car.copyWith(fuelType: fuel, isFuelTypeInteractedOnce: true),
-    );
-  }
-
-  void setBodyInsuranceExpiry(DateTime? date) {
-    _updateCurrentCar(
-      (car) => car.copyWith(
-        bodyInsuranceExpiry: date,
-        isBodyInsuranceExpiryInteractedOnce: true,
-      ),
-    );
-  }
-
-  void setNextTechnicalCheck(DateTime? date) {
-    _updateCurrentCar(
-      (car) => car.copyWith(
-        nextTechnicalCheck: date,
-        isNextTechnicalCheckInteractedOnce: true,
-      ),
-    );
-  }
-
-  void setThirdPersonInsuranceExpiry(DateTime? date) {
-    _updateCurrentCar(
-      (car) => car.copyWith(
-        thirdPartyInsuranceExpiry: date,
-        isThirdPartyInsuranceExpiryInteractedOnce: true,
-      ),
-    );
-  }
-
-  void setNickName(String? nickNameText) {
-    _updateCurrentCar((car) => car.copyWith(nickName: nickNameText));
-  }
-
-  // ----kilometer validation------
-  void setRawKilometerInput(String input) {
-    final normalized =
-        FarsiOrEnglishDigitsInputFormatter.normalizePersianDigits(input);
-    _updateCurrentCar((car) {
-      final parsed = int.tryParse(normalized);
-      return car.copyWith(
-        rawKilometersInput: normalized,
-        kilometerDriven: (parsed != null && parsed >= 0 && parsed <= 10000000)
-            ? parsed
-            : null,
-      );
-    });
-  }
-
 }

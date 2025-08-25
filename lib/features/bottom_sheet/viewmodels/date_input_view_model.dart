@@ -20,10 +20,10 @@ class DateInputViewModel extends ChangeNotifier {
   String get month => _month;
   String get year => _year;
 
-  final Jalali  now =Jalali.now();
-  String get dayHint => now.day.toString();
-  String get monthHint =>  now.month.toString();
-  String get yearHint =>  now.year.toString();
+  final Jalali nowJalali = Jalali.now();
+  String get dayHint => nowJalali.day.toString();
+  String get monthHint => nowJalali.month.toString();
+  String get yearHint => nowJalali.year.toString();
 
   bool isDayInteractedOnce = false;
   bool isMonthInteractedOnce = false;
@@ -65,23 +65,23 @@ class DateInputViewModel extends ChangeNotifier {
   DateTime? asDateTime() {
     if (!_isFieldsValid) return null;
     try {
-      final baseJalali = Jalali(
+      final baseGregorian = Jalali(
         int.parse(_year),
         int.parse(_month),
         int.parse(_day),
       ).toDateTime();
       if (usageType == DateUsageType.services) {
-        final now = DateTime.now();
+        final now = DateTime.now().toUtc();
         return DateTime(
-          baseJalali.year,
-          baseJalali.month,
-          baseJalali.day,
+          baseGregorian.year,
+          baseGregorian.month,
+          baseGregorian.day,
           now.hour,
           now.minute,
           now.second,
         );
       }
-      return baseJalali;
+      return baseGregorian;
     } catch (_) {
       return null;
     }

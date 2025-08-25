@@ -2,56 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
-import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
 import 'package:motogen/features/bottom_sheet/config/date_field_config.dart';
-import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/bottom_sheet/viewmodels/date_input_view_model.dart';
-import 'package:motogen/features/car_info/viewmodels/nick_name_validator.dart';
+import 'package:motogen/features/car_info/viewmodels/car_validation.dart';
 import 'package:motogen/features/user_info/viewmodels/code_controller_view_model.dart';
 import 'package:motogen/features/user_info/viewmodels/personal_info_controller_view_model.dart';
 import 'package:motogen/features/user_info/viewmodels/phone_number_controller_view_model.dart';
-import 'package:motogen/features/bottom_sheet/config/picker_item.dart';
-
-final isCarInfoButtonEnabledForFirstPageProvider = Provider<bool>((ref) {
-  final state = ref.watch(carStateNotifierProvider);
-  final selectedCar = state.currentCar;
-  if (selectedCar == null) return false;
-  final hasBrand =
-      selectedCar.brand != null &&
-      selectedCar.brand != PickerItem.noValueString;
-  final hasModel =
-      selectedCar.model != null &&
-      selectedCar.model != PickerItem.noValueString;
-  final hasType =
-      selectedCar.type != null && selectedCar.type != PickerItem.noValueString;
-  final hasYear = selectedCar.yearMade != null && selectedCar.yearMade != -1;
-  final hasColor = selectedCar.color != null;
-
-  return hasBrand && hasModel && hasType && hasYear && hasColor;
-});
-
-final isCarInfoButtonEnabledForSecondPageProvider = Provider<bool>((ref) {
-  final state = ref.watch(carStateNotifierProvider);
-  final selectedCar = state.currentCar;
-  if (selectedCar == null) return false;
-  final rawKm = selectedCar.rawKilometersInput ?? '';
-  final normalizedKm =
-      FarsiOrEnglishDigitsInputFormatter.normalizePersianDigits(rawKm);
-  final parsedKm = int.tryParse(normalizedKm);
-
-  final isKmValid = parsedKm != null && parsedKm > 0 && parsedKm < 10000000;
-
-  return isKmValid &&
-      selectedCar.fuelType != null &&
-      selectedCar.thirdPartyInsuranceExpiry != null &&
-      selectedCar.nextTechnicalCheck != null;
-});
 
 enum PagesTitleEnum {
   repairInfo,
   skipNickName,
   dateBottomSheetInsurance,
   dateBottomSheetServices,
+  addEditCar,
 }
 
 class OnboardingButton extends ConsumerWidget {
@@ -130,7 +93,7 @@ class OnboardingButton extends ConsumerWidget {
       case 4:
         return ref.watch(isCarInfoButtonEnabledForSecondPageProvider);
       case 5:
-        return ref.watch(nickNameValidatorProvider).isNickNameValid;
+        return ref.watch(isNickNameButtonEnabled);
       default:
         return false;
     }
@@ -148,6 +111,11 @@ class OnboardingButton extends ConsumerWidget {
             .isDateValid(); //button for date bottomsheet for services
       case PagesTitleEnum.skipNickName:
         return true; // skip nickName set
+      case PagesTitleEnum.addEditCar:
+        return ref.watch(isCarInfoButtonEnabledForFirstPageProvider) &&
+            ref.watch(
+              isCarInfoButtonEnabledForSecondPageProvider,
+            ); // skip nickName set
       default:
         return false;
     }
@@ -179,6 +147,8 @@ class OnboardingButton extends ConsumerWidget {
       case PagesTitleEnum.skipNickName:
         return "ادامه بدون لقب"; // skip nickName set
       case PagesTitleEnum.repairInfo:
+        return "ثبت";
+      case PagesTitleEnum.addEditCar:
         return "ثبت";
       default:
         return "تایید و ادامه";
