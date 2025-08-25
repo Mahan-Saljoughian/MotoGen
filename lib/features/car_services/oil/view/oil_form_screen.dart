@@ -124,6 +124,7 @@ class _OilFormScreenState extends ConsumerState<OilFormScreen> {
                             child: GestureDetector(
                               onTap: () async {
                                 await showConfirmBottomSheet(
+                                  titleText: "برای حذف کردنش مطمئنی؟",
                                   context: context,
                                   isDelete: true,
                                   onConfirm: () async {
@@ -164,7 +165,7 @@ class _OilFormScreenState extends ConsumerState<OilFormScreen> {
                           isEdit,
                         ),
                       ),
-                      
+
                       OnboardingButton(
                         enabled: ref.watch(isOilInfoButtonEnabled(isEdit)),
                         text: "ثبت",
@@ -172,6 +173,7 @@ class _OilFormScreenState extends ConsumerState<OilFormScreen> {
                           try {
                             if (isEdit) {
                               await showConfirmBottomSheet(
+                                titleText: "از ویرایش جدیدت مطمئنی؟",
                                 context: context,
                                 onConfirm: () async {
                                   await ref

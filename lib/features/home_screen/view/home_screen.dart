@@ -5,7 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/home_screen/widget/service_navigator.dart';
-import 'package:motogen/features/home_screen/widget/time_left_circle.dart';
+import 'package:motogen/features/reminder_screen.dart/widgets/time_left_circle.dart';
 import 'package:motogen/features/profile_screen/widget/car_item.dart';
 import 'package:motogen/features/user_info/viewmodels/personal_info_controller_view_model.dart';
 import 'package:motogen/features/user_info/viewmodels/phone_number_controller_view_model.dart';

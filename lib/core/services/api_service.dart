@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/web.dart';
-import 'package:motogen/core/global_error_handling/main.dart';
 import 'package:motogen/core/services/refresh_token_expired_exception.dart';
 
 class ApiService {

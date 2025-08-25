@@ -9,6 +9,7 @@ Future<void> showConfirmBottomSheet({
   required Future<void> Function() onConfirm,
   bool isPopOnce = false,
   bool isDelete = false,
+  required String titleText,
 }) {
   return showModalBottomSheet(
     context: context,
@@ -19,6 +20,7 @@ Future<void> showConfirmBottomSheet({
       onConfirm: onConfirm,
       isPopOnce: isPopOnce,
       isDelete: isDelete,
+      titleText: titleText,
     ),
   );
 }
@@ -27,18 +29,17 @@ class ConfirmBottomSheet extends ConsumerWidget {
   final Future<void> Function() onConfirm;
   final bool isPopOnce;
   final bool isDelete;
+  final String titleText;
   const ConfirmBottomSheet({
     super.key,
     required this.onConfirm,
     required this.isPopOnce,
     required this.isDelete,
+    required this.titleText,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final confirmText = isDelete
-        ? "برای حذف کردنش مطمئنی؟"
-        : "از ویرایش جدیدت مطمئنی؟";
     final confirmColor = isDelete ? Color(0xFFC60B0B) : Color(0xFF3C9452);
     return SizedBox(
       height: 178.h,
@@ -49,12 +50,11 @@ class ConfirmBottomSheet extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             Text(
-              confirmText,
+              titleText,
               style: TextStyle(
                 color: AppColors.blue600,
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w700,
-            
               ),
             ),
             Row(
@@ -88,7 +88,6 @@ class ConfirmBottomSheet extends ConsumerWidget {
                           color: AppColors.black50,
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
-                     
                         ),
                       ),
                     ),
@@ -116,7 +115,6 @@ class ConfirmBottomSheet extends ConsumerWidget {
                           color: confirmColor,
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w700,
-                    
                         ),
                       ),
                     ),

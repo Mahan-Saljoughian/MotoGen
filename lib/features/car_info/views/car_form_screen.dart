@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:logger/logger.dart';
+import 'package:motogen/features/bottom_sheet/widgets/confirm_bottom_sheet.dart';
 import 'package:motogen/features/car_info/config/car_info_config_list.dart';
 import 'package:motogen/features/car_info/models/car_form_state_item.dart';
 import 'package:motogen/features/car_info/viewmodels/car_draft_setters.dart';
@@ -204,27 +205,33 @@ class _CarFormScreenState extends ConsumerState<CarFormScreen> {
                           child: OnboardingButton(
                             pagesTitleEnum: PagesTitleEnum.addEditCar,
                             onPressed: () async {
-                              try {
-                                final draft = ref.watch(carDraftProvider);
-                                await carNotifier.updateCarFromDraft(
-                                  draft,
-                                  widget.initialItem!,
-                                );
-                                ref.invalidate(carDraftProvider);
-                                if (context.mounted) {
-                                  Navigator.of(context).pop();
-                                }
-                              } catch (e, st) {
-                                // handle error (snackbar, dialog, etc.)
-                                if (context.mounted) {
-                                  Logger().e("debug the errros is $e , $st");
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('خطا در ویرایش خودرو '),
-                                    ),
-                                  );
-                                }
-                              }
+                              await showConfirmBottomSheet(
+                                titleText: "از ویرایش جدید مطمئنی؟",
+                                context: context,
+                                onConfirm: () async {
+                                  try {
+                                    final draft = ref.watch(carDraftProvider);
+                                    await carNotifier.updateCarFromDraft(
+                                      draft,
+                                      widget.initialItem!,
+                                    );
+                                    ref.invalidate(carDraftProvider);
+                                  } catch (e, st) {
+                                    if (context.mounted) {
+                                      Logger().e(
+                                        "debug the errors is $e , $st",
+                                      );
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('خطا در ویرایش خودرو'),
+                                        ),
+                                      );
+                                    }
+                                  }
+                                },
+                              );
                             },
                           ),
                         ),
@@ -252,24 +259,33 @@ class _CarFormScreenState extends ConsumerState<CarFormScreen> {
                           child: OnboardingButton(
                             pagesTitleEnum: PagesTitleEnum.addEditCar,
                             onPressed: () async {
-                              try {
-                                final draft = ref.watch(carDraftProvider);
-                                await carNotifier.addCarFromDraft(draft);
-                                ref.invalidate(carDraftProvider);
-                                if (context.mounted) {
-                                  Navigator.of(context).pop();
-                                }
-                              } catch (e, st) {
-                                // handle error (snackbar, dialog, etc.)
-                                if (context.mounted) {
-                                  Logger().e("debug the errros is $e , $st");
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('خطا در ثبت خودرو جدید'),
-                                    ),
-                                  );
-                                }
-                              }
+                              await showConfirmBottomSheet(
+                                titleText: "از ثبت ماشین جدید مطمئنی؟",
+                                context: context,
+                                onConfirm: () async {
+                                  try {
+                                    final draft = ref.watch(carDraftProvider);
+                                    await carNotifier.addCarFromDraft(draft);
+                                    ref.invalidate(carDraftProvider);
+                                  } catch (e, st) {
+                                    // handle error (snackbar, dialog, etc.)
+                                    if (context.mounted) {
+                                      Logger().e(
+                                        "debug the errros is $e , $st",
+                                      );
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'خطا در ثبت خودرو جدید',
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  }
+                                },
+                              );
                             },
                           ),
                         ),

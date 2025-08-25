@@ -111,7 +111,7 @@ extension CarUseCaseApi on CarStateNotifier {
   ) async {
     final Map<String, dynamic> changes = {};
 
-    if (draft.type != original.type) {
+    if (draft.type?.title != original.type?.title) {
       changes['carTrimID'] = draft.type?.id;
     }
     if (draft.yearMade != original.yearMade) {

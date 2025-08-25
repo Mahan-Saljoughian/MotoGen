@@ -4,9 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
-import 'package:motogen/core/services/fade_route.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
-import 'package:motogen/features/car_info/views/car_form_screen.dart';
 import 'package:motogen/features/profile_screen/widget/car_item.dart';
 import 'package:motogen/features/profile_screen/widget/more_bottom_sheet.dart';
 import 'package:motogen/features/user_info/viewmodels/personal_info_controller_view_model.dart';
@@ -123,48 +121,64 @@ class ProfileScreen extends ConsumerWidget {
             if (!carFormState.hasCars) ...[
               AddCarCard(),
             ] else ...[
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    for (var i = 0; i < carFormState.cars.length; i++) ...[
-                      CarItem(
-                        index: i,
-                        carId: carFormState.cars[i].carId ?? "",
-                        editMode: true,
-                      ),
-                      // Middle spacing
-                      if (i != carFormState.cars.length - 1)
-                        SizedBox(width: 16.w),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-            SizedBox(height: 20.h),
-            if (carFormState.hasCars) ...[
-              GestureDetector(
-                onTap: () => Navigator.push(
-                  context,
-                  FadeRoute(page: CarFormScreen(mode: CarInfoFormMode.addEdit)),
-                ),
-                child: Column(
-                  children: [
-                    SvgPicture.asset(
-                      AppIcons.addCircle,
-                      width: 54.w,
-                      height: 54.h,
+              Column(
+                children: [
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        for (var i = 0; i < carFormState.cars.length; i++) ...[
+                          CarItem(
+                            index: i,
+                            carId: carFormState.cars[i].carId ?? "",
+                            editMode: true,
+                          ),
+                          // Middle spacing
+                          if (i != carFormState.cars.length - 1)
+                            SizedBox(width: 16.w),
+                        ],
+                      ],
                     ),
-                    Text(
-                      "افزودن خودرو",
-                      style: TextStyle(
-                        color: AppColors.blue300,
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.w600,
+                  ),
+                  // add car button
+                  SizedBox(height: 20.h),
+                  GestureDetector(
+                    onTap:
+                        () => /* Navigator.push(
+                      context,
+                      FadeRoute(
+                        page: CarFormScreen(mode: CarInfoFormMode.addEdit),
                       ),
+                    ), */ ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'لاب بزن',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 180.sp,
+                              ),
+                            ),
+                          ),
+                        ),
+                    child: Column(
+                      children: [
+                        SvgPicture.asset(
+                          AppIcons.addCircle,
+                          width: 54.w,
+                          height: 54.h,
+                        ),
+                        Text(
+                          "افزودن خودرو",
+                          style: TextStyle(
+                            color: AppColors.blue300,
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ],

@@ -112,6 +112,7 @@ class CarItem extends ConsumerWidget {
                             GestureDetector(
                               onTap: () async {
                                 await showConfirmBottomSheet(
+                                  titleText: "برای حذف کردنش مطمئنی؟",
                                   context: context,
                                   isDelete: true,
                                   onConfirm: () {

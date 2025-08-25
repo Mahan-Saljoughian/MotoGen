@@ -107,6 +107,7 @@ class _RefuelFormScreenState extends ConsumerState<RefuelFormScreen> {
                             child: GestureDetector(
                               onTap: () async {
                                 await showConfirmBottomSheet(
+                                  titleText: "برای حذف کردنش مطمئنی؟",
                                   context: context,
                                   isDelete: true,
                                   onConfirm: () async {
@@ -165,6 +166,7 @@ class _RefuelFormScreenState extends ConsumerState<RefuelFormScreen> {
                 try {
                   if (isEdit) {
                     await showConfirmBottomSheet(
+                      titleText: "از ویرایش جدیدت مطمئنی؟",
                       context: context,
                       onConfirm: () async {
                         await ref
