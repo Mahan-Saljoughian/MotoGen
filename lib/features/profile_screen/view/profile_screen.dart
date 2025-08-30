@@ -4,11 +4,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
+import 'package:motogen/core/services/fade_route.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/profile_screen/widget/car_item.dart';
 import 'package:motogen/features/profile_screen/widget/more_bottom_sheet.dart';
 import 'package:motogen/features/user_info/viewmodels/personal_info_controller_view_model.dart';
 import 'package:motogen/features/user_info/viewmodels/phone_number_controller_view_model.dart';
+import 'package:motogen/features/user_info/views/personal_info_screen.dart';
 import 'package:motogen/widgets/add_car_card.dart';
 import 'package:motogen/widgets/my_app_bar.dart';
 
@@ -71,12 +73,15 @@ class ProfileScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Text(
-                            " ${personalInfoController.nameController.text} ${personalInfoController.lastNameController.text}",
-                            style: TextStyle(
-                              color: AppColors.blue50,
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w700,
+                          Container(
+                            constraints: BoxConstraints(maxWidth: 200.w),
+                            child: Text(
+                              " ${personalInfoController.nameController.text} ${personalInfoController.lastNameController.text}",
+                              style: TextStyle(
+                                color: AppColors.blue50,
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                           Text(
@@ -93,10 +98,22 @@ class ProfileScreen extends ConsumerWidget {
                   ),
                   Column(
                     children: [
-                      SvgPicture.asset(
-                        AppIcons.edit,
-                        width: 24.w,
-                        height: 24.h,
+                      GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          FadeRoute(
+                            page: PersonalInfoScreen(
+                              onNext: () {},
+
+                              isEdit: true,
+                            ),
+                          ),
+                        ),
+                        child: SvgPicture.asset(
+                          AppIcons.edit,
+                          width: 24.w,
+                          height: 24.h,
+                        ),
                       ),
                     ],
                   ),

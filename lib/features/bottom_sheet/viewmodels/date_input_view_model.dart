@@ -25,6 +25,8 @@ class DateInputViewModel extends ChangeNotifier {
   String get monthHint => nowJalali.month.toString();
   String get yearHint => nowJalali.year.toString();
 
+  DateTime get gergorianNow => DateTime.now();
+
   bool isDayInteractedOnce = false;
   bool isMonthInteractedOnce = false;
   bool isYearInteractedOnce = false;
@@ -62,7 +64,7 @@ class DateInputViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  DateTime? asDateTime() {
+  DateTime? _asDateTimeWithNow(DateTime nowUtc) {
     if (!_isFieldsValid) return null;
     try {
       final baseGregorian = Jalali(
@@ -70,16 +72,18 @@ class DateInputViewModel extends ChangeNotifier {
         int.parse(_month),
         int.parse(_day),
       ).toDateTime();
+
       if (usageType == DateUsageType.services) {
-        final now = DateTime.now().toUtc();
-        return DateTime(
+        final nowLocal = nowUtc.toLocal();
+        final localDateTime = DateTime(
           baseGregorian.year,
           baseGregorian.month,
           baseGregorian.day,
-          now.hour,
-          now.minute,
-          now.second,
+          nowLocal.hour,
+          nowLocal.minute,
+          nowLocal.second,
         );
+        return localDateTime.toUtc();
       }
       return baseGregorian;
     } catch (_) {
@@ -87,17 +91,32 @@ class DateInputViewModel extends ChangeNotifier {
     }
   }
 
+  DateTime? asDateTime() {
+    return _asDateTimeWithNow(DateTime.now().toUtc());
+  }
+
   bool isDateValid() {
     if (!_isFieldsValid) return false;
-    final date = asDateTime();
+
+    final nowUtc = DateTime.now().toUtc();
+    final truncatedNowUtc = DateTime.utc(
+      nowUtc.year,
+      nowUtc.month,
+      nowUtc.day,
+      nowUtc.hour,
+      nowUtc.minute,
+      nowUtc.second,
+    );
+    final date = _asDateTimeWithNow(truncatedNowUtc);
     if (date == null) return false;
-    final now = DateTime.now();
+
     switch (usageType) {
       case DateUsageType.insurance:
-        final maxDate = now.add(const Duration(days: 366));
+        final maxDate = truncatedNowUtc.add(const Duration(days: 366));
         return date.isBefore(maxDate);
       case DateUsageType.services:
-        return date.isBefore(now) || date.isAtSameMomentAs(now);
+        return date.isBefore(truncatedNowUtc) ||
+            date.isAtSameMomentAs(truncatedNowUtc);
     }
   }
 
@@ -110,19 +129,29 @@ class DateInputViewModel extends ChangeNotifier {
 
   String errorText() {
     if (!_isFieldsValid) return "تاریخ معتبر انتخاب کن";
-    final date = asDateTime();
+    final nowUtc = DateTime.now().toUtc();
+    final truncatedNowUtc = DateTime.utc(
+      nowUtc.year,
+      nowUtc.month,
+      nowUtc.day,
+      nowUtc.hour,
+      nowUtc.minute,
+      nowUtc.second,
+    );
+    final date = _asDateTimeWithNow(truncatedNowUtc);
     if (date == null) return "تاریخ معتبر انتخاب کن";
-    final now = DateTime.now();
 
     switch (usageType) {
       case DateUsageType.insurance:
-        final maxDate = now.add(const Duration(days: 366));
+        final maxDate = truncatedNowUtc.add(const Duration(days: 366));
         if (!date.isBefore(maxDate)) return "تاریخ نباید بعد از یک سال باشد";
-        return "تاریخ معتبر انتخاب کن";
-
+        return "";
       case DateUsageType.services:
-        if (date.isAfter(now)) return "تاریخ نمی‌تواند در آینده باشد";
-        return "تاریخ معتبر انتخاب کن";
+        if (date.isAfter(truncatedNowUtc) &&
+            !date.isAtSameMomentAs(truncatedNowUtc)) {
+          return "تاریخ نمی‌تواند در آینده باشد";
+        }
+        return "";
     }
   }
 

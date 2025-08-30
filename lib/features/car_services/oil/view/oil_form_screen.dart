@@ -18,7 +18,12 @@ import 'package:motogen/widgets/my_app_bar.dart';
 
 class OilFormScreen extends ConsumerStatefulWidget {
   final OilStateItem? initialItem;
-  const OilFormScreen({super.key, this.initialItem});
+  final bool? fromReminderToggle;
+  const OilFormScreen({
+    super.key,
+    this.initialItem,
+    this.fromReminderToggle = false,
+  });
 
   @override
   ConsumerState<OilFormScreen> createState() => _OilFormScreenState();
@@ -201,8 +206,15 @@ class _OilFormScreenState extends ConsumerState<OilFormScreen> {
                                   OilStateItem(oilId: "oil_temp_id");
                             }
 
-                            if (!isEdit) {
-                              if (context.mounted) {
+                            if (!isEdit && context.mounted) {
+                              if (widget.fromReminderToggle!) {
+                                Navigator.of(context).pop({
+                                  "created": true,
+                                  "oilType": draft.oilType?.id,
+                                  "date": draft.date,
+                                  "km": draft.kilometer,
+                                });
+                              } else {
                                 Navigator.of(context).pop();
                               }
                             }

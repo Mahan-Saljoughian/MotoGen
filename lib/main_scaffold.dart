@@ -4,6 +4,7 @@ import 'package:motogen/features/chat_screen/views/chat_screen.dart';
 import 'package:motogen/features/home_screen/view/home_screen.dart';
 import 'package:motogen/features/nav_bar/custom_nav_bar.dart';
 import 'package:motogen/features/profile_screen/view/profile_screen.dart';
+import 'package:motogen/features/reminder_screen.dart/view/reminder_screen.dart';
 
 class MainScaffold extends StatefulWidget {
   const MainScaffold({super.key});
@@ -19,7 +20,7 @@ class _MainScaffoldState extends State<MainScaffold>
   Widget? chatScreen;
   List<Widget> get pages => [
     const HomeScreen(),
-    const Center(child: Text('Notifier')),
+    const ReminderScreen(),
     chatScreen ?? const SizedBox(), // placeholder
     const ProfileScreen(),
   ];
@@ -48,7 +49,6 @@ class _MainScaffoldState extends State<MainScaffold>
             if (i == 2 && chatScreen == null) {
               chatScreen = ChatScreen();
             }
-            
           });
         },
         vsync: this,

@@ -1,28 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-
 class PersonalInfoViewModel extends ChangeNotifier {
   final nameController = TextEditingController();
   final lastNameController = TextEditingController();
 
+  final draftNameController = TextEditingController();
+  final draftLastNameController = TextEditingController();
+
   bool _isNameValid = false;
   bool _isLastNameValid = false;
+  bool _isDraftNameValid = false;
+  bool _isDraftLastNameValid = false;
 
   String? _errorName;
   String? _errorLastName;
+  String? _errorDraftName;
+  String? _errorDraftLastName;
+
+  bool get isButtonEnabled => _isNameValid && _isLastNameValid;
+
+  bool get isDraftButtonEnabled => _isDraftNameValid && _isDraftLastNameValid;
 
   bool get isNameValid => _isNameValid;
   bool get isLastNameValid => _isLastNameValid;
+  bool get isDraftNameValid => _isDraftNameValid;
+  bool get isDraftLastNameValid => _isDraftLastNameValid;
 
   String? get errorName => _errorName;
   String? get errorLastName => _errorLastName;
-
-  bool get isButtonEnabled => _isNameValid && _isLastNameValid;
+  String? get errorDraftName => _errorDraftName;
+  String? get errorDraftLastName => _errorDraftLastName;
 
   PersonalInfoViewModel() {
     nameController.addListener(_onNameChanged);
     lastNameController.addListener(_onLastNameChanged);
+
+    draftNameController.addListener(_onDraftNameChanged);
+    draftLastNameController.addListener(_onDraftLastNameChanged);
   }
   static final RegExp nameRegExp = RegExp(
     r'''[a-zA-Z0-9\u0600-\u06FF\u200C\u200D\s\-_.,!?'"()]+$''',
@@ -67,11 +82,60 @@ class PersonalInfoViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _onDraftNameChanged() {
+    _validateDraftName();
+    notifyListeners();
+  }
+
+  void _onDraftLastNameChanged() {
+    _validateDraftLastName();
+    notifyListeners();
+  }
+
+  void setDraftFromMain() {
+    draftNameController.removeListener(_onDraftNameChanged);
+    draftLastNameController.removeListener(_onDraftLastNameChanged);
+
+    draftNameController.text = nameController.text;
+    draftLastNameController.text = lastNameController.text;
+
+    _validateDraftName();
+    _validateDraftLastName();
+
+    // Re-attach listeners
+    draftNameController.addListener(_onDraftNameChanged);
+    draftLastNameController.addListener(_onDraftLastNameChanged);
+
+    notifyListeners();
+  }
+
+  void _validateDraftName() {
+    final text = draftNameController.text.trim();
+    _errorDraftName = nameValidator(text);
+    _isDraftNameValid = _errorDraftName == null;
+  }
+
+  void _validateDraftLastName() {
+    final text = draftLastNameController.text.trim();
+    _errorDraftLastName = lastNameValidator(text);
+    _isDraftLastNameValid = _errorDraftLastName == null;
+  }
+
+  void applyDraftToMain() {
+    if (nameController.text.trim() != draftNameController.text.trim()) {
+      nameController.text = draftNameController.text;
+    }
+    if (lastNameController.text.trim() != draftLastNameController.text.trim()) {
+      lastNameController.text = draftLastNameController.text;
+    }
+  }
 
   @override
   void dispose() {
     nameController.dispose();
     lastNameController.dispose();
+    draftNameController.dispose();
+    draftLastNameController.dispose();
     super.dispose();
   }
 }

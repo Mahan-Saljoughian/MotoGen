@@ -45,4 +45,11 @@ class AppIcons {
   static const String trash = "assets/icons/trash.svg";
 
   static const String sort = "assets/icons/sort.svg";
+
+  static const String addCircleReminder =
+      "assets/icons/add_circle_reminder.svg";
+  static const String tickCircleReminder =
+      "assets/icons/tick_circle_reminder.svg";
+  static const String toggleOn = "assets/icons/toggle_on.svg";
+  static const String toggleOff = "assets/icons/toggle_off.svg";
 }

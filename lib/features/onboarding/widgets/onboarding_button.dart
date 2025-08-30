@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/features/bottom_sheet/config/date_field_config.dart';
 import 'package:motogen/features/bottom_sheet/viewmodels/date_input_view_model.dart';
+import 'package:motogen/features/car_info/viewmodels/car_draft_setters.dart';
 import 'package:motogen/features/car_info/viewmodels/car_validation.dart';
 import 'package:motogen/features/user_info/viewmodels/code_controller_view_model.dart';
 import 'package:motogen/features/user_info/viewmodels/personal_info_controller_view_model.dart';
@@ -15,6 +16,10 @@ enum PagesTitleEnum {
   dateBottomSheetInsurance,
   dateBottomSheetServices,
   addEditCar,
+  // ignore: constant_identifier_names
+  TIMING_BELT_CHANGE,
+  firstTimeEnablingReminder,
+  editPersonalInfo,
 }
 
 class OnboardingButton extends ConsumerWidget {
@@ -45,14 +50,19 @@ class OnboardingButton extends ConsumerWidget {
         : pagesTitleEnum != null
         ? _getCurrentButtonTextWithPagesTitleEnum()
         : text ?? "pick a text";
-    final Color textColor = pagesTitleEnum == PagesTitleEnum.skipNickName
+    final Color textColor =
+        pagesTitleEnum == PagesTitleEnum.skipNickName ||
+            pagesTitleEnum == PagesTitleEnum.firstTimeEnablingReminder
         ? AppColors.orange600
         : AppColors.black50;
     final Color buttonBackgroundColor =
-        pagesTitleEnum == PagesTitleEnum.skipNickName
+        pagesTitleEnum == PagesTitleEnum.skipNickName ||
+            pagesTitleEnum == PagesTitleEnum.firstTimeEnablingReminder
         ? AppColors.orange50
         : AppColors.orange600;
-    final Color borderColor = pagesTitleEnum == PagesTitleEnum.skipNickName
+    final Color borderColor =
+        pagesTitleEnum == PagesTitleEnum.skipNickName ||
+            pagesTitleEnum == PagesTitleEnum.firstTimeEnablingReminder
         ? AppColors.orange600
         : Colors.transparent;
 
@@ -116,6 +126,12 @@ class OnboardingButton extends ConsumerWidget {
             ref.watch(
               isCarInfoButtonEnabledForSecondPageProvider,
             ); // skip nickName set
+      case PagesTitleEnum.TIMING_BELT_CHANGE:
+        return ref.watch(carDraftProvider).isKilometerValid;
+      case PagesTitleEnum.firstTimeEnablingReminder:
+        return true;
+      case PagesTitleEnum.editPersonalInfo:
+        return ref.watch(personalInfoProvider).isDraftButtonEnabled;
       default:
         return false;
     }
@@ -149,6 +165,12 @@ class OnboardingButton extends ConsumerWidget {
       case PagesTitleEnum.repairInfo:
         return "ثبت";
       case PagesTitleEnum.addEditCar:
+        return "ثبت";
+      case PagesTitleEnum.TIMING_BELT_CHANGE:
+        return "تایید";
+      case PagesTitleEnum.firstTimeEnablingReminder:
+        return "یادم نیست، از امروز حساب کن";
+      case PagesTitleEnum.editPersonalInfo:
         return "ثبت";
       default:
         return "تایید و ادامه";

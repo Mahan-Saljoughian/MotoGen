@@ -19,14 +19,14 @@ class _AiLoadingAnimationState extends State<AiLoadingAnimation> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(milliseconds: 300), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 600), (timer) {
       setState(() {
         _current = 1 - _current;
       });
     });
   }
 
-   @override
+  @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
@@ -38,7 +38,7 @@ class _AiLoadingAnimationState extends State<AiLoadingAnimation> {
         ? AppIcons.loadingDotBottom
         : AppIcons.loadingDotTop;
     return AnimatedSwitcher(
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 100),
       child: SvgPicture.asset(
         assetPath,
         key: ValueKey(assetPath),

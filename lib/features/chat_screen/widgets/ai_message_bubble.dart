@@ -89,9 +89,27 @@ class AiMessageBubble extends StatelessWidget {
                           FontWeight.w600,
                         ),
                         listBullet: baseStyle,
+                        tableHead: baseStyle.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13.sp,
+                          color: aiChatColor,
+                        ),
+                        tableBody: baseStyle.copyWith(
+                          fontSize: 12.sp,
+                          color: aiChatColor,
+                        ),
+                        tableCellsPadding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 6.h,
+                        ),
+                        tableBorder: TableBorder.all(
+                          color: Colors.white,
+                          width: 1,
+                        ),
 
-                        blockquoteDecoration: BoxDecoration(
-                          color: Colors.transparent, // no background
+                        // QUOTES
+                        blockquoteDecoration: const BoxDecoration(
+                          color: Colors.transparent,
                         ),
                         blockquotePadding: EdgeInsets.symmetric(
                           horizontal: 8.w,

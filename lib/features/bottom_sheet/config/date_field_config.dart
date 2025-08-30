@@ -10,7 +10,7 @@ class DateFieldConfig<T> {
     required this.labelText,
     required this.getter,
     required this.setter,
-      required this.usageType,
+    required this.usageType,
   });
 }
 

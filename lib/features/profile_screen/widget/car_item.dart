@@ -156,7 +156,7 @@ class CarItem extends ConsumerWidget {
                         Container(
                           constraints: BoxConstraints(
                             maxWidth: 100.w,
-                          ), // adjust
+                          ), 
                           child: Text(
                             "${currentCar.brand?.title} ${currentCar.model?.title} ${currentCar.type?.title}",
                             style: TextStyle(

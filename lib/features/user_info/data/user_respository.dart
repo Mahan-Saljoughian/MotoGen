@@ -1,19 +1,12 @@
-
-
 import 'package:logger/web.dart';
 import 'package:motogen/core/services/api_service.dart';
-
-
 
 class UserRespository {
   final ApiService _api = ApiService();
   var logger = Logger();
   Future<Map<String, dynamic>> getUserProfile() async {
     try {
-    
-      final response = await _api.get(
-        "users/me"
-      );
+      final response = await _api.get("users/me");
       if (response['success'] != true) {
         throw Exception(response['message'] ?? 'Failed to get user profile');
       }
@@ -26,19 +19,14 @@ class UserRespository {
   }
 
   Future<Map<String, dynamic>> patchUserProfile(
-    Map<String, String> body,
+    Map<String, String> changes,
   ) async {
     try {
- 
-      final response = await _api.patch(
-        "users/me",
-        body
-      );
+      final response = await _api.patch("users/me", changes);
       if (response['success'] != true) {
         throw Exception(response['message'] ?? 'Failed to patch user profile');
       }
-      final data = response['data'];
-      return data;
+      return Map<String, dynamic>.from(response['data'] as Map);
     } catch (e) {
       logger.e("debug Error patching user profile");
       rethrow;

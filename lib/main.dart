@@ -83,6 +83,16 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   void initState() {
     super.initState();
+    // Set a 10-second fallback timer
+    Future.delayed(const Duration(seconds: 10), () {
+      if (_isLoading) {
+        logger.w("debug Loading exceeded 10 seconds, navigating to onboarding");
+        setState(() {
+          _isLoading = false; // stop loading spinner
+          _isLoggedIn = false; // force onboarding
+        });
+      }
+    });
     Future.microtask(_initApp);
   }
 
@@ -106,9 +116,11 @@ class _MyAppState extends ConsumerState<MyApp> {
         await storage.delete(key: 'accessToken');
       }
     }
-    setState(() {
-      _isLoading = false;
-    });
+    if (mounted && _isLoading) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override

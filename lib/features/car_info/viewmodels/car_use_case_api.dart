@@ -112,7 +112,7 @@ extension CarUseCaseApi on CarStateNotifier {
     final Map<String, dynamic> changes = {};
 
     if (draft.type?.title != original.type?.title) {
-      changes['carTrimID'] = draft.type?.id;
+      changes['carTrimId'] = draft.type?.id;
     }
     if (draft.yearMade != original.yearMade) {
       changes['productYear'] = draft.yearMade;
@@ -151,7 +151,7 @@ extension CarUseCaseApi on CarStateNotifier {
       await _carRepository.patchCarById(changes, original.carId!);
       updateCarById(original.carId!, (currentCar) {
         return currentCar.copyWith(
-          type: changes.containsKey('carTrimID') ? draft.type : currentCar.type,
+          type: changes.containsKey('carTrimId') ? draft.type : currentCar.type,
           yearMade: changes.containsKey('productYear')
               ? draft.yearMade
               : currentCar.yearMade,

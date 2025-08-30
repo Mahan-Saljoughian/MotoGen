@@ -20,7 +20,7 @@ DateFieldConfig<CarFormStateItem> thirdPersonInsuranceExpiryDateConfig =
       usageType: DateUsageType.insurance,
     );
 
-DateFieldConfig<CarFormStateItem> nextTechnicalCheckDateonfig =
+DateFieldConfig<CarFormStateItem> nextTechnicalCheckDateConfig =
     DateFieldConfig<CarFormStateItem>(
       labelText: "تاریخ معاینه فنی بعدی",
       getter: (state) => state.nextTechnicalCheck,

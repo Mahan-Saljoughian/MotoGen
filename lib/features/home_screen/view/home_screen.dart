@@ -5,6 +5,8 @@ import 'package:logger/logger.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/home_screen/widget/service_navigator.dart';
+import 'package:motogen/features/reminder_screen.dart/model/reminder_state_item.dart';
+import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_notifier.dart';
 import 'package:motogen/features/reminder_screen.dart/widgets/time_left_circle.dart';
 import 'package:motogen/features/profile_screen/widget/car_item.dart';
 import 'package:motogen/features/user_info/viewmodels/personal_info_controller_view_model.dart';
@@ -28,6 +30,9 @@ class HomeScreen extends ConsumerWidget {
     /*  for (var i = 0; i < carFormState.cars.length; i++) {
       logger.i("debug Car $i: ${carFormState.cars[i].toJson()}");
     } */
+
+    final asyncReminders = ref.watch(reminderNotifierProvider);
+
     return Scaffold(
       backgroundColor: AppColors.blue50,
       body: Column(
@@ -79,66 +84,125 @@ class HomeScreen extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "چیزی تا اتمام اعتبارشون باقی نمونده...",
-                            style: TextStyle(
-                              color: AppColors.blue900,
-                              height: 0,
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w700,
+                          asyncReminders.when(
+                            data: (reminders) {
+                              final fixedDateFiltered = reminders.where((
+                                reminder,
+                              ) {
+                                final isFixedDate =
+                                    reminder.intervalType.name ==
+                                        "FIXED_DATE" &&
+                                    reminder.haveBaseValue &&
+                                    reminder.enabled;
+                                final intervalValue = reminder.intervalValue;
+
+                                final remainingValue =
+                                    reminder.remainingValue ?? 0;
+                                final percent = remainingValue / intervalValue;
+                                final isAlert = percent <= 0.4;
+
+                                return isFixedDate && isAlert;
+                              }).toList();
+
+                              final serviceFiltered = reminders.where((
+                                reminder,
+                              ) {
+                                final isService =
+                                    reminder.intervalType.name !=
+                                        "FIXED_DATE" &&
+                                    reminder.haveBaseValue &&
+                                    reminder.enabled;
+                                ;
+                                final intervalValue = reminder.intervalValue;
+
+                                final remainingValue =
+                                    reminder.remainingValue ?? 0;
+                                final percent = remainingValue / intervalValue;
+                                final isAlert = percent <= 0.4;
+
+                                return isService && isAlert;
+                              }).toList();
+
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (fixedDateFiltered.isNotEmpty) ...[
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "چیزی تا اتمام اعتبارشون باقی نمونده...",
+                                          style: TextStyle(
+                                            color: AppColors.blue900,
+                                            height: 0,
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        SizedBox(height: 23.h),
+                                        SizedBox(
+                                          height: 140.h,
+                                          child: ListView.separated(
+                                            scrollDirection: Axis.horizontal,
+                                            itemCount: fixedDateFiltered.length,
+                                            separatorBuilder: (_, __) =>
+                                                SizedBox(width: 12.w),
+                                            itemBuilder: (context, index) {
+                                              return TimeLeftCircle(
+                                                reminderItem:
+                                                    fixedDateFiltered[index],
+                                                isHomeScreen: true,
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+
+                                  if (serviceFiltered.isNotEmpty) ...[
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "یادت نره سرویس و بررسی کنی!",
+                                          style: TextStyle(
+                                            color: AppColors.blue900,
+                                            height: 0,
+                                            fontSize: 14.sp,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        SizedBox(height: 23.h),
+                                        SizedBox(
+                                          height: 140.h,
+                                          child: ListView.separated(
+                                            scrollDirection: Axis.horizontal,
+                                            itemCount: serviceFiltered.length,
+                                            separatorBuilder: (_, __) =>
+                                                SizedBox(width: 12.w),
+                                            itemBuilder: (context, index) {
+                                              return TimeLeftCircle(
+                                                reminderItem:
+                                                    serviceFiltered[index],
+                                                isHomeScreen: true,
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ],
+                              );
+                            },
+                            loading: () => const Center(
+                              child: CircularProgressIndicator(),
                             ),
-                          ),
-                          SizedBox(height: 23.h),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              TimeLeftCircle(
-                                daysLeft: 50,
-                                totalDays: 100,
-                                serviceTitle: "بیمه بدنه",
-                              ),
-                              TimeLeftCircle(
-                                daysLeft: 40,
-                                totalDays: 100,
-                                serviceTitle: "معاینه فنی",
-                              ),
-                              TimeLeftCircle(
-                                daysLeft: 20,
-                                totalDays: 100,
-                                serviceTitle: "بیمه شخص ثالث",
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 23.h),
-                          Text(
-                            "یادت نره سرویس و بررسی کنی!",
-                            style: TextStyle(
-                              color: AppColors.blue900,
-                              height: 0,
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          SizedBox(height: 23.h),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              TimeLeftCircle(
-                                daysLeft: 50,
-                                totalDays: 100,
-                                serviceTitle: "بررسی آب و روغن",
-                              ),
-                              TimeLeftCircle(
-                                daysLeft: 40,
-                                totalDays: 100,
-                                serviceTitle: "تنظیم باد لاستیک",
-                              ),
-                              TimeLeftCircle(
-                                daysLeft: 20,
-                                totalDays: 100,
-                                serviceTitle: "تعویض روغن ترمز",
-                              ),
-                            ],
+                            error: (err, stack) =>
+                                Text("خطا در بارگیری یادآورها"),
                           ),
                           SizedBox(height: 28.h),
                           Text(

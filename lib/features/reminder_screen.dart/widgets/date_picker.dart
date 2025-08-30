@@ -4,78 +4,43 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
-import 'package:motogen/features/bottom_sheet/config/date_field_config.dart';
+import 'package:motogen/features/bottom_sheet/config/date_field_config.dart'; // For DateUsageType
 import 'package:motogen/features/bottom_sheet/viewmodels/date_input_view_model.dart';
-import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
+import 'package:motogen/features/onboarding/widgets/onboarding_button.dart'; // Adjust import if needed
 import 'package:shamsi_date/shamsi_date.dart';
 
-class BottomsheetDateShow<T> extends ConsumerStatefulWidget {
-  final DateFieldConfig<T> dateSetFieldConfig;
-  final T state;
+class BottomsheetDatePicker extends ConsumerStatefulWidget {
+  final String labelText;
   final DateUsageType usageType;
+  final PagesTitleEnum
+  pagesTitleEnum; // Assuming this is your enum for button config
 
-  const BottomsheetDateShow({
+  const BottomsheetDatePicker({
     super.key,
-    required this.dateSetFieldConfig,
-    required this.state,
+    required this.labelText,
     required this.usageType,
+    required this.pagesTitleEnum,
   });
 
   @override
-  ConsumerState<BottomsheetDateShow<T>> createState() =>
-      _BottomsheetDateShowState<T>();
+  ConsumerState<BottomsheetDatePicker> createState() =>
+      _BottomsheetDatePickerState();
 }
 
-class _BottomsheetDateShowState<T>
-    extends ConsumerState<BottomsheetDateShow<T>> {
-  late TextEditingController dayController;
-  late TextEditingController monthController;
-  late TextEditingController yearController;
-  late final List<FocusNode> focusNodes;
-
-  @override
-  void initState() {
-    super.initState();
-    final date = widget.dateSetFieldConfig.getter(widget.state);
-    Jalali? jalaliDate;
-    if (date != null) {
-      jalaliDate = Jalali.fromDateTime(date.toLocal());
-    }
-
-    dayController = TextEditingController(
-      text: jalaliDate?.day.toString() ?? "",
-    );
-    monthController = TextEditingController(
-      text: jalaliDate?.month.toString() ?? "",
-    );
-    yearController = TextEditingController(
-      text: jalaliDate?.year.toString() ?? "",
-    );
-    focusNodes = List.generate(3, (_) => FocusNode());
-
-    if (jalaliDate != null) {
-      Future.microtask(() {
-        final dateVM = ref.read(dateInputProvider(widget.usageType).notifier);
-        dateVM.markDayInteracted();
-        dateVM.markMonthInteracted();
-        dateVM.markYearInteracted();
-        dateVM.setDay(jalaliDate!.day.toString());
-        dateVM.setMonth(jalaliDate.month.toString());
-        dateVM.setYear(jalaliDate.year.toString());
-      });
-    }
-  }
+class _BottomsheetDatePickerState extends ConsumerState<BottomsheetDatePicker> {
+  final dayController = TextEditingController();
+  final monthController = TextEditingController();
+  final yearController = TextEditingController();
+  final List<FocusNode> focusNodes = List.generate(3, (_) => FocusNode());
 
   @override
   void dispose() {
     dayController.dispose();
     monthController.dispose();
     yearController.dispose();
-
     for (final f in focusNodes) {
       f.dispose();
     }
-
     super.dispose();
   }
 
@@ -98,7 +63,6 @@ class _BottomsheetDateShowState<T>
       'focusNode': focusNodes[1],
       'hint': dateVm.monthHint,
       'width': 56.w,
-
       'maxLength': 2,
       'onChanged': (String v) => dateVm.setMonth(v),
       'valid': dateVm.monthValid,
@@ -133,13 +97,12 @@ class _BottomsheetDateShowState<T>
         constraints: BoxConstraints(
           minHeight: MediaQuery.of(context).size.height * 0.4,
         ),
-
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 41.w, vertical: 34.h),
           child: Column(
             children: [
               Text(
-                widget.dateSetFieldConfig.labelText,
+                widget.labelText,
                 style: TextStyle(
                   color: AppColors.blue600,
                   fontSize: 16.sp,
@@ -147,7 +110,6 @@ class _BottomsheetDateShowState<T>
                 ),
               ),
               SizedBox(height: 40.h),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: inputConfigs.map((config) {
@@ -167,7 +129,6 @@ class _BottomsheetDateShowState<T>
                 }).toList(),
               ),
               SizedBox(height: 18.h),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -181,7 +142,6 @@ class _BottomsheetDateShowState<T>
                                 inputConfigs[i]['isInteractedOnce'] == false
                             ? AppColors.white300
                             : const Color(0xFFC60B0B).withAlpha(33),
-
                         border: Border.all(
                           color:
                               inputConfigs[i]['valid'] ||
@@ -198,7 +158,6 @@ class _BottomsheetDateShowState<T>
                                 as TextEditingController,
                         focusNode: inputConfigs[i]['focusNode'] as FocusNode,
                         keyboardType: TextInputType.number,
-
                         textAlign: TextAlign.center,
                         maxLength: (inputConfigs[i]['maxLength'] as num?)
                             ?.toInt(),
@@ -285,8 +244,6 @@ class _BottomsheetDateShowState<T>
                         },
                       ),
                     ),
-
-                    // ---- DIVIDER ----
                     if (i != inputConfigs.length - 1)
                       Text(
                         "/",
@@ -319,13 +276,28 @@ class _BottomsheetDateShowState<T>
               OnboardingButton(
                 onPressed: () {
                   final pickedDate = dateVM.asDateTime();
-                  widget.dateSetFieldConfig.setter(ref, pickedDate);
-                  Navigator.of(context).pop(pickedDate);
+                  Navigator.of(
+                    context,
+                  ).pop(pickedDate); // Just return the date, no setters
                 },
-                pagesTitleEnum: widget.usageType == DateUsageType.insurance
-                    ? PagesTitleEnum.dateBottomSheetInsurance
-                    : PagesTitleEnum.dateBottomSheetServices,
+                pagesTitleEnum:
+                    widget.pagesTitleEnum ==
+                        PagesTitleEnum.firstTimeEnablingReminder
+                    ? PagesTitleEnum.dateBottomSheetServices
+                    : widget.pagesTitleEnum,
               ),
+              SizedBox(height: 12.h),
+              if (widget.pagesTitleEnum ==
+                  PagesTitleEnum.firstTimeEnablingReminder)
+                OnboardingButton(
+                  onPressed: () {
+                    final pickedDate = dateVM.gergorianNow;
+                    Navigator.of(
+                      context,
+                    ).pop(pickedDate); // Just return the date, no setters
+                  },
+                  pagesTitleEnum: widget.pagesTitleEnum,
+                ),
             ],
           ),
         ),

@@ -79,7 +79,7 @@ List<CarInfoFieldConfig<CarFormStateItem>> buildCarInfoSecondPageFields(
     ),
     CarInfoFieldConfig<CarFormStateItem>(
       type: FieldInputType.dateSetter,
-      dateSetFieldConfig: nextTechnicalCheckDateonfig,
+      dateSetFieldConfig: nextTechnicalCheckDateConfig,
       errorGetter: (s) => s.nextTechnicalCheckError,
     ),
   ];
