@@ -7,7 +7,6 @@ import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.da
 import 'package:motogen/features/bottom_sheet/config/date_field_config.dart'; // For DateUsageType
 import 'package:motogen/features/bottom_sheet/viewmodels/date_input_view_model.dart';
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart'; // Adjust import if needed
-import 'package:shamsi_date/shamsi_date.dart';
 
 class BottomsheetDatePicker extends ConsumerStatefulWidget {
   final String labelText;

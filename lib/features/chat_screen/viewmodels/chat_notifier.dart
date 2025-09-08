@@ -14,9 +14,9 @@ class ChatNotifier extends AsyncNotifier<ChatState> {
   }
 
   final List<String> _suggestionQuestions = [
+    "چگونه از ماشین خود نگهداری کنم؟",
     "زمان تعویض روغن ماشین من کیه؟",
     "هر چند وقت یه بار باید فیلتر هوا عوض بشه؟",
-    "ماشین من ۸۰هزار کیلومتر کار کرده، چه سرویس‌هایی لازمه؟",
   ];
 
   List<String> get suggestionQuestions => _suggestionQuestions;

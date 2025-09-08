@@ -10,12 +10,12 @@ import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_notifie
 
 class EnableToggle extends ConsumerStatefulWidget {
   final ReminderStateItem reminderItem;
-  final Future<bool> Function() actionsForToggle;
+  final Future<dynamic> Function() reminderAction;
 
   const EnableToggle({
     super.key,
     required this.reminderItem,
-    required this.actionsForToggle,
+    required this.reminderAction,
   });
 
   @override
@@ -37,36 +37,80 @@ class EnableToggleState extends ConsumerState<EnableToggle>
     final newValue = !_value;
 
     if (newValue) {
-      // Enabling flow with confirmation
-      final confirmed = await showConfirmBottomSheet(
-        titleText:
-            "از فعال کردن یادآور “${ReminderStateItem.translate(widget.reminderItem.type)}” اطمینان داری؟",
-        intervalReminderText:
-            "بازه یادآوری: هر ${widget.reminderItem.intervalValue} روز یکبار",
-        context: context,
-        autoPop: false,
-        onConfirm: () async {
-          if (!widget.reminderItem.haveBaseValue) {
-            final picked = await widget.actionsForToggle();
-            if (picked) {
-              ref
-                  .read(reminderNotifierProvider.notifier)
-                  .setHaveBaseValueLocally(widget.reminderItem.type, true);
-              Navigator.pop(context); // Close confirm
+      // Enabling
+      dynamic picked;
+      bool useNew = true;
+      if (widget.reminderItem.haveBaseValue) {
+        final confirmedSecond = await showConfirmBottomSheet(
+          titleText: "تاریخ یادآور قبلی رو میخوای یا جدید تنظیم میکنی؟",
+          intervalReminderText:
+              "در صورت تنظیم تاریخ جدید، تاریخ قبلی حذف میشه.",
+          context: context,
+          isConfirmDate: true,
+          autoPop: false,
+        );
 
-              await _performToggle(newValue);
-            } else {
-              Navigator.pop(context); // Just close confirm
-            }
-          } else {
-            Navigator.pop(context); // Just close confirm
-            await _performToggle(newValue);
+        if (confirmedSecond == null) return;
+
+        useNew =
+            !confirmedSecond; // true if "قبلی" (keep previous), false for new -> useNew = true if !confirmedSecond
+      }
+
+      if (useNew) {
+        picked = await widget.reminderAction();
+        if (picked == null) return;
+
+        final intervalUnit =
+            widget.reminderItem.intervalType.name.toLowerCase() ==
+                IntervalType.DAYS.name.toLowerCase()
+            ? "روز"
+            : "کیلومتر";
+        final confirmed = await showConfirmBottomSheet(
+          titleText:
+              "از فعال کردن یادآور “${ReminderStateItem.translate(widget.reminderItem.type)}” اطمینان داری؟",
+          intervalReminderText:
+              "بازه یادآوری: هر ${widget.reminderItem.intervalValue} $intervalUnit یکبار",
+          context: context,
+          autoPop: false,
+        );
+        if (confirmed != true) return;
+      }
+
+      setState(() => _loading = true);
+      try {
+        if (useNew) {
+          await ref
+              .read(reminderNotifierProvider.notifier)
+              .updateFromPicked(
+                widget.reminderItem.reminderId,
+                widget.reminderItem.type,
+                picked,
+                true,
+              );
+          if (!widget.reminderItem.haveBaseValue) {
+            ref
+                .read(reminderNotifierProvider.notifier)
+                .setHaveBaseValueLocally(widget.reminderItem.type, true);
           }
-        },
-      );
-      if (confirmed != true) return;
+        } else {
+          await ref
+              .read(reminderNotifierProvider.notifier)
+              .toggleReminder(widget.reminderItem.reminderId, true);
+        }
+
+        setState(() {
+          _value = true;
+        });
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("خطا در تغییر وضعیت یادآور")),
+        );
+      } finally {
+        setState(() => _loading = false);
+      }
     } else {
-      await _performToggle(newValue);
+      // Disabling
+      await _performToggle(false);
     }
   }
 
@@ -75,7 +119,7 @@ class EnableToggleState extends ConsumerState<EnableToggle>
     try {
       await ref
           .read(reminderNotifierProvider.notifier)
-          .toggleReminder(widget.reminderItem.reminderId, newValue);
+          .toggleReminder(widget.reminderItem.reminderId, false);
       setState(() {
         _value = newValue;
       });

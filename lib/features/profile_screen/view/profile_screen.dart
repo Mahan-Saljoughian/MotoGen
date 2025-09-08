@@ -158,8 +158,13 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                   ),
                   // add car button
+
+
+
+
+                  
                   SizedBox(height: 20.h),
-                  GestureDetector(
+                  /*  GestureDetector(
                     onTap:
                         () => /* Navigator.push(
                       context,
@@ -194,7 +199,7 @@ class ProfileScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                  ),
+                  ), */
                 ],
               ),
             ],

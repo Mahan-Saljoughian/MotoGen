@@ -6,24 +6,29 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
+import 'package:motogen/features/chat_screen/viewmodels/chat_controller.dart';
+import 'package:motogen/features/chat_screen/viewmodels/chat_notifier.dart';
+import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_notifier.dart';
 import 'package:motogen/features/user_info/viewmodels/personal_info_controller_view_model.dart';
 import 'package:motogen/features/user_info/viewmodels/phone_number_controller_view_model.dart';
+import 'package:motogen/widgets/loading_animation.dart';
 
 class MoreBottomSheet extends ConsumerWidget {
   const MoreBottomSheet({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SizedBox(
+    return Container(
       width: double.infinity,
-      height: 156.h,
+      constraints: BoxConstraints(minHeight: 90.h),
       child: Padding(
         padding: EdgeInsetsGeometry.symmetric(vertical: 13.h, horizontal: 44.w),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            GestureDetector(
+            /*   GestureDetector(
               onTap: () {},
               child: Row(
                 children: [
@@ -39,7 +44,7 @@ class MoreBottomSheet extends ConsumerWidget {
                   ),
                 ],
               ),
-            ),
+            ), */
 
             /*   GestureDetector(
               onTap: () {},
@@ -63,8 +68,7 @@ class MoreBottomSheet extends ConsumerWidget {
                 showDialog(
                   context: context,
                   barrierDismissible: false,
-                  builder: (_) =>
-                      const Center(child: CircularProgressIndicator()),
+                  builder: (_) => const Center(child: LoadingAnimation()),
                 );
                 final secureStorage = FlutterSecureStorage();
 
@@ -73,6 +77,10 @@ class MoreBottomSheet extends ConsumerWidget {
                 ref.invalidate(personalInfoProvider);
                 ref.invalidate(phoneNumberControllerProvider);
                 ref.invalidate(carStateNotifierProvider);
+                ref.invalidate(chatNotifierProvider);
+                ref.invalidate(chatControllerProvider);
+                ref.invalidate(reminderNotifierProvider);
+
                 if (context.mounted) {
                   Navigator.of(context).pop();
                   Navigator.pushReplacementNamed(

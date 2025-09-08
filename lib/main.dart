@@ -21,6 +21,7 @@ import 'package:motogen/features/profile_screen/view/profile_screen.dart';
 
 import 'package:motogen/features/user_info/viewmodels/user_use_case_api.dart';
 import 'package:motogen/main_scaffold.dart';
+import 'package:motogen/widgets/loading_animation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,6 +81,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   var logger = Logger();
   bool _isLoggedIn = false;
   bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -126,9 +128,7 @@ class _MyAppState extends ConsumerState<MyApp> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const MaterialApp(
-        home: Scaffold(body: Center(child: CircularProgressIndicator())),
-      );
+      return const MaterialApp(home: Scaffold(body: LoadingAnimation()));
     }
     final theme = ThemeData(
       fontFamily: "IRANSansXFaNum",

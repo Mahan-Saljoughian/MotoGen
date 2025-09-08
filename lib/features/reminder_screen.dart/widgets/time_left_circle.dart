@@ -6,8 +6,7 @@ import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/services/format_functions.dart';
 import 'package:motogen/features/reminder_screen.dart/model/reminder_state_item.dart';
 import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_notifier.dart';
-import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_ontap.dart';
-import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_toggle.dart';
+import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_action.dart';
 import 'package:motogen/features/reminder_screen.dart/widgets/done_toggle.dart';
 import 'package:motogen/features/reminder_screen.dart/widgets/enable_toggle.dart';
 import 'package:percent_indicator/percent_indicator.dart';
@@ -35,12 +34,9 @@ class TimeLeftCircle extends ConsumerWidget {
       reminderItem.intervalValue,
     );
     final safeReminderIdByType = reminderIdByType ?? const {};
-    final actionsForTap = ref
+    final reminderAction = ref
         .read(reminderNotifierProvider.notifier)
-        .buildReminderActionsForTap(context, ref, safeReminderIdByType);
-    final actionsForToggle = ref
-        .read(reminderNotifierProvider.notifier)
-        .buildReminderActionsForToggle(context, ref, safeReminderIdByType);
+        .buildReminderAction(context, ref, safeReminderIdByType);
 
     final isThousand = isHomeScreen
         ? remainingFormatted.contains("هزار")
@@ -90,7 +86,7 @@ class TimeLeftCircle extends ConsumerWidget {
       child: Container(
         width: isHomeScreen ? 110.w : 162.w,
 
-        constraints: BoxConstraints(minHeight: isHomeScreen ? 110.h : 136.h),
+        constraints: BoxConstraints(minHeight: isHomeScreen ? 110.h : 126.h),
         padding: EdgeInsets.only(
           left: 14.w,
           right: 14.w,
@@ -113,57 +109,61 @@ class TimeLeftCircle extends ConsumerWidget {
             children: [
               if (!isHomeScreen)
                 Padding(
-                  padding: EdgeInsets.only(bottom: 10.h),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Replace your Text(type, style: ...) with this:
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: farsiTextForType.contains('(')
-                                  ? farsiTextForType.split(
-                                      '(',
-                                    )[0] // before parentheses
-                                  : farsiTextForType,
-                              style: TextStyle(
-                                color: AppColors.blue500,
-                                fontSize: 10.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            if (farsiTextForType.contains('('))
+                  padding: EdgeInsets.only(bottom: 15.h),
+                  child: SizedBox(
+                    height: 19.h,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            children: [
                               TextSpan(
-                                text:
-                                    '(${farsiTextForType.split('(')[1]}', // re-add parentheses
+                                text: farsiTextForType.contains('(')
+                                    ? farsiTextForType.split(
+                                        '(',
+                                      )[0] // before parentheses
+                                    : farsiTextForType,
                                 style: TextStyle(
                                   color: AppColors.blue500,
-                                  fontSize:
-                                      6.sp, // smaller for inside parentheses
+                                  fontFamily: "IRANSansXFaNum",
+                                  fontSize: 10.sp,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                          ],
+                              if (farsiTextForType.contains('('))
+                                TextSpan(
+                                  text:
+                                      '(${farsiTextForType.split('(')[1]}', // re-add parentheses
+                                  style: TextStyle(
+                                    color: AppColors.blue500,
+                                    fontFamily: "IRANSansXFaNum",
+                                    fontSize:
+                                        6.sp, // smaller for inside parentheses
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                            ],
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1, // prevents overflow
                         ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1, // prevents overflow
-                      ),
 
-                      EnableToggle(
-                        reminderItem: reminderItem,
-                        actionsForToggle:
-                            actionsForToggle[reminderItem.type] ??
-                            () async {
-                              logger.i("No action.");
-                              return false;
-                            },
-                      ),
-                    ],
+                        EnableToggle(
+                          reminderItem: reminderItem,
+                          reminderAction:
+                              reminderAction[reminderItem.type] ??
+                              () async {
+                                logger.i("No action.");
+                                return false;
+                              },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               CircularPercentIndicator(
-                radius: isHomeScreen ? 34.r : 45.r,
+                radius: isHomeScreen ? 34.r : 50.r,
                 lineWidth: 8.w,
                 percent: percent,
                 center: Column(
@@ -182,7 +182,9 @@ class TimeLeftCircle extends ConsumerWidget {
                       ),
                     ),
                     Text(
-                      isHomeScreen ? "روز" : "روز باقی مانده",
+                      isHomeScreen
+                          ? "روز"
+                          : "${reminderItem.intervalType.name == IntervalType.KILOMETERS.name ? "کیلومتر" : "روز"} باقی مانده",
                       style: TextStyle(
                         color: slideColor,
                         fontSize: isHomeScreen ? 13.sp : 9.sp,
@@ -212,12 +214,14 @@ class TimeLeftCircle extends ConsumerWidget {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: DoneToggle(
-                    enabled: reminderItem.enabled,
+                    reminderItem: reminderItem,
                     isAdd: true,
-                    intervalType: reminderItem.intervalType.name,
-                    actionsForTap:
-                        actionsForTap[reminderItem.type] ??
-                        () async => logger.i("No action."),
+
+                    reminderAction:
+                        reminderAction[reminderItem.type] ??
+                        () async {
+                          logger.i("No action.");
+                        },
                   ),
                 ),
             ],

@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
-import 'package:motogen/features/car_services/oil/data/oil_repository.dart';
 import 'package:motogen/features/reminder_screen.dart/model/reminder_state_item.dart';
 import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_notifier.dart';
-import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_ontap.dart';
-import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_toggle.dart';
 import 'package:motogen/features/reminder_screen.dart/widgets/time_left_circle.dart';
+import 'package:motogen/widgets/loading_animation.dart';
 import 'package:motogen/widgets/my_app_bar.dart';
 
 class ReminderScreen extends ConsumerWidget {
@@ -24,10 +22,10 @@ class ReminderScreen extends ConsumerWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 39.w),
           child: asyncReminders.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
+            loading: () => const Center(child: LoadingAnimation()),
             error: (e, st) {
               debugPrint("error in remindersPage with $e , $st");
-              Center(child: Text("خطا در بارگذاری یادآورها"));
+              return Center(child: Text("خطا در بارگذاری یادآورها"));
             },
             data: (reminders) {
               debugPrint("debug ${reminders.toString()}");
@@ -57,17 +55,14 @@ class ReminderScreen extends ConsumerWidget {
                   children: [
                     MyAppBar(titleText: "یادآور"),
                     SizedBox(height: 13.h),
-
                     _buildSection(
                       title: "یادآوری بر حسب زمان",
                       reminders: daysList,
                     ),
-
                     _buildSection(
                       title: "یادآوری بر حسب کیلومتر",
                       reminders: kmList,
                     ),
-
                     _buildSection(title: "اعتبار", reminders: fixedDateList),
                   ],
                 ),
@@ -83,12 +78,9 @@ class ReminderScreen extends ConsumerWidget {
     required String title,
     required List<ReminderStateItem> reminders,
   }) {
-    if (reminders.isEmpty) return SizedBox.shrink();
+    if (reminders.isEmpty) return const SizedBox.shrink();
 
     final reminderIdByType = {for (final r in reminders) r.type: r.reminderId};
-    reminderIdByType.forEach((type, id) {
-      print('debug Type: $type, Reminder ID: $id');
-    });
 
     return Padding(
       padding: EdgeInsets.only(bottom: 16.h),
@@ -98,14 +90,35 @@ class ReminderScreen extends ConsumerWidget {
           Text(
             title,
             style: TextStyle(
-              color: Color(0xFF14213D),
+              color: const Color(0xFF14213D),
               fontSize: 14.sp,
               fontWeight: FontWeight.w700,
             ),
           ),
           SizedBox(height: 26.h),
 
-          Wrap(
+          // lazy build reminders
+          GridView.builder(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, // 2 columns
+              mainAxisSpacing: 7.h, // vertical spacing
+              crossAxisSpacing: 10.w, // horizontal spacing
+              childAspectRatio: 0.9,
+            ),
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: reminders.length,
+            itemBuilder: (context, index) {
+              final reminder = reminders[index];
+              return TimeLeftCircle(
+                isHomeScreen: false,
+                reminderItem: reminder,
+                reminderIdByType: reminderIdByType,
+              );
+            },
+          ),
+
+          /*  Wrap(
             spacing: 10.w,
             runSpacing: 10.h,
             children: reminders.map((reminder) {
@@ -115,7 +128,7 @@ class ReminderScreen extends ConsumerWidget {
                 reminderIdByType: reminderIdByType,
               );
             }).toList(),
-          ),
+          ), */
         ],
       ),
     );

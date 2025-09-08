@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lazy_load_indexed_stack/lazy_load_indexed_stack.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/features/chat_screen/views/chat_screen.dart';
 import 'package:motogen/features/home_screen/view/home_screen.dart';
@@ -18,9 +19,11 @@ class _MainScaffoldState extends State<MainScaffold>
   int selected = 0;
 
   Widget? chatScreen;
+  Widget? reminderScreen;
   List<Widget> get pages => [
     const HomeScreen(),
-    const ReminderScreen(),
+    //const ReminderScreen(),
+    reminderScreen ?? const SizedBox(),
     chatScreen ?? const SizedBox(), // placeholder
     const ProfileScreen(),
   ];
@@ -36,7 +39,7 @@ class _MainScaffoldState extends State<MainScaffold>
         child: Stack(
           children: [
             Positioned.fill(
-              child: IndexedStack(index: selected, children: pages),
+              child: LazyLoadIndexedStack(index: selected, children: pages),
             ),
           ],
         ),
@@ -46,8 +49,11 @@ class _MainScaffoldState extends State<MainScaffold>
         onTap: (i) {
           setState(() {
             selected = i;
+            if (i == 1 && reminderScreen == null) {
+              reminderScreen = const ReminderScreen();
+            }
             if (i == 2 && chatScreen == null) {
-              chatScreen = ChatScreen();
+              chatScreen = const ChatScreen();
             }
           });
         },

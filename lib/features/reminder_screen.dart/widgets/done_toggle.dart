@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/features/bottom_sheet/widgets/confirm_bottom_sheet.dart';
 import 'package:motogen/features/reminder_screen.dart/model/reminder_state_item.dart';
+import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_notifier.dart';
 
-class DoneToggle extends StatefulWidget {
-  final bool enabled;
+class DoneToggle extends ConsumerStatefulWidget {
+  final ReminderStateItem reminderItem;
   final bool isAdd;
-  final String intervalType;
-  final Future<void> Function() actionsForTap;
+  final Future<dynamic> Function() reminderAction;
 
   const DoneToggle({
     super.key,
-    required this.enabled,
-    required this.actionsForTap,
-    required this.intervalType,
+    required this.reminderItem,
+    required this.reminderAction,
     this.isAdd = false,
   });
 
   @override
-  State<DoneToggle> createState() => _DoneToggleState();
+  ConsumerState<DoneToggle> createState() => _DoneToggleState();
 }
 
-class _DoneToggleState extends State<DoneToggle> {
+class _DoneToggleState extends ConsumerState<DoneToggle> {
   bool _isLoading = false;
 
   Future<void> _done(BuildContext context) async {
@@ -33,40 +33,41 @@ class _DoneToggleState extends State<DoneToggle> {
           "در صورت تایید یادآور برای بازه یادآوری بعدی تنظیم می‌شه.",
       context: context,
       autoPop: false,
-      onConfirm: () async {
-        final confirmedSecond = await showConfirmBottomSheet(
-          titleText: widget.intervalType == IntervalType.KILOMETERS.name
-              ? "کیلومتر یادآور قبلی رو میخوای یا جدید تنظیم میکنی؟"
-              : "تاریخ یادآور قبلی رو میخوای یا جدید تنظیم میکنی؟",
-          intervalReminderText:
-              widget.intervalType == IntervalType.KILOMETERS.name
-              ? "در صورت تنظیم کیلومتر جدید، تاریخ قبلی حذف میشه."
-              : "در صورت تنظیم تاریخ جدید، تاریخ قبلی حذف میشه.",
-          context: context,
-          isConfirmDate: widget.intervalType != IntervalType.KILOMETERS.name,
-          isConfirmKilometer:
-              widget.intervalType == IntervalType.KILOMETERS.name,
-          onConfirm: () async {},
-        );
-
-        // Run `actionsForTap` only when conditions match your logic
-        if (confirmedSecond == true || confirmedSecond == false) {
-          setState(() => _isLoading = true);
-          try {
-            await widget.actionsForTap();
-            if (context.mounted) {
-              Navigator.of(context).pop(); // Closes the confirm bottomsheet
-            }
-          } finally {
-            if (mounted) {
-              setState(() => _isLoading = false);
-            }
-          }
-        }
-      },
     );
 
     if (confirmedFirst != true) return;
+
+    final picked = await widget.reminderAction();
+    if (picked == null) return;
+
+    final intervalUnit =
+        widget.reminderItem.intervalType.name.toLowerCase() ==
+            IntervalType.DAYS.name.toLowerCase()
+        ? "روز"
+        : "کیلومتر";
+    final confirmed = await showConfirmBottomSheet(
+      titleText: "از ثبت انجام یادآور اطمینان داری؟",
+      intervalReminderText:
+          "با مقدار جدید، یادآور برای بازه یادآوری بعدی تنظیم می‌شه.", // New text for the done concept
+      context: context,
+      autoPop: false,
+    );
+
+    if (confirmed != true) return;
+
+    setState(() => _isLoading = true);
+    try {
+      await ref
+          .read(reminderNotifierProvider.notifier)
+          .updateFromPicked(
+            widget.reminderItem.reminderId,
+            widget.reminderItem.type,
+            picked,
+            false,
+          );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -75,12 +76,14 @@ class _DoneToggleState extends State<DoneToggle> {
         ? AppIcons.addCircleReminder
         : AppIcons.tickCircleReminder;
 
-    final ColorFilter? colorFilter = !widget.enabled
+    final ColorFilter? colorFilter = !widget.reminderItem.enabled
         ? const ColorFilter.mode(AppColors.black100, BlendMode.srcIn)
         : null;
 
     return GestureDetector(
-      onTap: widget.enabled && !_isLoading ? () => _done(context) : null,
+      onTap: widget.reminderItem.enabled && !_isLoading
+          ? () => _done(context)
+          : null,
       child: _isLoading
           ? SizedBox(
               width: 24,

@@ -12,6 +12,7 @@ import 'package:motogen/features/onboarding/widgets/dot_indicator.dart';
 import 'package:motogen/features/user_info/viewmodels/user_use_case_api.dart';
 import 'package:motogen/widgets/field_text.dart';
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
+import 'package:motogen/widgets/loading_animation.dart';
 import 'package:motogen/widgets/my_app_bar.dart';
 
 class PersonalInfoScreen extends ConsumerStatefulWidget {
@@ -157,6 +158,9 @@ class _PersonalInfoScreenState extends ConsumerState<PersonalInfoScreen> {
                   if (!widget.isEdit)
                     Column(
                       children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.43,
+                        ),
                         DotIndicator(
                           currentPage: widget.currentPage!,
                           count: widget.count!,
@@ -184,7 +188,7 @@ class _PersonalInfoScreenState extends ConsumerState<PersonalInfoScreen> {
               filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
               child: Container(
                 color: Colors.black.withAlpha(51), // semi-transparent tint
-                child: const Center(child: CircularProgressIndicator()),
+                child: const Center(child: LoadingAnimation()),
               ),
             ),
           ),

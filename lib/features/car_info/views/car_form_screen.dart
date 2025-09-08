@@ -11,6 +11,7 @@ import 'package:motogen/features/bottom_sheet/widgets/build_form_fields.dart';
 import 'package:motogen/features/car_info/viewmodels/car_use_case_api.dart';
 import 'package:motogen/features/onboarding/widgets/dot_indicator.dart';
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
+import 'package:motogen/widgets/loading_animation.dart';
 import 'package:motogen/widgets/my_app_bar.dart';
 
 enum CarInfoFormMode { addEdit, completeProfile }
@@ -96,7 +97,7 @@ class _CarFormScreenState extends ConsumerState<CarFormScreen> {
     final carNotifier = ref.read(carStateNotifierProvider.notifier);
 
     if (isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: Center(child:LoadingAnimation()));
     }
     debugPrint(
       'debug car DRAFT: id=${draft.carId}, '

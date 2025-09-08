@@ -9,170 +9,79 @@ import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
 import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_notifier.dart';
 import 'package:motogen/features/reminder_screen.dart/widgets/date_picker.dart';
 import 'package:motogen/features/reminder_screen.dart/widgets/kilometer_bottomsheet.dart';
-// Import your PagesTitleEnum here (e.g., from onboarding)
 
-extension ReminderOntap on ReminderNotifier {
-  Map<String, Future<void> Function()> buildReminderActionsForTap(
+extension ReminderToggle on ReminderNotifier {
+  Map<String, Future<dynamic> Function()> buildReminderAction(
     BuildContext context,
     WidgetRef ref,
     Map<String, String> reminderIdByType,
   ) {
     return {
       "ENGINE_OIL_CHECK": () async {
-        final date = await handleReminderTap(context, "ENGINE_OIL_CHECK");
-        if (date != null) {
-          await ref
-              .read(reminderNotifierProvider.notifier)
-              .updateReminder(
-                reminderIdByType["ENGINE_OIL_CHECK"]!,
-                lastDate: date,
-              );
-        }
+        final date = await handleReminderToggle(context, "ENGINE_OIL_CHECK");
+        return date;
       },
       "RADIATOR_WATER_CHECK": () async {
-        final date = await handleReminderTap(context, "RADIATOR_WATER_CHECK");
-        if (date != null) {
-          await ref
-              .read(reminderNotifierProvider.notifier)
-              .updateReminder(
-                reminderIdByType["RADIATOR_WATER_CHECK"]!,
-                lastDate: date,
-              );
-        }
+        final date = await handleReminderToggle(
+          context,
+          "RADIATOR_WATER_CHECK",
+        );
+        return date;
       },
-
       "TIRE_PRESSURE_ADJUSTMENT": () async {
-        final date = await handleReminderTap(
+        final date = await handleReminderToggle(
           context,
           "TIRE_PRESSURE_ADJUSTMENT",
         );
-        if (date != null) {
-          await ref
-              .read(reminderNotifierProvider.notifier)
-              .updateReminder(
-                reminderIdByType["TIRE_PRESSURE_ADJUSTMENT"]!,
-                lastDate: date,
-              );
-        }
+        return date;
       },
       "SPARE_TIRE_PRESSURE_ADJUSTMENT": () async {
-        final date = await handleReminderTap(
+        final date = await handleReminderToggle(
           context,
           "SPARE_TIRE_PRESSURE_ADJUSTMENT",
         );
-        if (date != null) {
-          await ref
-              .read(reminderNotifierProvider.notifier)
-              .updateReminder(
-                reminderIdByType["SPARE_TIRE_PRESSURE_ADJUSTMENT"]!,
-                lastDate: date,
-              );
-        }
+        return date;
       },
       "TURN_ON_AC": () async {
-        final date = await handleReminderTap(context, "TURN_ON_AC");
-        if (date != null) {
-          await ref
-              .read(reminderNotifierProvider.notifier)
-              .updateReminder(reminderIdByType["TURN_ON_AC"]!, lastDate: date);
-        }
+        final date = await handleReminderToggle(context, "TURN_ON_AC");
+        return date;
       },
-
       "BODY_INSURANCE_VALIDITY": () async {
-        final date = await handleReminderTap(
+        final date = await handleReminderToggle(
           context,
           "BODY_INSURANCE_VALIDITY",
         );
-        if (date != null) {
-          await ref
-              .read(reminderNotifierProvider.notifier)
-              .updateReminder(
-                reminderIdByType["BODY_INSURANCE_VALIDITY"]!,
-                lastDate: date,
-              );
-        }
+        return date;
       },
       "THIRD_PARTY_INSURANCE_VALIDITY": () async {
-        final date = await handleReminderTap(
+        final date = await handleReminderToggle(
           context,
           "THIRD_PARTY_INSURANCE_VALIDITY",
         );
-        if (date != null) {
-          await ref
-              .read(reminderNotifierProvider.notifier)
-              .updateReminder(
-                reminderIdByType["THIRD_PARTY_INSURANCE_VALIDITY"]!,
-                lastDate: date,
-              );
-        }
+        return date;
       },
       "VEHICLE_INSPECTION_VALIDITY": () async {
-        final date = await handleReminderTap(
+        final date = await handleReminderToggle(
           context,
           "VEHICLE_INSPECTION_VALIDITY",
         );
-        if (date != null) {
-          await ref
-              .read(reminderNotifierProvider.notifier)
-              .updateReminder(
-                reminderIdByType["VEHICLE_INSPECTION_VALIDITY"]!,
-                lastDate: date,
-              );
-        }
+        return date;
       },
-
-      // Navigate to another screen (unchanged)
       "BRAKE_OIL_CHANGE": () async {
         ref.read(oilTypeTabProvider.notifier).state = OilTypeTab.brake;
         final result = await Navigator.push(
           context,
           FadeRoute(page: OilFormScreen(fromReminderToggle: true)),
         );
-        debugPrint("debug see this ${result.toString()}");
-        if (result is Map &&
-            result["created"] == true &&
-            result["oilType"] == "BRAKE") {
-          await ref
-              .read(reminderNotifierProvider.notifier)
-              .toggleReminder(reminderIdByType["BRAKE_OIL_CHANGE"]!, true);
-
-          final date = result["date"] as DateTime?;
-          if (date != null) {
-            await ref
-                .read(reminderNotifierProvider.notifier)
-                .updateReminder(
-                  reminderIdByType["BRAKE_OIL_CHANGE"]!,
-                  lastDate: date,
-                );
-          }
-        }
+        return result;
       },
       "ENGINE_OIL_CHANGE": () async {
         ref.read(oilTypeTabProvider.notifier).state = OilTypeTab.engine;
-
         final result = await Navigator.push(
           context,
           FadeRoute(page: OilFormScreen(fromReminderToggle: true)),
         );
-        debugPrint("debug see this ${result.toString()}");
-        if (result is Map &&
-            result["created"] == true &&
-            result["oilType"] == "ENGINE") {
-          debugPrint("debug see this ${result.toString()}");
-          await ref
-              .read(reminderNotifierProvider.notifier)
-              .toggleReminder(reminderIdByType["ENGINE_OIL_CHANGE"]!, true);
-
-          final km = result["km"] as int?;
-          if (km != null) {
-            await ref
-                .read(reminderNotifierProvider.notifier)
-                .updateReminder(
-                  reminderIdByType["ENGINE_OIL_CHANGE"]!,
-                  lastKilometer: km,
-                );
-          }
-        }
+        return result;
       },
       "STEERING_OIL_CHANGE": () async {
         ref.read(oilTypeTabProvider.notifier).state = OilTypeTab.steering;
@@ -180,67 +89,27 @@ extension ReminderOntap on ReminderNotifier {
           context,
           FadeRoute(page: OilFormScreen(fromReminderToggle: true)),
         );
-        debugPrint("debug see this ${result.toString()}");
-        if (result is Map &&
-            result["created"] == true &&
-            result["oilType"] == "STEERING") {
-          await ref
-              .read(reminderNotifierProvider.notifier)
-              .toggleReminder(reminderIdByType["STEERING_OIL_CHANGE"]!, true);
-
-          final km = result["km"] as int?;
-          if (km != null) {
-            await ref
-                .read(reminderNotifierProvider.notifier)
-                .updateReminder(
-                  reminderIdByType["STEERING_OIL_CHANGE"]!,
-                  lastKilometer: km,
-                );
-          }
-        }
+        return result;
       },
       "GEARBOX_OIL_CHANGE": () async {
         ref.read(oilTypeTabProvider.notifier).state = OilTypeTab.gearbox;
-
         final result = await Navigator.push(
           context,
           FadeRoute(page: OilFormScreen(fromReminderToggle: true)),
         );
-        debugPrint("debug see this ${result.toString()}");
-        if (result is Map &&
-            result["created"] == true &&
-            result["oilType"] == "GEARBOX") {
-          await ref
-              .read(reminderNotifierProvider.notifier)
-              .toggleReminder(reminderIdByType["GEARBOX_OIL_CHANGE"]!, true);
-
-          final km = result["km"] as int?;
-          if (km != null) {
-            await ref
-                .read(reminderNotifierProvider.notifier)
-                .updateReminder(
-                  reminderIdByType["GEARBOX_OIL_CHANGE"]!,
-                  lastKilometer: km,
-                );
-          }
-        }
+        return result;
       },
-
       "TIMING_BELT_CHANGE": () async {
         final kilometer = await _openTimingBeltKM(context);
-        if (kilometer != null) {
-          await ref
-              .read(reminderNotifierProvider.notifier)
-              .updateReminder(
-                reminderIdByType["TIMING_BELT_CHANGE"]!,
-                lastKilometer: kilometer,
-              );
-        }
+        return kilometer;
       },
     };
   }
 
-  Future<DateTime?> handleReminderTap(BuildContext context, String type) async {
+  Future<DateTime?> handleReminderToggle(
+    BuildContext context,
+    String type,
+  ) async {
     String labelText;
     DateUsageType usageType;
     PagesTitleEnum pagesTitleEnum;
@@ -249,7 +118,7 @@ extension ReminderOntap on ReminderNotifier {
       case "ENGINE_OIL_CHECK":
         labelText = "یادآور بررسی روغن موتور";
         usageType = DateUsageType.services;
-        pagesTitleEnum = PagesTitleEnum.dateBottomSheetServices;
+        pagesTitleEnum = PagesTitleEnum.firstTimeEnablingReminder;
         return await _openDatePicker(
           context,
           labelText: labelText,
@@ -259,7 +128,7 @@ extension ReminderOntap on ReminderNotifier {
       case "RADIATOR_WATER_CHECK":
         labelText = "یادآور بررسی آب رادیاتور";
         usageType = DateUsageType.services;
-        pagesTitleEnum = PagesTitleEnum.dateBottomSheetServices;
+        pagesTitleEnum = PagesTitleEnum.firstTimeEnablingReminder;
         return await _openDatePicker(
           context,
           labelText: labelText,
@@ -269,7 +138,7 @@ extension ReminderOntap on ReminderNotifier {
       case "TIRE_PRESSURE_ADJUSTMENT":
         labelText = "یادآور تنظیم باد لاستیک";
         usageType = DateUsageType.services;
-        pagesTitleEnum = PagesTitleEnum.dateBottomSheetServices;
+        pagesTitleEnum = PagesTitleEnum.firstTimeEnablingReminder;
         return await _openDatePicker(
           context,
           labelText: labelText,
@@ -279,7 +148,7 @@ extension ReminderOntap on ReminderNotifier {
       case "SPARE_TIRE_PRESSURE_ADJUSTMENT":
         labelText = "یادآور تنظیم باد لاستیک زاپاس";
         usageType = DateUsageType.services;
-        pagesTitleEnum = PagesTitleEnum.dateBottomSheetServices;
+        pagesTitleEnum = PagesTitleEnum.firstTimeEnablingReminder;
         return await _openDatePicker(
           context,
           labelText: labelText,
@@ -289,7 +158,7 @@ extension ReminderOntap on ReminderNotifier {
       case "TURN_ON_AC":
         labelText = "یادآور روشن کردن کولر (فقط زمستان)";
         usageType = DateUsageType.services;
-        pagesTitleEnum = PagesTitleEnum.dateBottomSheetServices;
+        pagesTitleEnum = PagesTitleEnum.firstTimeEnablingReminder;
         return await _openDatePicker(
           context,
           labelText: labelText,
@@ -300,7 +169,6 @@ extension ReminderOntap on ReminderNotifier {
         labelText = "تاریخ انقضای بیمه بدنه";
         usageType = DateUsageType.insurance;
         pagesTitleEnum = PagesTitleEnum.dateBottomSheetInsurance;
-
         return await _openDatePicker(
           context,
           labelText: labelText,

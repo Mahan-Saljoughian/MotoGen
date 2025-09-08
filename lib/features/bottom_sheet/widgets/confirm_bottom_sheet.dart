@@ -6,7 +6,7 @@ import 'package:motogen/core/constants/app_colors.dart';
 /// Helper to open the ConfirmBottomSheet
 Future<bool?> showConfirmBottomSheet({
   required BuildContext context,
-  required Future<void> Function() onConfirm,
+  Future<void> Function()? onConfirm,
   bool isPopOnce = false,
   bool isDelete = false,
   bool isConfirmDate = false,
@@ -35,7 +35,7 @@ Future<bool?> showConfirmBottomSheet({
 }
 
 class ConfirmBottomSheet extends ConsumerWidget {
-  final Future<void> Function() onConfirm;
+  final Future<void> Function()? onConfirm;
   final bool isPopOnce;
   final bool isDelete;
   final bool isConfirmDate;
@@ -44,12 +44,12 @@ class ConfirmBottomSheet extends ConsumerWidget {
   final String titleText;
 
   final String? intervalReminderText;
+
   const ConfirmBottomSheet({
     super.key,
-    required this.onConfirm,
+    this.onConfirm,
     required this.isPopOnce,
     required this.isDelete,
-
     required this.isConfirmDate,
     required this.isConfirmKilometer,
     required this.autoPop,
@@ -111,8 +111,11 @@ class ConfirmBottomSheet extends ConsumerWidget {
               children: [
                 GestureDetector(
                   onTap: () async {
-                    await onConfirm();
-
+                    if (onConfirm != null) {
+                      await onConfirm?.call();
+                    } else {
+                      Navigator.of(context).pop(true);
+                    }
                     if (autoPop && context.mounted) {
                       if (isPopOnce) {
                         Navigator.of(context).pop(true);

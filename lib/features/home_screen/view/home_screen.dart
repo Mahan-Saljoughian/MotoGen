@@ -12,6 +12,7 @@ import 'package:motogen/features/profile_screen/widget/car_item.dart';
 import 'package:motogen/features/user_info/viewmodels/personal_info_controller_view_model.dart';
 import 'package:motogen/features/user_info/viewmodels/phone_number_controller_view_model.dart';
 import 'package:motogen/widgets/add_car_card.dart';
+import 'package:motogen/widgets/loading_animation.dart';
 import 'package:motogen/widgets/my_app_bar.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -123,84 +124,69 @@ class HomeScreen extends ConsumerWidget {
                                 return isService && isAlert;
                               }).toList();
 
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              return ListView(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
                                 children: [
                                   if (fixedDateFiltered.isNotEmpty) ...[
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "چیزی تا اتمام اعتبارشون باقی نمونده...",
-                                          style: TextStyle(
-                                            color: AppColors.blue900,
-                                            height: 0,
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                        SizedBox(height: 23.h),
-                                        SizedBox(
-                                          height: 140.h,
-                                          child: ListView.separated(
-                                            scrollDirection: Axis.horizontal,
-                                            itemCount: fixedDateFiltered.length,
-                                            separatorBuilder: (_, __) =>
-                                                SizedBox(width: 12.w),
-                                            itemBuilder: (context, index) {
-                                              return TimeLeftCircle(
-                                                reminderItem:
-                                                    fixedDateFiltered[index],
-                                                isHomeScreen: true,
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ],
+                                    Text(
+                                      "چیزی تا اتمام اعتبارشون باقی نمونده...",
+                                      style: TextStyle(
+                                        color: AppColors.blue900,
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    SizedBox(height: 23.h),
+                                    SizedBox(
+                                      height: 140.h,
+                                      child: ListView.separated(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: fixedDateFiltered.length,
+                                        separatorBuilder: (_, __) =>
+                                            SizedBox(width: 12.w),
+                                        itemBuilder: (context, index) {
+                                          return TimeLeftCircle(
+                                            reminderItem:
+                                                fixedDateFiltered[index],
+                                            isHomeScreen: true,
+                                          );
+                                        },
+                                      ),
                                     ),
                                   ],
-
                                   if (serviceFiltered.isNotEmpty) ...[
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "یادت نره سرویس و بررسی کنی!",
-                                          style: TextStyle(
-                                            color: AppColors.blue900,
-                                            height: 0,
-                                            fontSize: 14.sp,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                        SizedBox(height: 23.h),
-                                        SizedBox(
-                                          height: 140.h,
-                                          child: ListView.separated(
-                                            scrollDirection: Axis.horizontal,
-                                            itemCount: serviceFiltered.length,
-                                            separatorBuilder: (_, __) =>
-                                                SizedBox(width: 12.w),
-                                            itemBuilder: (context, index) {
-                                              return TimeLeftCircle(
-                                                reminderItem:
-                                                    serviceFiltered[index],
-                                                isHomeScreen: true,
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                      ],
+                                    Text(
+                                      "یادت نره سرویس و بررسی کنی!",
+                                      style: TextStyle(
+                                        color: AppColors.blue900,
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    SizedBox(height: 23.h),
+                                    SizedBox(
+                                      height: 140.h,
+                                      child: ListView.separated(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: serviceFiltered.length,
+                                        separatorBuilder: (_, __) =>
+                                            SizedBox(width: 12.w),
+                                        itemBuilder: (context, index) {
+                                          return TimeLeftCircle(
+                                            reminderItem:
+                                                serviceFiltered[index],
+                                            isHomeScreen: true,
+                                          );
+                                        },
+                                      ),
                                     ),
                                   ],
                                 ],
                               );
                             },
-                            loading: () => const Center(
-                              child: CircularProgressIndicator(),
-                            ),
+                            loading: () =>
+                                const Center(child: LoadingAnimation(size: 50)),
                             error: (err, stack) =>
                                 Text("خطا در بارگیری یادآورها"),
                           ),

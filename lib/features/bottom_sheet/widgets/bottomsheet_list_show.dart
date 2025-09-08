@@ -10,6 +10,7 @@ import 'package:motogen/features/bottom_sheet/config/picker_item.dart';
 import 'package:motogen/features/bottom_sheet/viewmodels/bottomsheet_multi_selection_viewmodel.dart';
 import 'package:motogen/features/bottom_sheet/viewmodels/bottomsheet_search_viewmodel.dart';
 import 'package:motogen/features/bottom_sheet/viewmodels/bottomsheet_selection_viewmodel.dart';
+import 'package:motogen/widgets/loading_animation.dart';
 
 class BottomsheetListShow {
   static Future<void> showSelectionBottomSheet<T>({
@@ -212,7 +213,7 @@ class _BottomSheetContent extends ConsumerWidget {
       ),
       loading: () => SizedBox(
         height: 250,
-        child: Center(child: CircularProgressIndicator()),
+        child: Center(child: LoadingAnimation()),
       ),
       error: (err, stack) {
         Logger().i('provider error: $err');
@@ -378,7 +379,7 @@ class _BottomSheetMultiContent extends ConsumerWidget {
       ),
       loading: () => SizedBox(
         height: 250,
-        child: Center(child: CircularProgressIndicator()),
+        child: Center(child: LoadingAnimation()),
       ),
       error: (err, stack) => SizedBox(
         height: 250,

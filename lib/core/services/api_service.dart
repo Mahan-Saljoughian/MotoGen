@@ -11,7 +11,7 @@ class ApiService {
   //'http://10.0.2.2:3000'; // Use 10.0.2.2 for Android emulator
   //'http://192.168.219.6:3000';
 
-  bool isDebugMode = true;
+  bool isDebugMode = false;
 
   Future<String> _getAccessToken() async {
     final token = await _secureStorage.read(key: 'accessToken');

@@ -27,7 +27,7 @@ class ReminderNotifier extends AsyncNotifier<List<ReminderStateItem>> {
   }
 
   // Toggle enable/disable
-  Future<void> toggleReminder(String reminderId, bool enabled) async {
+  Future<void> toggleReminder(String reminderId, bool isEnable) async {
     final currentState = state.value;
     if (currentState == null) return;
     try {
@@ -36,17 +36,58 @@ class ReminderNotifier extends AsyncNotifier<List<ReminderStateItem>> {
           .getCurrentCarId();
 
       await reminderRepository.patchReminderById(
-        {'enabled': enabled},
+        {'enabled': isEnable},
         currentCarId!,
         reminderId,
       );
 
       state = AsyncData([
         for (final r in currentState)
-          if (r.reminderId == reminderId) r.copyWith(enabled: enabled) else r,
+          if (r.reminderId == reminderId) r.copyWith(enabled: isEnable) else r,
       ]);
     } catch (e, st) {
-      logger.e("toggleReminder failed for reminderId $reminderId,$e,$st");
+      logger.e(
+        "toggleReminderForDisable failed for reminderId $reminderId,$e,$st",
+      );
+    }
+  }
+
+  Future<void> updateFromPicked(
+    String reminderId,
+    String type,
+    dynamic picked,
+    bool? isEnable,
+  ) async {
+    if (picked == null) return;
+
+    if (picked is DateTime) {
+      await updateReminder(reminderId, lastDate: picked, isEnable: isEnable);
+    } else if (picked is int) {
+      await updateReminder(
+        reminderId,
+        lastKilometer: picked,
+        isEnable: isEnable,
+      );
+    } else if (picked is Map) {
+      if (picked["created"] != true) return;
+      final oilType = picked["oilType"] as String?;
+      if (oilType == "BRAKE") {
+        final date = picked["date"] as DateTime?;
+        if (date != null) {
+          await updateReminder(reminderId, lastDate: date, isEnable: isEnable);
+        }
+      } else if (oilType == "ENGINE" ||
+          oilType == "STEERING" ||
+          oilType == "GEARBOX") {
+        final km = picked["km"] as int?;
+        if (km != null) {
+          await updateReminder(
+            reminderId,
+            lastKilometer: km,
+            isEnable: isEnable,
+          );
+        }
+      }
     }
   }
 
@@ -54,6 +95,7 @@ class ReminderNotifier extends AsyncNotifier<List<ReminderStateItem>> {
     String reminderId, {
     int? lastKilometer,
     DateTime? lastDate,
+    bool? isEnable,
   }) async {
     final currentState = state.value;
     if (currentState == null) return;
@@ -65,6 +107,7 @@ class ReminderNotifier extends AsyncNotifier<List<ReminderStateItem>> {
         {
           if (lastKilometer != null) 'lastKilometer': lastKilometer,
           if (lastDate != null) 'lastDate': lastDate.toIso8601String(),
+          if (isEnable == true) 'enabled': true,
         },
         currentCarId!,
         reminderId,
@@ -75,6 +118,7 @@ class ReminderNotifier extends AsyncNotifier<List<ReminderStateItem>> {
             r.copyWith(
               lastKilometer: lastKilometer ?? r.lastKilometer,
               lastDate: lastDate ?? r.lastDate,
+              enabled: isEnable! ? isEnable : r.enabled,
             )
           else
             r,
