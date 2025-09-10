@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,6 +10,7 @@ import 'package:motogen/features/car_info/viewmodels/car_validation.dart';
 import 'package:motogen/features/user_info/viewmodels/code_controller_view_model.dart';
 import 'package:motogen/features/user_info/viewmodels/personal_info_controller_view_model.dart';
 import 'package:motogen/features/user_info/viewmodels/phone_number_controller_view_model.dart';
+import 'package:motogen/widgets/my_circular_progress_indicator.dart';
 
 enum PagesTitleEnum {
   repairInfo,
@@ -24,17 +26,19 @@ enum PagesTitleEnum {
 
 class OnboardingButton extends ConsumerWidget {
   final int? currentPage;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final bool? enabled;
   final String? text;
   final PagesTitleEnum? pagesTitleEnum;
+  final bool loading;
   const OnboardingButton({
     super.key,
-    required this.onPressed,
+    this.onPressed,
     this.currentPage,
     this.enabled,
     this.pagesTitleEnum,
     this.text,
+    this.loading = false,
   });
 
   @override
@@ -67,25 +71,27 @@ class OnboardingButton extends ConsumerWidget {
         : Colors.transparent;
 
     return GestureDetector(
-      onTap: buttonEnabled ? onPressed : null,
+      onTap: (buttonEnabled && !loading) ? onPressed : null,
       child: Container(
         width: 330.w,
         height: 48.w,
-        padding: EdgeInsets.symmetric(vertical: 12.h),
+        padding: EdgeInsets.symmetric(vertical: loading ? 0 : 12.h),
         decoration: BoxDecoration(
           color: buttonEnabled ? buttonBackgroundColor : AppColors.white700,
           borderRadius: BorderRadius.circular(50.r),
           border: Border.all(color: borderColor),
         ),
-        child: Text(
-          buttonText,
-          style: TextStyle(
-            color: textColor,
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w700,
-          ),
-          textAlign: TextAlign.center,
-        ),
+        child: loading
+            ? MyCircularProgressIndicator()
+            : Text(
+                buttonText,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w700,
+                ),
+                textAlign: TextAlign.center,
+              ),
       ),
     );
   }

@@ -30,6 +30,8 @@ class _RepairFormScreenState extends ConsumerState<RepairFromScreen> {
   final costController = TextEditingController();
   final notesController = TextEditingController();
 
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -55,6 +57,59 @@ class _RepairFormScreenState extends ConsumerState<RepairFromScreen> {
         ref.setRawNotes(notesController.text);
       });
     }
+  }
+
+  Future<void> _handleSaveOrUpdate({
+    required BuildContext context,
+    required WidgetRef ref,
+    required bool isEdit,
+    required RepairStateItem draft,
+    required String carId,
+  }) async {
+    if (isEdit) {
+      await showConfirmBottomSheet(
+        context: context,
+        titleText: "از ویرایش جدیدت مطمئنی؟",
+
+        onConfirm: () async {
+          await ref
+              .read(repairListProvider(carId).notifier)
+              .updateRepairFromDraft(draft, widget.initialItem!, carId);
+          ref.invalidate(repairListProvider(carId));
+          ref.invalidate(repairDraftProvider);
+        },
+      );
+    } else {
+      await ref
+          .read(repairListProvider(carId).notifier)
+          .addRepairFromDraft(draft, carId);
+      ref.invalidate(repairListProvider(carId));
+      ref.invalidate(repairDraftProvider);
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+    }
+  }
+
+  Future<void> _handleDelete({
+    required BuildContext context,
+    required WidgetRef ref,
+    required String carId,
+    required String repairId,
+  }) async {
+    await showConfirmBottomSheet(
+      context: context,
+      titleText: "برای حذف کردنش مطمئنی؟",
+      isDelete: true,
+      onConfirm: () async {
+        await ref
+            .read(repairListProvider(carId).notifier)
+            .deleteSelectedRepairItemById(carId, repairId);
+
+        ref.invalidate(repairListProvider(carId));
+        ref.invalidate(repairDraftProvider);
+      },
+    );
   }
 
   @override
@@ -114,29 +169,12 @@ class _RepairFormScreenState extends ConsumerState<RepairFromScreen> {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: GestureDetector(
-                              onTap: () async {
-                                await showConfirmBottomSheet(
-                                  titleText: "برای حذف کردنش مطمئنی؟",
-                                  context: context,
-                                  isDelete: true,
-                                  onConfirm: () async {
-                                    await ref
-                                        .read(
-                                          repairListProvider(carId!).notifier,
-                                        )
-                                        .deleteSelectedRepairItemById(
-                                          carId,
-                                          draft.repairId!,
-                                        );
-
-                                    ref
-                                        .read(repairDraftProvider.notifier)
-                                        .state = RepairStateItem(
-                                      repairId: "repair_temp_id",
-                                    );
-                                  },
-                                );
-                              },
+                              onTap: () => _handleDelete(
+                                context: context,
+                                ref: ref,
+                                carId: carId!,
+                                repairId: draft.repairId!,
+                              ),
                               child: SvgPicture.asset(
                                 AppIcons.trash,
                                 width: 24.w,
@@ -173,53 +211,42 @@ class _RepairFormScreenState extends ConsumerState<RepairFromScreen> {
             child: OnboardingButton(
               enabled: ref.watch(isRepairInfoButtonEnabled),
               text: "ثبت",
+              loading: isLoading,
               onPressed: () async {
-                try {
-                  if (isEdit) {
-                    await showConfirmBottomSheet(
-                      titleText: "از ویرایش جدیدت مطمئنی؟",
+                if (isEdit) {
+                  try {
+                    await _handleSaveOrUpdate(
                       context: context,
-                      onConfirm: () async {
-                        await ref
-                            .read(repairListProvider(carId!).notifier)
-                            .updateRepairFromDraft(
-                              draft,
-                              widget.initialItem!,
-                              carId,
-                            );
-                        // refreshes the repair list
-                        ref.invalidate(repairListProvider(carId));
-                        // Reset draft
-                        ref.read(repairDraftProvider.notifier).state =
-                            RepairStateItem(repairId: "repair_temp_id");
-                      },
+                      ref: ref,
+                      isEdit: true,
+                      draft: draft,
+                      carId: carId!,
                     );
-                  } else {
-                    await ref
-                        .read(repairListProvider(carId!).notifier)
-                        .addRepairFromDraft(draft, carId);
-                    // refreshes the repair list
-                    ref.invalidate(repairListProvider(carId));
-                    // Reset draft
-                    ref.read(repairDraftProvider.notifier).state =
-                        RepairStateItem(repairId: "repair_temp_id");
-                  }
-
-                  if (!isEdit) {
+                  } catch (e) {
                     if (context.mounted) {
-                      Navigator.of(context).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('خطا در تعمیرات خرید')),
+                      );
                     }
                   }
-                } catch (e) {
-                  // handle error (snackbar, dialog, etc.)
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: isEdit
-                            ? Text('خطا در ویرایش تعمیرات ')
-                            : Text('خطا در ثبت تعمیرات جدید'),
-                      ),
+                } else {
+                  setState(() => isLoading = true);
+                  try {
+                    await _handleSaveOrUpdate(
+                      context: context,
+                      ref: ref,
+                      isEdit: false,
+                      draft: draft,
+                      carId: carId!,
                     );
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('خطا در ثبت تعمیرات جدید')),
+                      );
+                    }
+                  } finally {
+                    if (mounted) setState(() => isLoading = false);
                   }
                 }
               },

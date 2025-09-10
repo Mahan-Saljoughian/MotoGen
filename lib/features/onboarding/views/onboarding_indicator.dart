@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:motogen/features/car_info/views/car_form_screen.dart';
-import 'package:motogen/features/car_info/views/car_nickname_screen.dart';
+import 'package:motogen/features/onboarding/views/car_nickname_screen.dart';
 import 'package:motogen/features/user_info/views/personal_info_screen.dart';
 import 'package:motogen/features/user_info/views/enter_phone_number_screen.dart';
 import 'package:motogen/features/user_info/views/code_confirm_screen.dart';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
+import 'package:motogen/widgets/my_circular_progress_indicator.dart';
 
 /// Helper to open the ConfirmBottomSheet
 Future<bool?> showConfirmBottomSheet({
@@ -34,7 +35,7 @@ Future<bool?> showConfirmBottomSheet({
   );
 }
 
-class ConfirmBottomSheet extends ConsumerWidget {
+class ConfirmBottomSheet extends ConsumerStatefulWidget {
   final Future<void> Function()? onConfirm;
   final bool isPopOnce;
   final bool isDelete;
@@ -58,16 +59,52 @@ class ConfirmBottomSheet extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final confirmColor = isDelete ? Color(0xFFC60B0B) : Color(0xFF3C9452);
-    final yesConfirmText = isConfirmDate
+  ConsumerState<ConfirmBottomSheet> createState() => _ConfirmBottomSheetState();
+}
+
+class _ConfirmBottomSheetState extends ConsumerState<ConfirmBottomSheet> {
+  bool isLoading = false;
+  Future<void> _handleConfirmTap(BuildContext context) async {
+    if (isLoading) return;
+
+    setState(() => isLoading = true);
+
+    try {
+      if (widget.onConfirm != null) {
+        await widget.onConfirm!.call();
+      } else {
+        Navigator.of(context).pop(true);
+      }
+
+      if (widget.autoPop && context.mounted) {
+        if (widget.isPopOnce) {
+          Navigator.of(context).pop(true);
+        } else {
+          Navigator.of(context)
+            ..pop()
+            ..pop(true);
+        }
+      }
+    } finally {
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final confirmColor = widget.isDelete
+        ? Color(0xFFC60B0B)
+        : Color(0xFF3C9452);
+    final yesConfirmText = widget.isConfirmDate
         ? "تاریخ قبلی"
-        : isConfirmKilometer
+        : widget.isConfirmKilometer
         ? "کیلومتر قبلی"
         : "بله";
-    final noConfirmText = isConfirmDate
+    final noConfirmText = widget.isConfirmDate
         ? "تاریخ جدید"
-        : isConfirmKilometer
+        : widget.isConfirmKilometer
         ? "کیلومتر جدید"
         : "خیر";
 
@@ -84,7 +121,7 @@ class ConfirmBottomSheet extends ConsumerWidget {
 
           children: [
             Text(
-              titleText,
+              widget.titleText,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: AppColors.blue600,
@@ -93,11 +130,11 @@ class ConfirmBottomSheet extends ConsumerWidget {
               ),
             ),
 
-            if (intervalReminderText != null)
+            if (widget.intervalReminderText != null)
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 21.h),
                 child: Text(
-                  intervalReminderText ?? "",
+                  widget.intervalReminderText ?? "",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: AppColors.blue300,
@@ -110,22 +147,7 @@ class ConfirmBottomSheet extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 GestureDetector(
-                  onTap: () async {
-                    if (onConfirm != null) {
-                      await onConfirm?.call();
-                    } else {
-                      Navigator.of(context).pop(true);
-                    }
-                    if (autoPop && context.mounted) {
-                      if (isPopOnce) {
-                        Navigator.of(context).pop(true);
-                      } else {
-                        Navigator.of(context)
-                          ..pop()
-                          ..pop(true);
-                      }
-                    }
-                  },
+                  onTap: isLoading ? null : () => _handleConfirmTap(context),
                   child: Container(
                     height: 48.h,
                     width: 144.w,
@@ -134,14 +156,16 @@ class ConfirmBottomSheet extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(50.r),
                     ),
                     child: Center(
-                      child: Text(
-                        yesConfirmText,
-                        style: TextStyle(
-                          color: AppColors.black50,
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                      child: isLoading
+                          ? const MyCircularProgressIndicator()
+                          : Text(
+                              yesConfirmText,
+                              style: TextStyle(
+                                color: AppColors.black50,
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
                     ),
                   ),
                 ),

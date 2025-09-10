@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -40,16 +41,16 @@ class _DoneToggleState extends ConsumerState<DoneToggle> {
     final picked = await widget.reminderAction();
     if (picked == null) return;
 
-    final intervalUnit =
+    /*    final intervalUnit =
         widget.reminderItem.intervalType.name.toLowerCase() ==
             IntervalType.DAYS.name.toLowerCase()
         ? "روز"
-        : "کیلومتر";
+        : "کیلومتر"; */
     final confirmed = await showConfirmBottomSheet(
       titleText: "از ثبت انجام یادآور اطمینان داری؟",
       intervalReminderText:
           "با مقدار جدید، یادآور برای بازه یادآوری بعدی تنظیم می‌شه.", // New text for the done concept
-      context: context,
+      context: context.mounted ? context : context,
       autoPop: false,
     );
 
@@ -88,7 +89,10 @@ class _DoneToggleState extends ConsumerState<DoneToggle> {
           ? SizedBox(
               width: 24,
               height: 24,
-              child: const CircularProgressIndicator(strokeWidth: 2),
+              child: const CupertinoActivityIndicator(
+                radius: 10, // small size for icon areas
+                color: AppColors.blue500,
+              ),
             )
           : SvgPicture.asset(iconPath, colorFilter: colorFilter),
     );

@@ -36,13 +36,15 @@ class _OilFormScreenState extends ConsumerState<OilFormScreen> {
   final costController = TextEditingController();
   final notesController = TextEditingController();
 
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
 
     if (widget.initialItem != null) {
       Future.microtask(() {
-        ref.read(oillDraftProvider.notifier).state = widget.initialItem!
+        ref.read(oilDraftProvider.notifier).state = widget.initialItem!
             .copyWith(
               isDateInteractedOnce: true,
               isOilTypeInteractedOnce: true,
@@ -63,6 +65,59 @@ class _OilFormScreenState extends ConsumerState<OilFormScreen> {
     }
   }
 
+  Future<void> _handleSaveOrUpdate({
+    required BuildContext context,
+    required WidgetRef ref,
+    required bool isEdit,
+    required OilStateItem draft,
+    required String carId,
+  }) async {
+    if (isEdit) {
+      await showConfirmBottomSheet(
+        context: context,
+        titleText: "از ویرایش جدیدت مطمئنی؟",
+
+        onConfirm: () async {
+          await ref
+              .read(oilListProvider(carId).notifier)
+              .updateOilFromDraft(draft, widget.initialItem!, carId);
+          ref.invalidate(oilListProvider(carId));
+          ref.invalidate(oilDraftProvider);
+        },
+      );
+    } else {
+      await ref
+          .read(oilListProvider(carId).notifier)
+          .addOilFromDraft(draft, carId);
+      ref.invalidate(oilListProvider(carId));
+      ref.invalidate(oilDraftProvider);
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
+    }
+  }
+
+  Future<void> _handleDelete({
+    required BuildContext context,
+    required WidgetRef ref,
+    required String carId,
+    required String oilId,
+  }) async {
+    await showConfirmBottomSheet(
+      context: context,
+      titleText: "برای حذف کردنش مطمئنی؟",
+      isDelete: true,
+      onConfirm: () async {
+        await ref
+            .read(oilListProvider(carId).notifier)
+            .deleteSelectedOilItemById(carId, oilId);
+
+        ref.invalidate(oilListProvider(carId));
+        ref.invalidate(oilDraftProvider);
+      },
+    );
+  }
+
   @override
   void dispose() {
     oilBrandAndModelController.dispose();
@@ -76,7 +131,7 @@ class _OilFormScreenState extends ConsumerState<OilFormScreen> {
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.initialItem != null;
-    final draft = ref.watch(oillDraftProvider);
+    final draft = ref.watch(oilDraftProvider);
     final carId = ref.read(carStateNotifierProvider).currentCarId;
 
     debugPrint(
@@ -102,7 +157,7 @@ class _OilFormScreenState extends ConsumerState<OilFormScreen> {
             MyAppBar(
               titleText: isEdit ? "ویرایش روغن" : "ثبت روغن جدید",
               ontapFunction: () {
-                ref.invalidate(oillDraftProvider);
+                ref.invalidate(oilDraftProvider);
                 Navigator.of(context).pop();
               },
               isBack: true,
@@ -127,24 +182,12 @@ class _OilFormScreenState extends ConsumerState<OilFormScreen> {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: GestureDetector(
-                              onTap: () async {
-                                await showConfirmBottomSheet(
-                                  titleText: "برای حذف کردنش مطمئنی؟",
-                                  context: context,
-                                  isDelete: true,
-                                  onConfirm: () async {
-                                    await ref
-                                        .read(oilListProvider(carId!).notifier)
-                                        .deleteSelectedOilItemById(
-                                          carId,
-                                          draft.oilId!,
-                                        );
-
-                                    ref.read(oillDraftProvider.notifier).state =
-                                        OilStateItem(oilId: "oil_temp_id");
-                                  },
-                                );
-                              },
+                              onTap: () => _handleDelete(
+                                context: context,
+                                ref: ref,
+                                carId: carId!,
+                                oilId: draft.oilId!,
+                              ),
                               child: SvgPicture.asset(
                                 AppIcons.trash,
                                 width: 24.w,
@@ -158,7 +201,7 @@ class _OilFormScreenState extends ConsumerState<OilFormScreen> {
                           ),
                         ),
                       BuildFormFields<OilStateItem>(
-                        provider: oillDraftProvider,
+                        provider: oilDraftProvider,
                         fieldsBuilder: (state, ref) => buildOilInfoFields(
                           state,
                           ref,
@@ -174,60 +217,46 @@ class _OilFormScreenState extends ConsumerState<OilFormScreen> {
                       OnboardingButton(
                         enabled: ref.watch(isOilInfoButtonEnabled(isEdit)),
                         text: "ثبت",
+                        loading: isLoading,
                         onPressed: () async {
-                          try {
-                            if (isEdit) {
-                              await showConfirmBottomSheet(
-                                titleText: "از ویرایش جدیدت مطمئنی؟",
+                          if (isEdit) {
+                            try {
+                              await _handleSaveOrUpdate(
                                 context: context,
-                                onConfirm: () async {
-                                  await ref
-                                      .read(oilListProvider(carId!).notifier)
-                                      .updateOilFromDraft(
-                                        draft,
-                                        widget.initialItem!,
-                                        carId,
-                                      );
-                                  // refreshes the repair list
-                                  ref.invalidate(oilListProvider(carId));
-                                  // Reset draft
-                                  ref.read(oillDraftProvider.notifier).state =
-                                      OilStateItem(oilId: "oil_temp_id");
-                                },
+                                ref: ref,
+                                isEdit: true,
+                                draft: draft,
+                                carId: carId!,
                               );
-                            } else {
-                              await ref
-                                  .read(oilListProvider(carId!).notifier)
-                                  .addOilFromDraft(draft, carId);
-                              // refreshes the repair list
-                              ref.invalidate(oilListProvider(carId));
-                              // Reset draft
-                              ref.read(oillDraftProvider.notifier).state =
-                                  OilStateItem(oilId: "oil_temp_id");
-                            }
-
-                            if (!isEdit && context.mounted) {
-                              if (widget.fromReminderToggle!) {
-                                Navigator.of(context).pop({
-                                  "created": true,
-                                  "oilType": draft.oilType?.id,
-                                  "date": draft.date,
-                                  "km": draft.kilometer,
-                                });
-                              } else {
-                                Navigator.of(context).pop();
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('خطا در تعمیرات خرید'),
+                                  ),
+                                );
                               }
                             }
-                          } catch (e) {
-                            // handle error (snackbar, dialog, etc.)
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: isEdit
-                                      ? Text('خطا در ویرایش روغن ')
-                                      : Text('خطا در ثبت روغن جدید'),
-                                ),
+                          } else {
+                            setState(() => isLoading = true);
+                            try {
+                              await _handleSaveOrUpdate(
+                                context: context,
+                                ref: ref,
+                                isEdit: false,
+                                draft: draft,
+                                carId: carId!,
                               );
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('خطا در ثبت تعمیرات جدید'),
+                                  ),
+                                );
+                              }
+                            } finally {
+                              if (mounted) setState(() => isLoading = false);
                             }
                           }
                         },

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
-import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/chat_screen/model/chat_message.dart';
 import 'package:motogen/features/chat_screen/model/chat_state.dart';
 import 'package:motogen/features/chat_screen/viewmodels/chat_controller.dart';
@@ -12,7 +11,6 @@ import 'package:motogen/features/chat_screen/widgets/ai_message_bubble.dart';
 import 'package:motogen/features/chat_screen/widgets/prompt_input.dart';
 import 'package:motogen/features/chat_screen/widgets/suggestion_question.dart';
 import 'package:motogen/features/chat_screen/widgets/user_message_bubble.dart';
-import 'package:motogen/widgets/add_car_card.dart';
 import 'package:motogen/widgets/loading_animation.dart';
 import 'package:motogen/widgets/my_app_bar.dart';
 
@@ -21,7 +19,7 @@ class ChatScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final carFormState = ref.watch(carStateNotifierProvider);
+    //final carFormState = ref.watch(carStateNotifierProvider);
     final chatStateAsync = ref.watch(chatNotifierProvider);
     final chatNotifier = ref.read(chatNotifierProvider.notifier);
     final controller = ref.watch(chatControllerProvider);
@@ -52,7 +50,7 @@ class ChatScreen extends ConsumerWidget {
  */
           if (chatStateAsync.isLoading && chatState.messages.isEmpty) ...[
             const Spacer(),
-           LoadingAnimation(), 
+            const LoadingAnimation(),
             const Spacer(),
           ] else if (chatState.messages.isEmpty) ...[
             Spacer(),

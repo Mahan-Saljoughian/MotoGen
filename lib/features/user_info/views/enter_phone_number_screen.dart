@@ -41,6 +41,7 @@ class EnterPhoneNumberScreen extends ConsumerWidget {
     final phoneVm = ref.watch(phoneNumberControllerProvider);
     final auth = ref.watch(authProvider);
     final authNotifier = ref.read(authProvider.notifier);
+    final loading = ref.watch(authProvider).status == AuthStatus.loading;
 
     final phoneNumberString =
         FarsiOrEnglishDigitsInputFormatter.normalizePersianDigits(
@@ -96,6 +97,7 @@ class EnterPhoneNumberScreen extends ConsumerWidget {
                 SizedBox(height: 24.h),
                 OnboardingButton(
                   currentPage: currentPage,
+                  loading: loading,
                   onPressed: () async {
                     await authNotifier.requestOtp(phoneNumberString);
                   },

@@ -1,8 +1,9 @@
 import 'package:flutter/rendering.dart';
-import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_notifier.dart';
 
 // ignore: constant_identifier_names
 enum IntervalType { DAYS, KILOMETERS, FIXED_DATE, orElse }
+
+enum DoneType { tick, add }
 
 class ReminderStateItem {
   final String reminderId;
@@ -117,7 +118,27 @@ class ReminderStateItem {
     "VEHICLE_INSPECTION_VALIDITY": "اعتبار معاینه فنی",
   };
 
+  static const Map<String, DoneType> doneType = {
+    "ENGINE_OIL_CHECK": DoneType.tick,
+    "RADIATOR_WATER_CHECK": DoneType.tick,
+    "TIRE_PRESSURE_ADJUSTMENT": DoneType.tick,
+    "SPARE_TIRE_PRESSURE_ADJUSTMENT": DoneType.tick,
+    "TURN_ON_AC": DoneType.tick,
+    "BRAKE_OIL_CHANGE": DoneType.add,
+    "ENGINE_OIL_CHANGE": DoneType.add,
+    "STEERING_OIL_CHANGE": DoneType.add,
+    "GEARBOX_OIL_CHANGE": DoneType.add,
+    "TIMING_BELT_CHANGE": DoneType.add,
+    "BODY_INSURANCE_VALIDITY": DoneType.add,
+    "THIRD_PARTY_INSURANCE_VALIDITY": DoneType.add,
+    "VEHICLE_INSPECTION_VALIDITY": DoneType.add,
+  };
+
   static String translate(String type) {
     return faTypeJSON[type] ?? type; // fallback
+  }
+
+  static DoneType getDoneType(String type) {
+    return doneType[type] ?? DoneType.add; // fallback
   }
 }

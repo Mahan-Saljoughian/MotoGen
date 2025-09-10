@@ -75,9 +75,9 @@ class ChatNotifier extends AsyncNotifier<ChatState> {
       ),
     );
     // No sessions loaded yet → try to load
-    if (current!.sessions.isEmpty) {
+    if (current!.sessions.isEmpty || current.activeSessionId == null) {
       final loaded = await loadInitialSession();
-      if (loaded.sessions.isEmpty) {
+      if (loaded.sessions.isEmpty || loaded.activeSessionId == null) {
         await _startNewSession(text);
         return;
       } else {
@@ -100,20 +100,14 @@ class ChatNotifier extends AsyncNotifier<ChatState> {
           content: response['message'] ?? 'خطا در شروع گفتگو',
           sender: MessageSender.ai,
         );
-        final newSession = ChatSession(
-          id: 'temp-error-${DateTime.now().millisecondsSinceEpoch}',
-          title: 'New Chat (Error)',
-          messages: [
-            ChatMessage(content: firstMessage, sender: MessageSender.user),
-            aiError,
-          ],
-        );
 
         state = AsyncValue.data(
           state.value!.copyWith(
-            sessions: [newSession],
-            activeSessionId: newSession.id,
-            messages: newSession.messages,
+            messages: [
+              ChatMessage(content: firstMessage, sender: MessageSender.user),
+              aiError,
+            ],
+            activeSessionId: null,
           ),
         );
         return; // exit early, finally will still run
@@ -145,20 +139,14 @@ class ChatNotifier extends AsyncNotifier<ChatState> {
         content: 'خطای شبکه',
         sender: MessageSender.ai,
       );
-      final newSession = ChatSession(
-        id: 'temp-error-${DateTime.now().millisecondsSinceEpoch}',
-        title: 'New Chat (Error)',
-        messages: [
-          ChatMessage(content: firstMessage, sender: MessageSender.user),
-          aiError,
-        ],
-      );
 
       state = AsyncValue.data(
         state.value!.copyWith(
-          sessions: [newSession],
-          activeSessionId: newSession.id,
-          messages: newSession.messages,
+          messages: [
+            ChatMessage(content: firstMessage, sender: MessageSender.user),
+            aiError,
+          ],
+          activeSessionId: null,
         ),
       );
     } finally {

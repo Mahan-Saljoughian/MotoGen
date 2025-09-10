@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,23 +8,20 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:logger/logger.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/services/fade_route.dart';
-
 import 'package:motogen/features/car_info/viewmodels/car_use_case_api.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/car_services/base/view/service_screen.dart';
 import 'package:motogen/features/chat_screen/views/chat_screen.dart';
-
 import 'package:motogen/features/home_screen/view/home_screen.dart';
 import 'package:motogen/features/home_screen/widget/service_navigator.dart';
 import 'package:motogen/features/onboarding/views/onboarding_indicator.dart';
 import 'package:motogen/features/onboarding/views/onboarding_page_2.dart';
 import 'package:motogen/features/profile_screen/view/profile_screen.dart';
-
 import 'package:motogen/features/user_info/viewmodels/user_use_case_api.dart';
 import 'package:motogen/main_scaffold.dart';
 import 'package:motogen/widgets/loading_animation.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await SystemChrome.setPreferredOrientations([
@@ -36,6 +34,8 @@ void main() async {
       statusBarIconBrightness: Brightness.dark, // or .light
     ),
   );
+
+  await dotenv.load(fileName: ".env");
 
   runApp(
     ProviderScope(

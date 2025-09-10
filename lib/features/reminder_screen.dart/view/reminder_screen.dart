@@ -97,23 +97,36 @@ class ReminderScreen extends ConsumerWidget {
           ),
           SizedBox(height: 26.h),
 
-          // lazy build reminders
-          GridView.builder(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, // 2 columns
-              mainAxisSpacing: 7.h, // vertical spacing
-              crossAxisSpacing: 10.w, // horizontal spacing
-              childAspectRatio: 0.9,
-            ),
+       // lazy build reminders 
+          ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: reminders.length,
-            itemBuilder: (context, index) {
-              final reminder = reminders[index];
-              return TimeLeftCircle(
-                isHomeScreen: false,
-                reminderItem: reminder,
-                reminderIdByType: reminderIdByType,
+            itemCount: (reminders.length / 2).ceil(), // For 2 columns
+            itemBuilder: (context, rowIndex) {
+              final int firstIndex = rowIndex * 2;
+              final int secondIndex = firstIndex + 1;
+              return Row(
+                children: [
+                  Expanded(
+                    child: firstIndex < reminders.length
+                        ? TimeLeftCircle(
+                            isHomeScreen: false,
+                            reminderItem: reminder,
+                            reminderIdByType: reminderIdByType,
+                          )
+                        : SizedBox(),
+                  ),
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    child: secondIndex < reminders.length
+                        ? TimeLeftCircle(
+                            isHomeScreen: false,
+                            reminderItem: reminder,
+                            reminderIdByType: reminderIdByType,
+                          )
+                        : SizedBox(),
+                  ),
+                ],
               );
             },
           ),

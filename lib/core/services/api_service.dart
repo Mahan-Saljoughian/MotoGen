@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/web.dart';
@@ -7,9 +8,13 @@ import 'package:motogen/core/services/refresh_token_expired_exception.dart';
 class ApiService {
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
   final _logger = Logger();
-  final String _baseUrl = 'https://motogen-api-nest.onrender.com';
-  //'http://10.0.2.2:3000'; // Use 10.0.2.2 for Android emulator
-  //'http://192.168.219.6:3000';
+  late final String _baseUrl;
+  ApiService() {
+    _baseUrl = dotenv.env['BASE_URL'] ?? '';
+    if (_baseUrl.isEmpty) {
+      _logger.e("BASE_URL is not set in .env");
+    }
+  }
 
   bool isDebugMode = false;
 
@@ -71,12 +76,9 @@ class ApiService {
         token = await _refreshToken();
         response = await requestFunc(token);
       }
-    } catch (e) {
-      _logger.e('API request failed: $e');
-      return {
-        "success": false,
-        "message": isDebugMode ? 'API request failed: $e' : "خطای شبکه",
-      };
+    } catch (e, st) {
+      _logger.e('API request failed: $e . $st');
+      rethrow; // 🔹 let the error bubble up instead of returning a map
     }
 
     final body = json.decode(response.body);

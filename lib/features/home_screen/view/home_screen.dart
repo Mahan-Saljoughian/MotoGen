@@ -5,7 +5,6 @@ import 'package:logger/logger.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/home_screen/widget/service_navigator.dart';
-import 'package:motogen/features/reminder_screen.dart/model/reminder_state_item.dart';
 import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_notifier.dart';
 import 'package:motogen/features/reminder_screen.dart/widgets/time_left_circle.dart';
 import 'package:motogen/features/profile_screen/widget/car_item.dart';
@@ -113,7 +112,7 @@ class HomeScreen extends ConsumerWidget {
                                         "FIXED_DATE" &&
                                     reminder.haveBaseValue &&
                                     reminder.enabled;
-                                ;
+
                                 final intervalValue = reminder.intervalValue;
 
                                 final remainingValue =
@@ -143,7 +142,7 @@ class HomeScreen extends ConsumerWidget {
                                       child: ListView.separated(
                                         scrollDirection: Axis.horizontal,
                                         itemCount: fixedDateFiltered.length,
-                                        separatorBuilder: (_, __) =>
+                                        separatorBuilder: (_, _) =>
                                             SizedBox(width: 12.w),
                                         itemBuilder: (context, index) {
                                           return TimeLeftCircle(
@@ -170,7 +169,7 @@ class HomeScreen extends ConsumerWidget {
                                       child: ListView.separated(
                                         scrollDirection: Axis.horizontal,
                                         itemCount: serviceFiltered.length,
-                                        separatorBuilder: (_, __) =>
+                                        separatorBuilder: (_, _) =>
                                             SizedBox(width: 12.w),
                                         itemBuilder: (context, index) {
                                           return TimeLeftCircle(

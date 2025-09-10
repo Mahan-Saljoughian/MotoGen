@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -70,7 +71,7 @@ class EnableToggleState extends ConsumerState<EnableToggle>
               "از فعال کردن یادآور “${ReminderStateItem.translate(widget.reminderItem.type)}” اطمینان داری؟",
           intervalReminderText:
               "بازه یادآوری: هر ${widget.reminderItem.intervalValue} $intervalUnit یکبار",
-          context: context,
+          context: context.mounted ? context : context,
           autoPop: false,
         );
         if (confirmed != true) return;
@@ -102,7 +103,7 @@ class EnableToggleState extends ConsumerState<EnableToggle>
           _value = true;
         });
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        ScaffoldMessenger.of(context.mounted ? context : context).showSnackBar(
           const SnackBar(content: Text("خطا در تغییر وضعیت یادآور")),
         );
       } finally {
@@ -124,7 +125,7 @@ class EnableToggleState extends ConsumerState<EnableToggle>
         _value = newValue;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      ScaffoldMessenger.of(context.mounted ? context : context).showSnackBar(
         const SnackBar(content: Text("خطا در تغییر وضعیت یادآور")),
       );
     } finally {
@@ -145,9 +146,9 @@ class EnableToggleState extends ConsumerState<EnableToggle>
                 key: const ValueKey('loading'),
                 width: 24.w,
                 height: 24.w,
-                child: const CircularProgressIndicator(
-                  strokeWidth: 2.2,
-                  valueColor: AlwaysStoppedAnimation(AppColors.blue500),
+                child: const CupertinoActivityIndicator(
+                  radius: 10, // small size for icon areas
+                  color: AppColors.blue500,
                 ),
               )
             : _value

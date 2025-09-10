@@ -14,6 +14,7 @@ import 'package:motogen/features/car_services/base/widgets/help_to_add_text_box.
 import 'package:motogen/features/car_services/oil/data/oil_repository.dart';
 import 'package:motogen/features/car_services/oil/view/oil_tab_button.dart';
 import 'package:motogen/features/home_screen/widget/service_navigator.dart';
+import 'package:motogen/widgets/loading_animation.dart';
 import 'package:motogen/widgets/my_app_bar.dart';
 
 class ServiceScreen extends ConsumerWidget {
@@ -199,11 +200,7 @@ class ServiceScreen extends ConsumerWidget {
             child: Column(
               children: [
                 _buildHeader(context, ref, title, selectedTab, true),
-                const Expanded(
-                  child: Center(
-                    child: CircularProgressIndicator(color: AppColors.blue500),
-                  ),
-                ),
+                const Expanded(child: Center(child: LoadingAnimation())),
               ],
             ),
           ),

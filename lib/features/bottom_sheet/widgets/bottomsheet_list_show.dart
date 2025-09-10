@@ -213,7 +213,7 @@ class _BottomSheetContent extends ConsumerWidget {
       ),
       loading: () => SizedBox(
         height: 250,
-        child: Center(child: LoadingAnimation()),
+        child: Center(child:const  LoadingAnimation()),
       ),
       error: (err, stack) {
         Logger().i('provider error: $err');
@@ -379,7 +379,7 @@ class _BottomSheetMultiContent extends ConsumerWidget {
       ),
       loading: () => SizedBox(
         height: 250,
-        child: Center(child: LoadingAnimation()),
+        child: Center(child: const  LoadingAnimation()),
       ),
       error: (err, stack) => SizedBox(
         height: 250,

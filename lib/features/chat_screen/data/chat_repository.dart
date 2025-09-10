@@ -16,6 +16,7 @@ class ChatRepository {
         throw Exception(response['message'] ?? 'Failed to create chat session');
       } */
       debugPrint("debug the repsonse in createSession is $response");
+      response['success'] = false;
       return response;
     } catch (e) {
       logger.e("Error creating chat session ");
@@ -67,7 +68,7 @@ class ChatRepository {
       final response = await _api.post('users/me/chat-session/$sessionId', {
         "prompt": prompt,
       });
-     /*  if (response['success'] != true) {
+      /*  if (response['success'] != true) {
         throw Exception(response['message'] ?? 'Failed to send chat message');
       } */
       debugPrint("debug the repsonse in sendMessage is $response");

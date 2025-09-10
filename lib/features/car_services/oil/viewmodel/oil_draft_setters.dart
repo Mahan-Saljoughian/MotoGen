@@ -2,14 +2,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:motogen/features/car_services/base/viewmodel/shared_draft_setters.dart';
 import 'package:motogen/features/car_services/oil/model/oil_state_item.dart';
 
-final oillDraftProvider = StateProvider<OilStateItem>(
+final oilDraftProvider = StateProvider<OilStateItem>(
   (ref) => OilStateItem(oilId: "oil_temp_id"),
 );
 
 extension OilDraftSetters on WidgetRef {
   void updateDraft(OilStateItem Function(OilStateItem) updater) {
-    final current = read(oillDraftProvider);
-    read(oillDraftProvider.notifier).state = updater(current);
+    final current = read(oilDraftProvider);
+    read(oilDraftProvider.notifier).state = updater(current);
   }
 
   void setRawOilBrandAndModel(String oilBrandAndModel) {
@@ -37,18 +37,18 @@ extension OilDraftSetters on WidgetRef {
   }
 
   void setRawKilometer(String input) {
-    setKilometerField(oillDraftProvider, input, min: 1, max: 10000000);
+    setKilometerField(oilDraftProvider, input, min: 1, max: 10000000);
   }
 
   void setRawLocation(String input) {
-    setLocation(oillDraftProvider, input);
+    setLocation(oilDraftProvider, input);
   }
 
   void setRawCost(String input) {
-    setCostField(oillDraftProvider, input, min: 1, max: 1000000000);
+    setCostField(oilDraftProvider, input, min: 1, max: 1000000000);
   }
 
   void setRawNotes(String input) {
-    setNotes(oillDraftProvider, input);
+    setNotes(oilDraftProvider, input);
   }
 }

@@ -29,6 +29,17 @@ class _MainScaffoldState extends State<MainScaffold>
   ];
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        reminderScreen = const ReminderScreen();
+        chatScreen = const ChatScreen();
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.blue50,

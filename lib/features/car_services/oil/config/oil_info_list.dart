@@ -105,12 +105,12 @@ DateFieldConfig<OilStateItem> oilDateConfig = DateFieldConfig<OilStateItem>(
   labelText: "تاریخ",
   getter: (state) => state.date,
   setter: (WidgetRef ref, value) {
-    final current = ref.read(oillDraftProvider);
-    ref.read(oillDraftProvider.notifier).state = current.copyWith(
+    final current = ref.read(oilDraftProvider);
+    ref.read(oilDraftProvider.notifier).state = current.copyWith(
       date: value,
       isDateInteractedOnce: true,
     );
-    if (ref.read(oillDraftProvider.notifier).state.oilType?.id == "ENGINE") {}
+    if (ref.read(oilDraftProvider.notifier).state.oilType?.id == "ENGINE") {}
   },
   usageType: DateUsageType.services,
 );
@@ -120,8 +120,8 @@ PickerFieldConfig<OilStateItem> oilTypeConfig = PickerFieldConfig<OilStateItem>(
   providerBuilder: (state) => oilTypeAsyncProvider,
   getter: (OilStateItem state) => state.oilType,
   setter: (WidgetRef ref, PickerItem? value) {
-    final current = ref.read(oillDraftProvider);
-    ref.read(oillDraftProvider.notifier).state = current.copyWith(
+    final current = ref.read(oilDraftProvider);
+    ref.read(oilDraftProvider.notifier).state = current.copyWith(
       oilType: value,
       isOilTypeInteractedOnce: true,
     );
@@ -150,8 +150,8 @@ PickerFieldConfig<OilStateItem> filtersChangedConfig =
         return list;
       },
       multiSetter: (ref, items) {
-        final current = ref.read(oillDraftProvider);
-        ref.read(oillDraftProvider.notifier).state = current.copyWith(
+        final current = ref.read(oilDraftProvider);
+        ref.read(oilDraftProvider.notifier).state = current.copyWith(
           oilFilterChanged: items.any((e) => e.id == 'oilFilterChanged'),
           airFilterChanged: items.any((e) => e.id == 'airFilterChanged'),
           cabinFilterChanged: items.any((e) => e.id == 'cabinFilterChanged'),

@@ -13,7 +13,7 @@ import 'package:motogen/widgets/field_text.dart';
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
 import 'package:motogen/widgets/my_app_bar.dart';
 
-class CarNicknameScreen extends ConsumerWidget {
+class CarNicknameScreen extends ConsumerStatefulWidget {
   final int currentPage;
   final int count;
   final VoidCallback onNext;
@@ -27,9 +27,61 @@ class CarNicknameScreen extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CarNicknameScreen> createState() => _CarNicknameScreenState();
+}
+
+class _CarNicknameScreenState extends ConsumerState<CarNicknameScreen> {
+  bool _isBusy = false;
+  String? _loadingButton;
+  Future<void> _handleAction({
+    required String buttonKey,
+    required bool isSetNickName,
+    required VoidCallback onNext,
+  }) async {
+    if (_isBusy) return;
+    setState(() {
+      _isBusy = true;
+      _loadingButton = buttonKey;
+    });
+
+    try {
+      final personalInfocontroller = ref.read(personalInfoProvider);
+      final draft = ref.read(carDraftProvider);
+      await ref
+          .read(carStateNotifierProvider.notifier)
+          .completeProfileFromDraft(
+            isSetNickName: isSetNickName,
+            draft: draft,
+            userInfo: {
+              'firstName': personalInfocontroller.nameController.text.trim(),
+              'lastName': personalInfocontroller.lastNameController.text.trim(),
+            },
+          );
+      onNext();
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context.mounted ? context : context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
+        Navigator.pushReplacementNamed(
+          context.mounted ? context : context,
+          '/onboardingIndicator',
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isBusy = false;
+          _loadingButton = null;
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final nickNameController = ref.watch(nickNameControllerProvider);
-    final personalInfocontroller = ref.watch(personalInfoProvider);
+
     final currentCar = ref.watch(carDraftProvider);
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -41,7 +93,7 @@ class CarNicknameScreen extends ConsumerWidget {
               children: [
                 MyAppBar(
                   titleText: "مشخصات خودرو",
-                  ontapFunction: onBack,
+                  ontapFunction: widget.onBack,
                   isBack: true,
                 ),
 
@@ -77,80 +129,33 @@ class CarNicknameScreen extends ConsumerWidget {
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height * 0.09.h),
 
-                DotIndicator(currentPage: currentPage, count: count),
+                DotIndicator(
+                  currentPage: widget.currentPage,
+                  count: widget.count,
+                ),
                 SizedBox(height: 24.h),
                 OnboardingButton(
-                  currentPage: currentPage,
-                  onPressed: () async {
-                    try {
-                      final draft = ref.read(carDraftProvider);
-                      await ref
-                          .read(carStateNotifierProvider.notifier)
-                          .completeProfileFromDraft(
-                            isSetNickName: true,
-                            draft: draft,
-                            userInfo: {
-                              'firstName': personalInfocontroller
-                                  .nameController
-                                  .text
-                                  .trim(),
-                              'lastName': personalInfocontroller
-                                  .lastNameController
-                                  .text
-                                  .trim(),
-                            },
-                          );
-                      onNext();
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text(e.toString())));
-
-                        Navigator.pushReplacementNamed(
-                          context,
-                          '/onboardingIndicator',
-                        );
-                      }
-                    }
-                  },
+                  currentPage: widget.currentPage,
+                  loading: _loadingButton == 'save',
+                  onPressed: _isBusy
+                      ? null
+                      : () => _handleAction(
+                          buttonKey: 'save',
+                          isSetNickName: true,
+                          onNext: widget.onNext,
+                        ),
                 ),
                 SizedBox(height: 20.h),
                 OnboardingButton(
                   pagesTitleEnum: PagesTitleEnum.skipNickName,
-                  onPressed: () async {
-                    try {
-                      final draft = ref.read(carDraftProvider);
-                      await ref
-                          .read(carStateNotifierProvider.notifier)
-                          .completeProfileFromDraft(
-                            isSetNickName: false,
-                            draft: draft,
-                            userInfo: {
-                              'firstName': personalInfocontroller
-                                  .nameController
-                                  .text
-                                  .trim(),
-                              'lastName': personalInfocontroller
-                                  .lastNameController
-                                  .text
-                                  .trim(),
-                            },
-                          );
-
-                      onNext();
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text(e.toString())));
-                        Navigator.pushReplacementNamed(
-                          context,
-                          '/onboardingIndicator',
-                        );
-                      }
-                    }
-                  },
+                  loading: _loadingButton == 'skip',
+                  onPressed: _isBusy
+                      ? null
+                      : () => _handleAction(
+                          buttonKey: 'skip',
+                          isSetNickName: false,
+                          onNext: widget.onNext,
+                        ),
                 ),
               ],
             ),

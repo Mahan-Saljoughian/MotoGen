@@ -43,6 +43,8 @@ class TimeLeftCircle extends ConsumerWidget {
         : remainingFormatted.contains("هزار") ||
               intervalFormatted.contains("هزار");
 
+    final doneType = ReminderStateItem.getDoneType(reminderItem.type);
+
     Color getSlideColor() {
       if (percent == 0 && !reminderItem.haveBaseValue) return AppColors.black50;
       if (percent <= 0.2) return Color(0xFFCD3A3A);
@@ -75,6 +77,7 @@ class TimeLeftCircle extends ConsumerWidget {
     final innerShadowBackGroundColor = reminderItem.enabled
         ? getInnerShadowBackGroundColor()
         : Color(0xFF8B0E0E).withAlpha(35);
+
     return InnerShadow(
       shadows: [
         BoxShadow(
@@ -215,8 +218,7 @@ class TimeLeftCircle extends ConsumerWidget {
                   alignment: Alignment.centerLeft,
                   child: DoneToggle(
                     reminderItem: reminderItem,
-                    isAdd: true,
-
+                    isAdd: doneType == DoneType.add ? true : false,
                     reminderAction:
                         reminderAction[reminderItem.type] ??
                         () async {

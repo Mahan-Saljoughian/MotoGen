@@ -97,7 +97,7 @@ class _CarFormScreenState extends ConsumerState<CarFormScreen> {
     final carNotifier = ref.read(carStateNotifierProvider.notifier);
 
     if (isLoading) {
-      return const Scaffold(body: Center(child:LoadingAnimation()));
+      return const Scaffold(body: Center(child:  LoadingAnimation()));
     }
     debugPrint(
       'debug car DRAFT: id=${draft.carId}, '

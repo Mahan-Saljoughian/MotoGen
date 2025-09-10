@@ -5,7 +5,7 @@ import 'package:motogen/features/car_info/viewmodels/car_draft_setters.dart';
 
 DateFieldConfig<CarFormStateItem> bodyInsuranceExpiryDateConfig =
     DateFieldConfig<CarFormStateItem>(
-      labelText: "تاریخ انقضای بیمه (اختیاری)",
+      labelText: "تاریخ انقضای بیمه بدنه (اختیاری)",
       getter: (state) => state.bodyInsuranceExpiry,
       setter: (WidgetRef ref, value) => ref.setBodyInsuranceExpiry(value),
       usageType: DateUsageType.insurance,

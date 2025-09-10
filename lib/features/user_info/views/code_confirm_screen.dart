@@ -101,6 +101,9 @@ class _ValidateCodeScreenState extends ConsumerState<CodeConfirmScreen> {
                   ontapFunction: () {
                     codeVM.cancelTimer();
                     codeVM.resetCode();
+                    for (var controller in controllers) {
+                      controller.clear();
+                    }
                     widget.onBack();
                   },
                   isBack: true,
@@ -186,59 +189,69 @@ class _ValidateCodeScreenState extends ConsumerState<CodeConfirmScreen> {
                   ),
                 ),
                 SizedBox(height: 17.h),
-                hasError
-                    ? Text(
-                        auth.message ?? "کدی که وارد کردی اشتباهه!",
-                        style: TextStyle(
-                          color: Color(0xFFC60B0B),
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      )
-                    : Text(
-                        codeVM.timerText,
-                        style: TextStyle(
-                          color: AppColors.blue900,
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
+                if (hasError)
+                  Text(
+                    auth.message ?? "کدی که وارد کردی اشتباهه!",
+                    style: TextStyle(
+                      color: Color(0xFFC60B0B),
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+
+                Text(
+                  codeVM.timerText,
+                  style: TextStyle(
+                    color: AppColors.blue900,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 SizedBox(height: 17.h),
                 GestureDetector(
-                  onTap: () {
-                    final phone = auth.phoneNumber;
-                    if (phone != null && phone.isNotEmpty) {
-                      authNotifier.requestOtp(phone);
-                      Logger().d("debug the send code is : ${auth.codeSent}");
-                    } else {
-                      logger.d("Phone number is missing!");
-                    }
-                    ref.read(codeControllerProvider.notifier).resetCode();
-                    for (var controller in controllers) {
-                      controller.clear();
-                    }
-                    ref.read(codeControllerProvider.notifier).startTimer();
-                    focusNodes[0].requestFocus();
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.only(right: 134.w),
-                    child: Row(
-                      children: [
-                        SvgPicture.asset(
-                          AppIcons.rotateLeft,
-                          height: 24.h,
-                          width: 24.w,
-                        ),
-                        SizedBox(width: 5.w),
-                        Text(
-                          "ارسال مجدد کد",
-                          style: TextStyle(
-                            color: Color(0xFF3D89F6),
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w700,
+                  onTap: codeVM.isTimerActive
+                      ? null
+                      : () {
+                          final phone = auth.phoneNumber;
+                          if (phone != null && phone.isNotEmpty) {
+                            authNotifier.requestOtp(phone);
+                            Logger().d(
+                              "debug the send code is : ${auth.codeSent}",
+                            );
+                          } else {
+                            logger.d("Phone number is missing!");
+                          }
+                          codeVM.resetCode();
+                          for (var controller in controllers) {
+                            controller.clear();
+                          }
+                          ref
+                              .read(codeControllerProvider.notifier)
+                              .startTimer();
+                          focusNodes[0].requestFocus();
+                        },
+                  child: Opacity(
+                    opacity: codeVM.isTimerActive ? 0.5 : 1.0,
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 134.w),
+                      child: Row(
+                        children: [
+                          SvgPicture.asset(
+                            AppIcons.rotateLeft,
+                            height: 24.h,
+                            width: 24.w,
                           ),
-                        ),
-                      ],
+                          SizedBox(width: 5.w),
+                          Text(
+                            "ارسال مجدد کد",
+                            style: TextStyle(
+                              color: Color(0xFF3D89F6),
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -256,6 +269,7 @@ class _ValidateCodeScreenState extends ConsumerState<CodeConfirmScreen> {
                 SizedBox(height: 24.h),
                 OnboardingButton(
                   currentPage: widget.currentPage,
+                  loading: auth.status == AuthStatus.loading,
                   onPressed: () {
                     final codeVM = ref.read(codeControllerProvider);
                     if (codeVM.isComplete &&
