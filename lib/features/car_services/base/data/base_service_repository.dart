@@ -1,27 +1,30 @@
-import 'package:logger/logger.dart';
-import 'package:motogen/core/services/api_service.dart';
+import 'dart:io';
 
+import 'package:motogen/core/services/api_service.dart';
+import 'package:motogen/core/services/custom_exceptions.dart';
+import 'package:motogen/core/services/logger.dart';
 
 abstract class BaseServiceRepository<T> {
   final ApiService _api = ApiService();
-  final logger = Logger();
 
   /// Subclasses must override
   String get endpoint; // e.g. "refuels", "repairs"
 
   Map<String, dynamic> toApiJson(T item); // serialize
-
+  
   Future<List<Map<String, dynamic>>> getAllItems(
     String carId,
     String? sortType,
     String? oilType,
   ) async {
     try {
-    
       final queryParams = [
         if (oilType != null) 'oilType=$oilType',
         if (sortType != null) 'order=$sortType',
       ].join('&');
+      if (simulateNoInternet) {
+        throw const SocketException('Deliberate test of offline handling');
+      }
       final response = await _api.get(
         "users/me/cars/$carId/$endpoint${queryParams.isNotEmpty ? '?$queryParams' : ''}",
       );
@@ -33,21 +36,21 @@ abstract class BaseServiceRepository<T> {
       }
       return List<Map<String, dynamic>>.from(response['data'] ?? []);
     } catch (e, st) {
-      logger.e(
+      appLogger.e(
         "Error getting $endpoint for carId: $carId with sort type : $sortType and oilType $oilType: $e,$st",
       );
+
       rethrow;
     }
   }
 
   Future<Map<String, dynamic>> postItem(T item, String carId) async {
     try {
-  
       final response = await _api.post(
         "users/me/cars/$carId/$endpoint",
-        toApiJson(item)
+        toApiJson(item),
       );
-      logger.d("debug Repair post response: $response");
+      appLogger.d("debug Repair post response: $response");
       if (response['success'] != true) {
         throw Exception(
           response['message'] ?? 'Failed to post $endpoint for carId: $carId',
@@ -55,7 +58,7 @@ abstract class BaseServiceRepository<T> {
       }
       return response;
     } catch (e, st) {
-      logger.e("Error posting $endpoint for carId: $carId: $e , $st");
+      appLogger.e("Error posting $endpoint for carId: $carId: $e , $st");
       rethrow;
     }
   }
@@ -65,10 +68,8 @@ abstract class BaseServiceRepository<T> {
     String itemId,
   ) async {
     try {
-    
       final response = await _api.delete(
         "users/me/cars/$carId/$endpoint/$itemId",
-       
       );
       if (response['success'] != true) {
         throw Exception(
@@ -78,7 +79,7 @@ abstract class BaseServiceRepository<T> {
       }
       return response;
     } catch (e) {
-      logger.e("Error deleting $endpoint $itemId for carId: $carId: $e");
+      appLogger.e("Error deleting $endpoint $itemId for carId: $carId: $e");
       rethrow;
     }
   }
@@ -89,10 +90,9 @@ abstract class BaseServiceRepository<T> {
     String itemId,
   ) async {
     try {
-  
       final response = await _api.patch(
         "users/me/cars/$carId/$endpoint/$itemId",
-        changes
+        changes,
       );
       if (response['success'] != true) {
         throw Exception(
@@ -102,7 +102,9 @@ abstract class BaseServiceRepository<T> {
       }
       return response;
     } catch (e, st) {
-      logger.e("Error patching $endpoint $itemId for carId: $carId: $e , $st");
+      appLogger.e(
+        "Error patching $endpoint $itemId for carId: $carId: $e , $st",
+      );
       rethrow;
     }
   }

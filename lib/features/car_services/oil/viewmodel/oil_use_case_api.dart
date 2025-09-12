@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:logger/logger.dart';
+import 'package:motogen/core/services/logger.dart';
 import 'package:motogen/features/car_services/base/data/providers.dart';
 import 'package:motogen/features/car_services/oil/config/oil_info_list.dart';
 import 'package:motogen/features/car_services/oil/data/oil_repository.dart';
@@ -41,7 +41,7 @@ extension OilUseCaseApi on OilListNotifier {
       await _oilRepository.deleteItemById(carId, oilId);
       deleteOilById(oilId);
     } catch (e, st) {
-      Logger().e(
+      appLogger.e(
         "Error deleting oil (id: $oilId) for car $carId , error : $e , stacktrace: $st",
       );
       rethrow;
@@ -95,7 +95,7 @@ extension OilUseCaseApi on OilListNotifier {
     try {
       await _oilRepository.patchItemById(changes, carId, original.oilId!);
     } catch (e, st) {
-      Logger().e(
+      appLogger.e(
         "Error patching oil (id: ${original.oilId}) for car $carId with ${changes.toString()}, error : $e , stacktrace: $st",
       );
       rethrow;

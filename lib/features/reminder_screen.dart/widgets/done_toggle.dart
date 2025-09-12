@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
@@ -75,11 +74,13 @@ class _DoneToggleState extends ConsumerState<DoneToggle> {
   Widget build(BuildContext context) {
     final String iconPath = widget.isAdd
         ? AppIcons.addCircleReminder
-        : AppIcons.tickCircleReminder;
+        : AppIcons.tickCircleFilled;
 
-    final ColorFilter? colorFilter = !widget.reminderItem.enabled
-        ? const ColorFilter.mode(AppColors.black100, BlendMode.srcIn)
-        : null;
+    final ColorFilter? colorFilter = widget.reminderItem.enabled
+        ? widget.isAdd
+              ? null
+              : const ColorFilter.mode(AppColors.orange500, BlendMode.srcIn)
+        : const ColorFilter.mode(AppColors.black100, BlendMode.srcIn);
 
     return GestureDetector(
       onTap: widget.reminderItem.enabled && !_isLoading

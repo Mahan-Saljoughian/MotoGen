@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:logger/logger.dart';
+import 'package:motogen/core/services/logger.dart';
 import 'package:motogen/features/car_services/base/data/providers.dart';
 import 'package:motogen/features/car_services/refuel/config/refuel_info_list.dart';
 import 'package:motogen/features/car_services/refuel/data/refuel_repository.dart';
@@ -42,7 +42,7 @@ extension RefuelUseCaseApi on RefuelListNotifier {
       await _refuelRepository.deleteItemById(carId, refuelId);
       deleteRefuelById(refuelId);
     } catch (e, st) {
-      Logger().e(
+      appLogger.e(
         "Error deleting refuel (id: $refuelId) for car $carId , error : $e , stacktrace: $st",
       );
       rethrow;
@@ -74,7 +74,7 @@ extension RefuelUseCaseApi on RefuelListNotifier {
     try {
       await _refuelRepository.patchItemById(changes, carId, original.refuelId!);
     } catch (e, st) {
-      Logger().e(
+      appLogger.e(
         "Error patching refuel (id: ${original.refuelId}) for car $carId with ${changes.toString()}, error : $e , stacktrace: $st",
       );
       rethrow;

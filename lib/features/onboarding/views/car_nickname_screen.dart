@@ -12,6 +12,7 @@ import 'package:motogen/features/onboarding/widgets/dot_indicator.dart';
 import 'package:motogen/widgets/field_text.dart';
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
 import 'package:motogen/widgets/my_app_bar.dart';
+import 'package:motogen/widgets/snack_bar.dart';
 
 class CarNicknameScreen extends ConsumerStatefulWidget {
   final int currentPage;
@@ -59,14 +60,11 @@ class _CarNicknameScreenState extends ConsumerState<CarNicknameScreen> {
           );
       onNext();
     } catch (e) {
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(
-          context.mounted ? context : context,
-        ).showSnackBar(SnackBar(content: Text(e.toString())));
-        Navigator.pushReplacementNamed(
-          context.mounted ? context : context,
-          '/onboardingIndicator',
-        );
+          context,
+        ).showSnackBar(buildCustomSnackBar(type: SnackBarType.error));
+        Navigator.pushReplacementNamed(context, '/onboardingIndicator');
       }
     } finally {
       if (mounted) {

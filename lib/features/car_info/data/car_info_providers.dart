@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logger/logger.dart';
 import 'package:motogen/core/services/api_service.dart';
-
+import 'package:motogen/core/services/logger.dart';
 import 'package:motogen/features/bottom_sheet/config/picker_item.dart';
 import 'package:motogen/features/car_info/models/car_form_state_item.dart';
 
@@ -11,7 +10,7 @@ final carBrandsProvider = FutureProvider.autoDispose<List<PickerItem>>((
 ) async {
   final result = await api.get('cars/brands', skipAuth: true);
   final List data = result['data'];
-  Logger().i("API response: $result");
+  appLogger.i("API response: $result");
   return data
       .map(
         (e) => PickerItem(id: e['id'].toString(), title: e['title'] as String),
@@ -27,7 +26,7 @@ final carModelsProvider = FutureProvider.autoDispose
         skipAuth: true,
       );
       final List data = result['data'];
-      Logger().i("API response: $result");
+      appLogger.i("API response: $result");
       return data
           .map(
             (e) =>

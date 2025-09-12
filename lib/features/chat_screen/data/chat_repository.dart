@@ -1,10 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import 'package:motogen/core/services/api_service.dart';
+import 'package:motogen/core/services/custom_exceptions.dart';
+import 'package:motogen/core/services/logger.dart';
 
 class ChatRepository {
   final ApiService _api = ApiService();
-  var logger = Logger();
 
   Future<Map<String, dynamic>> createSession(String prompt) async {
     try {
@@ -19,14 +21,18 @@ class ChatRepository {
       response['success'] = false;
       return response;
     } catch (e) {
-      logger.e("Error creating chat session ");
+      appLogger.e("Error creating chat session ");
       rethrow;
     }
   }
 
   Future<List<Map<String, dynamic>>> getAllSessions() async {
     try {
+      if (simulateNoInternet) {
+        throw const SocketException('Deliberate test of offline handling');
+      }
       final response = await _api.get('users/me/chat-session');
+
       if (response['success'] != true) {
         throw Exception(response['message'] ?? 'Failed to get chat sessions');
       }
@@ -35,7 +41,7 @@ class ChatRepository {
       );
       return List<Map<String, dynamic>>.from(response['data'] ?? []);
     } catch (e) {
-      logger.e("Error fetching chat sessions");
+      appLogger.e("Error fetching chat sessions");
       rethrow;
     }
   }
@@ -55,7 +61,7 @@ class ChatRepository {
       );
       return List<Map<String, dynamic>>.from(response['data'] ?? []);
     } catch (e) {
-      logger.e("Error fetching chat messages for sessionId: $sessionId");
+      appLogger.e("Error fetching chat messages for sessionId: $sessionId");
       rethrow;
     }
   }
@@ -74,7 +80,7 @@ class ChatRepository {
       debugPrint("debug the repsonse in sendMessage is $response");
       return response;
     } catch (e) {
-      logger.e("Error sending message to sessionId: $sessionId");
+      appLogger.e("Error sending message to sessionId: $sessionId");
       rethrow;
     }
   }

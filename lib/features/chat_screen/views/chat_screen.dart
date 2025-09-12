@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
+import 'package:motogen/core/global_error_handling/view/update_page.dart';
+import 'package:motogen/core/global_error_handling/viewmodel/global_error_provider.dart';
+import 'package:motogen/core/services/logger.dart';
 import 'package:motogen/features/chat_screen/model/chat_message.dart';
 import 'package:motogen/features/chat_screen/model/chat_state.dart';
 import 'package:motogen/features/chat_screen/viewmodels/chat_controller.dart';
@@ -32,6 +35,14 @@ class ChatScreen extends ConsumerWidget {
     debugPrint(
       "UI rebuild — messages length: ${chatState.messages.length}, isLoading: ${chatState.isLoading}",
     );
+    final globalError = ref.watch(globalErrorProvider);
+    appLogger.e("global error : ${globalError!.message}");
+    if (globalError.message == 'socket_exception' ||
+        globalError.isForceUpdate == true) {
+      return UpdatePage(
+        updateUrl: globalError.updateUrl!,
+      ); // Let root handle UI
+    }
 
     return Scaffold(
       backgroundColor: AppColors.blue50,

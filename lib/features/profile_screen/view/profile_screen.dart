@@ -13,6 +13,7 @@ import 'package:motogen/features/user_info/viewmodels/phone_number_controller_vi
 import 'package:motogen/features/user_info/views/personal_info_screen.dart';
 import 'package:motogen/widgets/add_car_card.dart';
 import 'package:motogen/widgets/my_app_bar.dart';
+import 'package:motogen/widgets/snack_bar.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -157,14 +158,10 @@ class ProfileScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
+
                   // add car button
-
-
-
-
-                  
-                  SizedBox(height: 20.h),
-                  /*  GestureDetector(
+                  /*  SizedBox(height: 20.h),
+                  GestureDetector(
                     onTap:
                         () => /* Navigator.push(
                       context,
@@ -172,14 +169,9 @@ class ProfileScreen extends ConsumerWidget {
                         page: CarFormScreen(mode: CarInfoFormMode.addEdit),
                       ),
                     ), */ ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'لاب بزن',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 180.sp,
-                              ),
-                            ),
+                          buildCustomSnackBar(
+                            message: 'لاب بزن',
+                            type: SnackBarType.error,
                           ),
                         ),
                     child: Column(

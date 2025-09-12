@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:logger/logger.dart';
 import 'package:motogen/core/constants/app_colors.dart';
+import 'package:motogen/core/services/logger.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/home_screen/widget/service_navigator.dart';
 import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_notifier.dart';
@@ -13,22 +13,22 @@ import 'package:motogen/features/user_info/viewmodels/phone_number_controller_vi
 import 'package:motogen/widgets/add_car_card.dart';
 import 'package:motogen/widgets/loading_animation.dart';
 import 'package:motogen/widgets/my_app_bar.dart';
+import 'package:motogen/widgets/snack_bar.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final logger = Logger();
     final personalInfocontroller = ref.watch(personalInfoProvider);
     final phoneNumberController = ref.watch(phoneNumberControllerProvider);
     final carFormState = ref.watch(carStateNotifierProvider);
-    logger.i(
+    appLogger.i(
       "debug user info : firstname: ${personalInfocontroller.nameController.text} , lastName: ${personalInfocontroller.lastNameController.text} , phoneNumber:${phoneNumberController.phoneController.text}",
     );
-    logger.i("debug car info : ${carFormState.currentCar?.toJson()}");
+    appLogger.i("debug car info : ${carFormState.currentCar?.toJson()}");
     /*  for (var i = 0; i < carFormState.cars.length; i++) {
-      logger.i("debug Car $i: ${carFormState.cars[i].toJson()}");
+      appLogger.i("debug Car $i: ${carFormState.cars[i].toJson()}");
     } */
 
     final asyncReminders = ref.watch(reminderNotifierProvider);

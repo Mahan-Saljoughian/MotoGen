@@ -46,7 +46,7 @@ extension CarValidation on CarFormStateItem {
     r'^[\u0600-\u06FFa-zA-Z0-9\u06F0-\u06F9 ]+$',
   );
   static const int _minNickLength = 1;
-  static const int _maxNickLength = 30;
+  static const int _maxNickLength = 15;
 
   String? get nickNameError {
     if (nickName == null || nickName!.trim().isEmpty) {
@@ -54,7 +54,7 @@ extension CarValidation on CarFormStateItem {
     }
     final trimmed = nickName!.trim();
     if (trimmed.length < _minNickLength || trimmed.length > _maxNickLength) {
-      return "نام مستعار باید بین 1 تا 30 کاراکتر باشد";
+      return "نام مستعار باید بین 1 تا 15 کاراکتر باشد";
     }
     if (!_nicknameRegExp.hasMatch(trimmed)) {
       return "فقط حروف، اعداد و فاصله مجاز است";

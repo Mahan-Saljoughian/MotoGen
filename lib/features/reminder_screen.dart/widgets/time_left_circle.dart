@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/services/format_functions.dart';
+import 'package:motogen/core/services/logger.dart';
 import 'package:motogen/features/reminder_screen.dart/model/reminder_state_item.dart';
 import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_notifier.dart';
 import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_action.dart';
@@ -45,38 +46,33 @@ class TimeLeftCircle extends ConsumerWidget {
 
     final doneType = ReminderStateItem.getDoneType(reminderItem.type);
 
-    Color getSlideColor() {
-      if (percent == 0 && !reminderItem.haveBaseValue) return AppColors.black50;
-      if (percent <= 0.2) return Color(0xFFCD3A3A);
-      if (percent <= 0.4) return AppColors.orange500;
-      return Color(0xFF3C9452);
-    }
+    final Color slideColor;
+    final Color backGroundColor;
+    final Color innerShadowBackGroundColor;
 
-    Color getBackGroundColor() {
-      if (percent == 0 && !reminderItem.haveBaseValue) return AppColors.black50;
-      if (percent <= 0.2) return Color(0xFFFBEAEA);
-      if (percent <= 0.4) return AppColors.orange50;
-      return Color(0xFFDEF9E5);
-    }
-
-    Color getInnerShadowBackGroundColor() {
+    if (!reminderItem.enabled) {
+      slideColor = AppColors.black50;
+      backGroundColor = AppColors.black50;
+      innerShadowBackGroundColor = const Color(0xFF8B0E0E).withAlpha(35);
+    } else {
       if (percent == 0 && !reminderItem.haveBaseValue) {
-        return Color(0xFF8B0E0E).withAlpha(35);
+        slideColor = AppColors.black50;
+        backGroundColor = AppColors.black50;
+        innerShadowBackGroundColor = const Color(0xFF8B0E0E).withAlpha(35);
+      } else if (percent <= 0.2) {
+        slideColor = const Color(0xFFCD3A3A);
+        backGroundColor = const Color(0xFFFBEAEA);
+        innerShadowBackGroundColor = const Color(0xFF8B0E0E).withAlpha(35);
+      } else if (percent <= 0.4) {
+        slideColor = AppColors.orange500;
+        backGroundColor = AppColors.orange50;
+        innerShadowBackGroundColor = const Color(0xFFB3740C).withAlpha(50);
+      } else {
+        slideColor = const Color(0xFF3C9452);
+        backGroundColor = const Color(0xFFDEF9E5);
+        innerShadowBackGroundColor = const Color(0xFF0D3417).withAlpha(35);
       }
-      if (percent <= 0.2) return Color(0xFF8B0E0E).withAlpha(35);
-      if (percent <= 0.4) return Color(0xFFB3740C).withAlpha(50);
-      return Color(0xFF0D3417).withAlpha(35);
     }
-
-    final slideColor = reminderItem.enabled
-        ? getSlideColor()
-        : AppColors.black50;
-    final backGroundColor = reminderItem.enabled
-        ? getBackGroundColor()
-        : AppColors.black50;
-    final innerShadowBackGroundColor = reminderItem.enabled
-        ? getInnerShadowBackGroundColor()
-        : Color(0xFF8B0E0E).withAlpha(35);
 
     return InnerShadow(
       shadows: [
@@ -97,14 +93,14 @@ class TimeLeftCircle extends ConsumerWidget {
           bottom: 17.h,
         ),
         decoration: BoxDecoration(
-          color: Color(0xFFF1F3F5),
+          color: const Color(0xFFF1F3F5),
           borderRadius: BorderRadius.circular(15.r),
         ),
         child: InnerShadow(
           shadows: [
             BoxShadow(
               blurRadius: 4,
-              offset: Offset(0, 0),
+              offset: const Offset(0, 0),
               color: innerShadowBackGroundColor,
             ),
           ],
@@ -112,9 +108,9 @@ class TimeLeftCircle extends ConsumerWidget {
             children: [
               if (!isHomeScreen)
                 Padding(
-                  padding: EdgeInsets.only(bottom: 15.h),
+                  padding: EdgeInsets.only(bottom: 10.h),
                   child: SizedBox(
-                    height: 19.h,
+                    height: 24.h,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -123,9 +119,8 @@ class TimeLeftCircle extends ConsumerWidget {
                             children: [
                               TextSpan(
                                 text: farsiTextForType.contains('(')
-                                    ? farsiTextForType.split(
-                                        '(',
-                                      )[0] // before parentheses
+                                    ? '${farsiTextForType.split('(')[0]}\n'
+                                    // before parentheses
                                     : farsiTextForType,
                                 style: TextStyle(
                                   color: AppColors.blue500,
@@ -149,7 +144,7 @@ class TimeLeftCircle extends ConsumerWidget {
                             ],
                           ),
                           overflow: TextOverflow.ellipsis,
-                          maxLines: 1, // prevents overflow
+                          maxLines: 2, // prevents overflow
                         ),
 
                         EnableToggle(
@@ -157,7 +152,7 @@ class TimeLeftCircle extends ConsumerWidget {
                           reminderAction:
                               reminderAction[reminderItem.type] ??
                               () async {
-                                logger.i("No action.");
+                                appLogger.i("No action.");
                                 return false;
                               },
                         ),
@@ -222,7 +217,7 @@ class TimeLeftCircle extends ConsumerWidget {
                     reminderAction:
                         reminderAction[reminderItem.type] ??
                         () async {
-                          logger.i("No action.");
+                          appLogger.i("No action.");
                         },
                   ),
                 ),

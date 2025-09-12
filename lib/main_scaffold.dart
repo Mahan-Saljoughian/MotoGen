@@ -22,9 +22,8 @@ class _MainScaffoldState extends State<MainScaffold>
   Widget? reminderScreen;
   List<Widget> get pages => [
     const HomeScreen(),
-    //const ReminderScreen(),
     reminderScreen ?? const SizedBox(),
-    chatScreen ?? const SizedBox(), // placeholder
+    chatScreen ?? const SizedBox(),
     const ProfileScreen(),
   ];
 
@@ -60,12 +59,6 @@ class _MainScaffoldState extends State<MainScaffold>
         onTap: (i) {
           setState(() {
             selected = i;
-            if (i == 1 && reminderScreen == null) {
-              reminderScreen = const ReminderScreen();
-            }
-            if (i == 2 && chatScreen == null) {
-              chatScreen = const ChatScreen();
-            }
           });
         },
         vsync: this,

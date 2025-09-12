@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:logger/logger.dart';
+import 'package:motogen/core/global_error_handling/app_with_container.dart';
+import 'package:motogen/core/global_error_handling/viewmodel/global_error_provider.dart';
+import 'package:motogen/core/services/custom_exceptions.dart';
+import 'package:motogen/core/services/logger.dart';
 import 'package:motogen/features/bottom_sheet/widgets/confirm_bottom_sheet.dart';
 import 'package:motogen/features/car_info/config/car_info_config_list.dart';
 import 'package:motogen/features/car_info/models/car_form_state_item.dart';
@@ -13,6 +16,7 @@ import 'package:motogen/features/onboarding/widgets/dot_indicator.dart';
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
 import 'package:motogen/widgets/loading_animation.dart';
 import 'package:motogen/widgets/my_app_bar.dart';
+import 'package:motogen/widgets/snack_bar.dart';
 
 enum CarInfoFormMode { addEdit, completeProfile }
 
@@ -76,6 +80,12 @@ class _CarFormScreenState extends ConsumerState<CarFormScreen> {
       ref.read(carDraftProvider.notifier).state = updatedCar;
       ref.setRawKilometer(updatedCar.kilometer.toString());
       ref.setNickName(updatedCar.nickName);
+    } on ForceUpdateException catch (e) {
+      GlobalErrorHandler.handle(e);
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      return;
     } catch (err, st) {
       debugPrint('❌debug update loadLatestCar error: $err\n$st');
     } finally {
@@ -97,7 +107,7 @@ class _CarFormScreenState extends ConsumerState<CarFormScreen> {
     final carNotifier = ref.read(carStateNotifierProvider.notifier);
 
     if (isLoading) {
-      return const Scaffold(body: Center(child:  LoadingAnimation()));
+      return const Scaffold(body: Center(child: LoadingAnimation()));
     }
     debugPrint(
       'debug car DRAFT: id=${draft.carId}, '
@@ -217,16 +227,34 @@ class _CarFormScreenState extends ConsumerState<CarFormScreen> {
                                       widget.initialItem!,
                                     );
                                     ref.invalidate(carDraftProvider);
-                                  } catch (e, st) {
                                     if (context.mounted) {
-                                      Logger().e(
-                                        "debug the errors is $e , $st",
-                                      );
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('خطا در ویرایش خودرو'),
+                                        buildCustomSnackBar(
+                                          type: SnackBarType.success,
+                                        ),
+                                      );
+                                    }
+                                  } on ForceUpdateException catch (e) {
+                                    GlobalErrorHandler.handle(e);
+                                    if (mounted &&
+                                        Navigator.of(context).canPop()) {
+                                      Navigator.of(context).pop();
+                                    }
+                                    return;
+                                  } catch (e, st) {
+                                    if (context.mounted) {
+                                      appLogger.e(
+                                        "debug the errors is $e , $st",
+                                      );
+
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        buildCustomSnackBar(
+                                          message: 'خطا در ویرایش خودرو',
+                                          type: SnackBarType.error,
                                         ),
                                       );
                                     }
@@ -268,19 +296,35 @@ class _CarFormScreenState extends ConsumerState<CarFormScreen> {
                                     final draft = ref.watch(carDraftProvider);
                                     await carNotifier.addCarFromDraft(draft);
                                     ref.invalidate(carDraftProvider);
-                                  } catch (e, st) {
-                                    // handle error (snackbar, dialog, etc.)
                                     if (context.mounted) {
-                                      Logger().e(
-                                        "debug the errros is $e , $st",
-                                      );
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            'خطا در ثبت خودرو جدید',
-                                          ),
+                                        buildCustomSnackBar(
+                                          type: SnackBarType.success,
+                                        ),
+                                      );
+                                    }
+                                  } on ForceUpdateException catch (e) {
+                                    GlobalErrorHandler.handle(e);
+                                    if (mounted &&
+                                        Navigator.of(context).canPop()) {
+                                      Navigator.of(context).pop();
+                                    }
+                                    return;
+                                  } catch (e, st) {
+                                    // handle error (snackbar, dialog, etc.)
+                                    if (context.mounted) {
+                                      appLogger.e(
+                                        "debug the errros is $e , $st",
+                                      );
+
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        buildCustomSnackBar(
+                                          message: 'خطا در ثبت خودرو جدید',
+                                          type: SnackBarType.error,
                                         ),
                                       );
                                     }

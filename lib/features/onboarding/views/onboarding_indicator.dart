@@ -7,7 +7,8 @@ import 'package:motogen/features/user_info/views/enter_phone_number_screen.dart'
 import 'package:motogen/features/user_info/views/code_confirm_screen.dart';
 
 class OnboardingIndicator extends ConsumerStatefulWidget {
-  const OnboardingIndicator({super.key});
+  final bool skipPhoneStep;
+  const OnboardingIndicator({super.key, this.skipPhoneStep = false});
 
   @override
   ConsumerState<OnboardingIndicator> createState() =>
@@ -15,9 +16,17 @@ class OnboardingIndicator extends ConsumerStatefulWidget {
 }
 
 class _OnboardingIndicatorState extends ConsumerState<OnboardingIndicator> {
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
-  final int count = 6;
+  late final PageController _pageController;
+  late int _logicalPage;
+  final int fullCount = 6;
+
+  @override
+  void initState() {
+    super.initState();
+    _logicalPage = widget.skipPhoneStep ? 2 : 0;
+
+    _pageController = PageController(initialPage: 0);
+  }
 
   void _nextPage() {
     _pageController.nextPage(
@@ -35,6 +44,53 @@ class _OnboardingIndicatorState extends ConsumerState<OnboardingIndicator> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> pages = [];
+
+    if (!widget.skipPhoneStep) {
+      pages.addAll([
+        EnterPhoneNumberScreen(
+          currentPage: _logicalPage,
+          count: fullCount,
+          onNext: _nextPage,
+        ),
+        CodeConfirmScreen(
+          currentPage: _logicalPage,
+          count: fullCount,
+          onNext: _nextPage,
+          onBack: _prevPage,
+        ),
+      ]);
+    }
+
+    pages.addAll([
+      PersonalInfoScreen(
+        currentPage: _logicalPage,
+        count: fullCount,
+        onNext: _nextPage,
+        onBack: widget.skipPhoneStep ? null : _prevPage,
+      ),
+      CarFormScreen(
+        mode: CarInfoFormMode.completeProfile,
+        currentPage: _logicalPage,
+        count: fullCount,
+        onCompleteProfileNext: _nextPage,
+        onCompleteProfileBack: _prevPage,
+      ),
+      CarFormScreen(
+        mode: CarInfoFormMode.completeProfile,
+        currentPage: _logicalPage,
+        count: fullCount,
+        onCompleteProfileNext: _nextPage,
+        onCompleteProfileBack: _prevPage,
+      ),
+      CarNicknameScreen(
+        currentPage: _logicalPage,
+        count: fullCount,
+        onNext: () => Navigator.pushReplacementNamed(context, '/mainApp'),
+
+        onBack: _prevPage,
+      ),
+    ]);
     return Scaffold(
       body: Column(
         children: [
@@ -42,48 +98,14 @@ class _OnboardingIndicatorState extends ConsumerState<OnboardingIndicator> {
             child: PageView(
               controller: _pageController,
               physics: NeverScrollableScrollPhysics(),
-              onPageChanged: (index) => setState(() => _currentPage = index),
-              children: [
-                EnterPhoneNumberScreen(
-                  currentPage: _currentPage,
-                  count: count,
-                  onNext: _nextPage,
-                ),
-                CodeConfirmScreen(
-                  currentPage: _currentPage,
-                  count: count,
-                  onNext: _nextPage,
-                  onBack: _prevPage,
-                ),
-                PersonalInfoScreen(
-                  currentPage: _currentPage,
-                  count: count,
-                  onNext: _nextPage,
-                  onBack: _prevPage,
-                ),
-                CarFormScreen(
-                  mode: CarInfoFormMode.completeProfile,
-                  currentPage: _currentPage,
-                  count: count,
-                  onCompleteProfileNext: _nextPage,
-                  onCompleteProfileBack: _prevPage,
-                ),
-                CarFormScreen(
-                  mode: CarInfoFormMode.completeProfile,
-                  currentPage: _currentPage,
-                  count: count,
-                  onCompleteProfileNext: _nextPage,
-                  onCompleteProfileBack: _prevPage,
-                ),
-                CarNicknameScreen(
-                  currentPage: _currentPage,
-                  count: count,
-                  onNext: () =>
-                      Navigator.pushReplacementNamed(context, '/mainApp'),
-
-                  onBack: _prevPage,
-                ),
-              ],
+              onPageChanged: (physicalIndex) {
+                setState(() {
+                  _logicalPage = widget.skipPhoneStep
+                      ? physicalIndex + 2
+                      : physicalIndex;
+                });
+              },
+              children: pages,
             ),
           ),
         ],

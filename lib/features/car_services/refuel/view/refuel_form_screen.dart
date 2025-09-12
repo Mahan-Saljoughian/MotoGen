@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:logger/logger.dart';
 import 'package:motogen/core/constants/app_icons.dart';
+import 'package:motogen/core/services/custom_exceptions.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/car_services/refuel/config/refuel_info_list.dart';
 import 'package:motogen/features/car_services/refuel/model/refuel_state_item.dart';
@@ -15,6 +15,8 @@ import 'package:motogen/features/bottom_sheet/widgets/build_form_fields.dart';
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
 import 'package:motogen/features/bottom_sheet/widgets/confirm_bottom_sheet.dart';
 import 'package:motogen/widgets/my_app_bar.dart';
+import 'package:motogen/widgets/snack_bar.dart'
+    show buildCustomSnackBar, SnackBarType;
 
 class RefuelFormScreen extends ConsumerStatefulWidget {
   final RefuelStateItem? initialItem;
@@ -211,10 +213,19 @@ class _RefuelFormScreenState extends ConsumerState<RefuelFormScreen> {
                       draft: draft,
                       carId: carId!,
                     );
-                  } catch (e) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('خطا در سوخت خرید')),
+                        buildCustomSnackBar(type: SnackBarType.success),
+                      );
+                    }
+                  } catch (e) {
+                    if (e is ForceUpdateException) rethrow;
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        buildCustomSnackBar(
+                          message: 'خطا در ویرایش سوخت جدید',
+                          type: SnackBarType.error,
+                        ),
                       );
                     }
                   }
@@ -228,10 +239,18 @@ class _RefuelFormScreenState extends ConsumerState<RefuelFormScreen> {
                       draft: draft,
                       carId: carId!,
                     );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        buildCustomSnackBar(type: SnackBarType.success),
+                      );
+                    }
                   } catch (e) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('خطا در ثبت سوخت جدید')),
+                        buildCustomSnackBar(
+                          message: 'خطا در ثبت سوخت جدید',
+                          type: SnackBarType.error,
+                        ),
                       );
                     }
                   } finally {

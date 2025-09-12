@@ -1,5 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
+import 'package:motogen/core/services/logger.dart';
 import 'package:motogen/features/bottom_sheet/config/picker_item.dart';
 import 'package:motogen/features/car_info/data/car_info_providers.dart';
 import 'package:motogen/features/car_info/data/car_respository.dart';
@@ -31,7 +32,7 @@ extension CarUseCaseApi on CarStateNotifier {
 
       return response;
     } catch (e) {
-      Logger().e('Complete profile error : $e');
+      appLogger.e('Complete profile error : $e');
       rethrow;
     }
   }
@@ -45,6 +46,7 @@ extension CarUseCaseApi on CarStateNotifier {
         brand: PickerItem(id: null, title: car['CarBrandTitle'] ?? ''),
         model: PickerItem(id: null, title: car['carModelTitle'] ?? ''),
         type: PickerItem(id: null, title: car['carTrimTitle'] ?? ''),
+        kilometer: car['kilometer'],
         nickName: car['nickName'] ?? '',
       );
     }).toList();
@@ -101,6 +103,7 @@ extension CarUseCaseApi on CarStateNotifier {
       commitDraft(draft, carId!);
     } catch (e) {
       debugPrint("debug Error adding car");
+
       rethrow;
     }
   }
@@ -139,7 +142,7 @@ extension CarUseCaseApi on CarStateNotifier {
           ?.toIso8601String();
     }
     if (draft.nickName != original.nickName) {
-      changes['nickName'] = draft.nickName;
+      changes['nickName'] = draft.nickName!.isEmpty ? null : draft.nickName;
     }
 
     if (changes.isEmpty) {
@@ -178,7 +181,7 @@ extension CarUseCaseApi on CarStateNotifier {
         );
       });
     } catch (e, st) {
-      Logger().e(
+      appLogger.e(
         "Error patching car with ${original.carId} with ${changes.toString()}, error : $e , stacktrace: $st",
       );
       rethrow;
@@ -204,7 +207,7 @@ extension CarUseCaseApi on CarStateNotifier {
       updatedCars.removeAt(indexToRemove);
       setCars(updatedCars);
     } catch (e) {
-      Logger().e("Error deleting car (id: $carId): $e");
+      appLogger.e("Error deleting car (id: $carId): $e");
       rethrow;
     }
   }

@@ -8,6 +8,7 @@ import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/core/constants/app_images.dart';
 import 'package:motogen/core/services/farsi_or_english_digits_input_formatter.dart';
+import 'package:motogen/core/services/logger.dart';
 import 'package:motogen/features/car_info/viewmodels/car_use_case_api.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/user_info/model/auth_state.dart';
@@ -38,7 +39,6 @@ class CodeConfirmScreen extends ConsumerStatefulWidget {
 class _ValidateCodeScreenState extends ConsumerState<CodeConfirmScreen> {
   late final List<TextEditingController> controllers;
   late final List<FocusNode> focusNodes;
-  final logger = Logger();
 
   @override
   void initState() {
@@ -219,7 +219,7 @@ class _ValidateCodeScreenState extends ConsumerState<CodeConfirmScreen> {
                               "debug the send code is : ${auth.codeSent}",
                             );
                           } else {
-                            logger.d("Phone number is missing!");
+                            appLogger.d("Phone number is missing!");
                           }
                           codeVM.resetCode();
                           for (var controller in controllers) {
@@ -282,7 +282,7 @@ class _ValidateCodeScreenState extends ConsumerState<CodeConfirmScreen> {
                         codeVM.cancelTimer();
                         codeVM.resetCode();
                       } else {
-                        logger.d("Phone number is missing!");
+                        appLogger.d("Phone number is missing!");
                       }
                     }
                   },

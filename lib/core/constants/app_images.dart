@@ -13,4 +13,9 @@ class AppImages {
   static const String carCardDark = "assets/images/car_card_dark.png";
   static const String fuel = "assets/images/fuel.png";
   static const String purchases = "assets/images/purchases.png";
+
+  static const String update = "assets/images/update.png";
+  static const String error = "assets/images/error.png";
+  
+    static const String logo = "assets/images/logo.png";
 }

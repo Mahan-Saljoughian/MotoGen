@@ -1,15 +1,20 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:logger/web.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
+import 'package:motogen/core/global_error_handling/view/update_page.dart';
+import 'package:motogen/core/services/custom_exceptions.dart';
+import 'package:motogen/core/services/logger.dart';
 import 'package:motogen/features/bottom_sheet/config/picker_field_config.dart';
 import 'package:motogen/features/bottom_sheet/config/picker_item.dart';
 import 'package:motogen/features/bottom_sheet/viewmodels/bottomsheet_multi_selection_viewmodel.dart';
 import 'package:motogen/features/bottom_sheet/viewmodels/bottomsheet_search_viewmodel.dart';
 import 'package:motogen/features/bottom_sheet/viewmodels/bottomsheet_selection_viewmodel.dart';
+import 'package:motogen/features/onboarding/views/onboarding_internet.dart';
 import 'package:motogen/widgets/loading_animation.dart';
 
 class BottomsheetListShow {
@@ -41,7 +46,7 @@ class BottomsheetListShow {
       config.multiSetter!(ref, result ?? latestSelected);
     } else {
       final PickerItem? selectedItem = config.getter!(state);
-     //PickerItem? latestSelectedItem = selectedItem;
+      //PickerItem? latestSelectedItem = selectedItem;
 
       final result = await showModalBottomSheet<PickerItem>(
         context: context,
@@ -68,11 +73,11 @@ class _BottomSheetContent extends ConsumerWidget {
   final String labelText;
   final ProviderListenable<AsyncValue<List<PickerItem>>> itemsProvider;
   final PickerItem? initialSelectedItem;
-//  final ValueChanged<PickerItem?> onLatestSelectionChanged;
+  //  final ValueChanged<PickerItem?> onLatestSelectionChanged;
 
   const _BottomSheetContent({
     required this.labelText,
-  //  required this.onLatestSelectionChanged,
+    //  required this.onLatestSelectionChanged,
     this.initialSelectedItem,
     required this.itemsProvider,
   });
@@ -96,7 +101,7 @@ class _BottomSheetContent extends ConsumerWidget {
             final selectionVM = ref.watch(bottomsheetSelectionProvider);
 
             // Update latest selection
-        //    onLatestSelectionChanged(selectionVM.selectedItem);
+            //    onLatestSelectionChanged(selectionVM.selectedItem);
 
             return Container(
               width: double.infinity,
@@ -211,13 +216,17 @@ class _BottomSheetContent extends ConsumerWidget {
           },
         ),
       ),
-      loading: () => SizedBox(
-        height: 250,
-        child: Center(child:const  LoadingAnimation()),
-      ),
+      loading: () =>
+          SizedBox(height: 250, child: Center(child: const LoadingAnimation())),
       error: (err, stack) {
-        Logger().i('provider error: $err');
-        Logger().i('stack error  $stack');
+        if (err is SocketException) {
+          return const OnboardingInternet(); 
+        }
+        if (err is ForceUpdateException) {
+          return UpdatePage(updateUrl: err.updateUrl);
+        }
+        appLogger.i('provider error: $err');
+        appLogger.i('stack error  $stack');
         return SizedBox(
           height: 250,
           child: Center(child: Text('خطا در گرفتن لیست')),
@@ -377,10 +386,8 @@ class _BottomSheetMultiContent extends ConsumerWidget {
           },
         ),
       ),
-      loading: () => SizedBox(
-        height: 250,
-        child: Center(child: const  LoadingAnimation()),
-      ),
+      loading: () =>
+          SizedBox(height: 250, child: Center(child: const LoadingAnimation())),
       error: (err, stack) => SizedBox(
         height: 250,
         child: Center(child: Text('خطا در گرفتن لیست')),

@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:logger/logger.dart';
+import 'package:motogen/core/services/logger.dart';
 import 'package:motogen/features/car_services/base/data/providers.dart';
 import 'package:motogen/features/car_services/repair/config/repair_info_list.dart';
 import 'package:motogen/features/car_services/repair/data/repair_repository.dart';
@@ -42,7 +42,7 @@ extension RepairUseCaseApi on RepairListNotifier {
       await _repairRepository.deleteItemById(carId, repairId);
       deleteRepairById(repairId);
     } catch (e, st) {
-      Logger().e(
+      appLogger.e(
         "Error deleting repair (id: $repairId) for car $carId , error : $e , stacktrace: $st",
       );
       rethrow;
@@ -81,7 +81,7 @@ extension RepairUseCaseApi on RepairListNotifier {
     try {
       await _repairRepository.patchItemById(changes, carId, original.repairId!);
     } catch (e, st) {
-      Logger().e(
+      appLogger.e(
         "Error patching repair (id: ${original.repairId}) for car $carId with ${changes.toString()}, error : $e , stacktrace: $st",
       );
       rethrow;

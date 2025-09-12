@@ -97,7 +97,7 @@ class ReminderScreen extends ConsumerWidget {
           ),
           SizedBox(height: 26.h),
 
-       // lazy build reminders 
+          // lazy build reminders
           ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -105,28 +105,31 @@ class ReminderScreen extends ConsumerWidget {
             itemBuilder: (context, rowIndex) {
               final int firstIndex = rowIndex * 2;
               final int secondIndex = firstIndex + 1;
-              return Row(
-                children: [
-                  Expanded(
-                    child: firstIndex < reminders.length
-                        ? TimeLeftCircle(
-                            isHomeScreen: false,
-                            reminderItem: reminder,
-                            reminderIdByType: reminderIdByType,
-                          )
-                        : SizedBox(),
-                  ),
-                  SizedBox(width: 10.w),
-                  Expanded(
-                    child: secondIndex < reminders.length
-                        ? TimeLeftCircle(
-                            isHomeScreen: false,
-                            reminderItem: reminder,
-                            reminderIdByType: reminderIdByType,
-                          )
-                        : SizedBox(),
-                  ),
-                ],
+              return Padding(
+                padding: EdgeInsets.only(bottom: 7.h),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: firstIndex < reminders.length
+                          ? TimeLeftCircle(
+                              isHomeScreen: false,
+                              reminderItem: reminders[firstIndex],
+                              reminderIdByType: reminderIdByType,
+                            )
+                          : SizedBox(),
+                    ),
+                    SizedBox(width: 10.w),
+                    Expanded(
+                      child: secondIndex < reminders.length
+                          ? TimeLeftCircle(
+                              isHomeScreen: false,
+                              reminderItem: reminders[secondIndex],
+                              reminderIdByType: reminderIdByType,
+                            )
+                          : SizedBox(),
+                    ),
+                  ],
+                ),
               );
             },
           ),

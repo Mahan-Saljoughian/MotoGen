@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logger/logger.dart';
+
+import 'package:motogen/core/services/logger.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/reminder_screen.dart/data/reminder_repository.dart';
 import 'package:motogen/features/reminder_screen.dart/model/reminder_state_item.dart';
 
-var logger = Logger();
+
 
 final reminderNotifierProvider =
     AsyncNotifierProvider<ReminderNotifier, List<ReminderStateItem>>(
@@ -46,7 +47,7 @@ class ReminderNotifier extends AsyncNotifier<List<ReminderStateItem>> {
           if (r.reminderId == reminderId) r.copyWith(enabled: isEnable) else r,
       ]);
     } catch (e, st) {
-      logger.e(
+      appLogger.e(
         "toggleReminderForDisable failed for reminderId $reminderId,$e,$st",
       );
     }
@@ -127,7 +128,7 @@ class ReminderNotifier extends AsyncNotifier<List<ReminderStateItem>> {
       // then get fresh remainingValue from API
       await refreshRemainingValueForReminder(reminderId);
     } catch (e, st) {
-      logger.e(
+      appLogger.e(
         "debug error occured in updateReminder for reminderId $reminderId , $e,$st",
       );
     }
@@ -173,7 +174,7 @@ class ReminderNotifier extends AsyncNotifier<List<ReminderStateItem>> {
         ]);
       }
     } catch (e, st) {
-      logger.e("Failed to refresh remainingValue for $reminderId, $e, $st");
+      appLogger.e("Failed to refresh remainingValue for $reminderId, $e, $st");
     }
   }
 }

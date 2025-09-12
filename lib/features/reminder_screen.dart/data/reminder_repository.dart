@@ -1,10 +1,9 @@
-import 'package:logger/web.dart';
+
 import 'package:motogen/core/services/api_service.dart';
+import 'package:motogen/core/services/logger.dart';
 
 class ReminderRepository  {
   final ApiService _api = ApiService();
-  var logger = Logger();
-
   Future<List<Map<String, dynamic>>> getAllReminders(String carId) async {
     try {
       final response = await _api.get("users/me/cars/$carId/reminders");
@@ -16,7 +15,7 @@ class ReminderRepository  {
       }
       return List<Map<String, dynamic>>.from(response['data'] ?? []);
     } catch (e) {
-      logger.e("debug Error getting reminder for car with carId : $carId");
+      appLogger.e("debug Error getting reminder for car with carId : $carId");
       rethrow;
     }
   }
@@ -39,7 +38,7 @@ class ReminderRepository  {
       }
       return response;
     } catch (e, st) {
-      logger.e(
+      appLogger.e(
         "Error patching reminder with reminderId : $reminderId for car with carId: $carId: $e , $st",
       );
       rethrow;

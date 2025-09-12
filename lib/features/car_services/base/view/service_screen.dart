@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,6 +7,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:motogen/core/constants/app_colors.dart';
 import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/core/constants/app_images.dart';
+import 'package:motogen/core/global_error_handling/view/update_page.dart';
+import 'package:motogen/core/global_error_handling/viewmodel/global_error_provider.dart';
+import 'package:motogen/core/services/custom_exceptions.dart';
 import 'package:motogen/features/car_info/viewmodels/car_state_notifier.dart';
 import 'package:motogen/features/car_services/base/data/providers.dart';
 import 'package:motogen/features/car_services/base/model/service_model.dart';
@@ -14,6 +19,7 @@ import 'package:motogen/features/car_services/base/widgets/help_to_add_text_box.
 import 'package:motogen/features/car_services/oil/data/oil_repository.dart';
 import 'package:motogen/features/car_services/oil/view/oil_tab_button.dart';
 import 'package:motogen/features/home_screen/widget/service_navigator.dart';
+import 'package:motogen/features/onboarding/views/onboarding_internet.dart';
 import 'package:motogen/widgets/loading_animation.dart';
 import 'package:motogen/widgets/my_app_bar.dart';
 
@@ -67,6 +73,12 @@ class ServiceScreen extends ConsumerWidget {
         }
       },
       error: (err, stack) {
+        if (err is SocketException) {
+          return const OnboardingInternet();
+        }
+        if (err is ForceUpdateException) {
+          return UpdatePage(updateUrl: err.updateUrl);
+        }
         debugPrint('❌ Error in loading $title list: $err');
         debugPrint('📍 Stacktrace:\n$stack');
         return _buildErrorUI(context, ref, title, selectedTab);

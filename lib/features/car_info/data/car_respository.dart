@@ -1,11 +1,10 @@
-import 'package:logger/web.dart';
 import 'package:motogen/core/services/api_service.dart';
-
+import 'package:motogen/core/services/logger.dart';
 import 'package:motogen/features/car_info/models/car_form_state_item.dart';
 
 class CarRespository {
   final ApiService _api = ApiService();
-  var logger = Logger();
+
 
   Future<Map<String, dynamic>> completeProfile(
     CarFormStateItem carState,
@@ -29,7 +28,7 @@ class CarRespository {
       }
       return List<Map<String, dynamic>>.from(response['data'] ?? []);
     } catch (e) {
-      logger.e("debug Error getting car info");
+      appLogger.e("debug Error getting car info");
       rethrow;
     }
   }
@@ -44,7 +43,7 @@ class CarRespository {
       }
       return response['data'];
     } catch (e) {
-      logger.e("debug Error getting car info by carId : $carId");
+      appLogger.e("debug Error getting car info by carId : $carId");
       rethrow;
     }
   }
@@ -62,7 +61,7 @@ class CarRespository {
       }
       return response;
     } catch (e, st) {
-      logger.e("Error patching car with carId: $carId: $e , $st");
+      appLogger.e("Error patching car with carId: $carId: $e , $st");
       rethrow;
     }
   }
@@ -76,7 +75,7 @@ class CarRespository {
       }
       return response;
     } catch (e) {
-      logger.e("debug Error posting car ");
+      appLogger.e("debug Error posting car ");
       rethrow;
     }
   }
@@ -92,7 +91,7 @@ class CarRespository {
 
       return response;
     } catch (e) {
-      logger.e("debug Error deleting car info with carId: $carId");
+      appLogger.e("debug Error deleting car info with carId: $carId");
       rethrow;
     }
   }

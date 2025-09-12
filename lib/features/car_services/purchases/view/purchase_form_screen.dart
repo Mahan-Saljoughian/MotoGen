@@ -15,6 +15,7 @@ import 'package:motogen/features/car_services/purchases/viewmodel/purchase_valid
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
 import 'package:motogen/features/bottom_sheet/widgets/confirm_bottom_sheet.dart';
 import 'package:motogen/widgets/my_app_bar.dart';
+import 'package:motogen/widgets/snack_bar.dart';
 
 class PurchaseFromScreen extends ConsumerStatefulWidget {
   final PurhcaseStateItem? initialItem;
@@ -218,10 +219,18 @@ class _PurchaseFormScreenState extends ConsumerState<PurchaseFromScreen> {
                       draft: draft,
                       carId: carId!,
                     );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        buildCustomSnackBar(type: SnackBarType.success),
+                      );
+                    }
                   } catch (e) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('خطا در ویرایش خرید')),
+                        buildCustomSnackBar(
+                          message: 'خطا در ویرایش خرید جدید',
+                          type: SnackBarType.error,
+                        ),
                       );
                     }
                   }
@@ -235,10 +244,18 @@ class _PurchaseFormScreenState extends ConsumerState<PurchaseFromScreen> {
                       draft: draft,
                       carId: carId!,
                     );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        buildCustomSnackBar(type: SnackBarType.success),
+                      );
+                    }
                   } catch (e) {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('خطا در ثبت خرید جدید')),
+                        buildCustomSnackBar(
+                          message: 'خطا در ثبت خرید جدید',
+                          type: SnackBarType.error,
+                        ),
                       );
                     }
                   } finally {

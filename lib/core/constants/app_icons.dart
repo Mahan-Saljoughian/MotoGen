@@ -13,6 +13,8 @@ class AppIcons {
   static const String loadingDotBottom = "assets/icons/loading_dot_bottom.svg";
 
   static const String errorCircle = "assets/icons/error_circle.svg";
+  static const String errorCircleFilled =
+      "assets/icons/error_circle_filled.svg";
 
   static const String home = "assets/icons/nav_bar/home.svg";
   static const String notifier = "assets/icons/nav_bar/timer.svg";
@@ -48,8 +50,10 @@ class AppIcons {
 
   static const String addCircleReminder =
       "assets/icons/add_circle_reminder.svg";
-  static const String tickCircleReminder =
-      "assets/icons/tick_circle_reminder.svg";
+
   static const String toggleOn = "assets/icons/toggle_on.svg";
   static const String toggleOff = "assets/icons/toggle_off.svg";
+
+  static const String refresh = "assets/icons/refresh.svg";
+
 }

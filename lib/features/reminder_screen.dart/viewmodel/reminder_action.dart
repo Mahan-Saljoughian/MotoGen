@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:motogen/core/services/fade_route.dart';
+import 'package:motogen/core/services/logger.dart';
 import 'package:motogen/features/bottom_sheet/config/date_field_config.dart'; // For DateUsageType
 import 'package:motogen/features/car_services/oil/data/oil_repository.dart';
 import 'package:motogen/features/car_services/oil/view/oil_form_screen.dart';
@@ -196,7 +197,7 @@ extension ReminderToggle on ReminderNotifier {
           pagesTitleEnum: pagesTitleEnum,
         );
       default:
-        logger.i("No action defined for $type");
+        appLogger.i("No action defined for $type");
         return null;
     }
   }

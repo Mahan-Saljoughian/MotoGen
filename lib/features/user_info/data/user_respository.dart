@@ -1,9 +1,9 @@
-import 'package:logger/web.dart';
 import 'package:motogen/core/services/api_service.dart';
+import 'package:motogen/core/services/logger.dart';
 
 class UserRespository {
   final ApiService _api = ApiService();
-  var logger = Logger();
+  
   Future<Map<String, dynamic>> getUserProfile() async {
     try {
       final response = await _api.get("users/me");
@@ -13,7 +13,7 @@ class UserRespository {
       final data = response['data'];
       return data;
     } catch (e) {
-      logger.e("debug Error getting user profile");
+      appLogger.e("debug Error getting user profile");
       rethrow;
     }
   }
@@ -28,7 +28,7 @@ class UserRespository {
       }
       return Map<String, dynamic>.from(response['data'] as Map);
     } catch (e) {
-      logger.e("debug Error patching user profile");
+      appLogger.e("debug Error patching user profile");
       rethrow;
     }
   }

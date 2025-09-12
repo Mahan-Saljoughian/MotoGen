@@ -8,6 +8,7 @@ import 'package:motogen/core/constants/app_icons.dart';
 import 'package:motogen/features/bottom_sheet/widgets/confirm_bottom_sheet.dart';
 import 'package:motogen/features/reminder_screen.dart/model/reminder_state_item.dart';
 import 'package:motogen/features/reminder_screen.dart/viewmodel/reminder_notifier.dart';
+import 'package:motogen/widgets/snack_bar.dart';
 
 class EnableToggle extends ConsumerStatefulWidget {
   final ReminderStateItem reminderItem;
@@ -103,9 +104,14 @@ class EnableToggleState extends ConsumerState<EnableToggle>
           _value = true;
         });
       } catch (e) {
-        ScaffoldMessenger.of(context.mounted ? context : context).showSnackBar(
-          const SnackBar(content: Text("خطا در تغییر وضعیت یادآور")),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            buildCustomSnackBar(
+              message: "خطا در تغییر وضعیت یادآور",
+              type: SnackBarType.error,
+            ),
+          );
+        }
       } finally {
         setState(() => _loading = false);
       }
@@ -125,9 +131,14 @@ class EnableToggleState extends ConsumerState<EnableToggle>
         _value = newValue;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context.mounted ? context : context).showSnackBar(
-        const SnackBar(content: Text("خطا در تغییر وضعیت یادآور")),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          buildCustomSnackBar(
+            message: "خطا در تغییر وضعیت یادآور",
+            type: SnackBarType.error,
+          ),
+        );
+      }
     } finally {
       setState(() => _loading = false);
     }

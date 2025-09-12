@@ -15,6 +15,7 @@ import 'package:motogen/features/car_services/oil/viewmodel/oil_validation.dart'
 import 'package:motogen/features/onboarding/widgets/onboarding_button.dart';
 import 'package:motogen/features/bottom_sheet/widgets/confirm_bottom_sheet.dart';
 import 'package:motogen/widgets/my_app_bar.dart';
+import 'package:motogen/widgets/snack_bar.dart';
 
 class OilFormScreen extends ConsumerStatefulWidget {
   final OilStateItem? initialItem;
@@ -228,11 +229,19 @@ class _OilFormScreenState extends ConsumerState<OilFormScreen> {
                                 draft: draft,
                                 carId: carId!,
                               );
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  buildCustomSnackBar(
+                                    type: SnackBarType.success,
+                                  ),
+                                );
+                              }
                             } catch (e) {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('خطا در تعمیرات خرید'),
+                                  buildCustomSnackBar(
+                                    message: 'خطا در ویرایش روغن جدید',
+                                    type: SnackBarType.error,
                                   ),
                                 );
                               }
@@ -247,11 +256,19 @@ class _OilFormScreenState extends ConsumerState<OilFormScreen> {
                                 draft: draft,
                                 carId: carId!,
                               );
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  buildCustomSnackBar(
+                                    type: SnackBarType.success,
+                                  ),
+                                );
+                              }
                             } catch (e) {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('خطا در ثبت تعمیرات جدید'),
+                                  buildCustomSnackBar(
+                                    message: 'خطا در ثبت روغن جدید',
+                                    type: SnackBarType.error,
                                   ),
                                 );
                               }
